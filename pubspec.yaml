@@ -1,0 +1,41 @@
+name: merge2mkv
+description: Automatically merge downloaded series or movies to the common convention used by media servers.
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.1 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  fluent_ui: ^4.0.0-pre.3
+  flutter_acrylic: ^1.0.0+2
+  window_manager: ^0.2.5
+  provider: ^6.0.3
+  shared_preferences: ^2.0.15
+  path: ^1.8.1
+  equatable: ^2.0.3
+  collection: ^1.16.0
+  url_launcher: ^6.1.5
+  desktop_drop: ^0.3.3
+  system_theme: ^2.0.0
+  multi_split_view: ^2.1.0
+  file_picker: ^5.0.0
+  pluto_grid: ^5.0.4
+
+dev_dependencies:
+  flutter_lints: ^2.0.0
+
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/mediainfo/
+    - assets/mkvmerge/
+    - assets/json/
