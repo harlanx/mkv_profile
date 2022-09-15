@@ -15,13 +15,13 @@ class NameDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: const Text('Edit title'),
+      title: const Text('Profile Name'),
       content: TextFormBox(
         key: nameForm,
         controller: controller,
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'Title cannot be empty';
+            return 'Name cannot be empty';
           }
           return null;
         },

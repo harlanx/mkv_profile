@@ -12,7 +12,6 @@ void main() async {
   await WindowManager.instance.ensureInitialized(); // window_manager
   await Window.initialize(); // flutter_acrylic
   Window.hideWindowControls(); // hide window controls of flutter_acrylic
-
   await AppData.init(); // this app
 
   var windowOptions = WindowOptions(
@@ -41,7 +40,8 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with WidgetsBindingObserver, WindowListener {
+class _MyAppState extends State<MyApp>
+    with WidgetsBindingObserver, WindowListener {
   @override
   void initState() {
     super.initState();
@@ -49,7 +49,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver, WindowListen
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Future.delayed(const Duration(milliseconds: 200), () {
-        AppData.appSettings.applyWindowEffect(AppData.appSettings.windowEffect, context);
+        AppData.appSettings
+            .applyWindowEffect(AppData.appSettings.windowEffect, context);
       });
     });
   }
@@ -70,9 +71,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver, WindowListen
   @override
   void didChangePlatformBrightness() async {
     SystemTheme.accentColor.load(); // reload system_theme
-    AppData.appSettings.setThemeMode(AppData.appSettings.themeMode); // update app theme
+    AppData.appSettings
+        .setThemeMode(AppData.appSettings.themeMode); // update app theme
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      AppData.appSettings.applyWindowEffect(AppData.appSettings.windowEffect, context); // update window effect
+      AppData.appSettings.applyWindowEffect(
+          AppData.appSettings.windowEffect, context); // update window effect
     });
     super.didChangePlatformBrightness();
   }
@@ -82,7 +85,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver, WindowListen
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AppData>.value(value: AppData()),
-        ChangeNotifierProvider<AppSettingsNotifier>.value(value: AppData.appSettings),
+        ChangeNotifierProvider<AppSettingsNotifier>.value(
+            value: AppData.appSettings),
+        ChangeNotifierProvider<ShowListNotifier>(
+            create: (_) => ShowListNotifier()),
+        ChangeNotifierProvider<TaskListNotifier>(
+            create: (_) => TaskListNotifier()),
+        ChangeNotifierProvider<OutputNotifier>.value(value: AppData.outputs),
+        ChangeNotifierProvider<UserProfilesNotifier>.value(
+            value: AppData.profiles),
       ],
       builder: (context, _) {
         final appSettings = context.watch<AppSettingsNotifier>();
@@ -100,7 +111,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver, WindowListen
             return NavigationPaneTheme(
               data: NavigationPaneThemeData(
                 highlightColor: appSettings.systemAccentColor,
-                backgroundColor: appSettings.windowEffect.value != WindowEffect.disabled ? Colors.transparent : null,
+                backgroundColor:
+                    appSettings.windowEffect.value != WindowEffect.disabled
+                        ? Colors.transparent
+                        : null,
               ),
               child: child!,
             );

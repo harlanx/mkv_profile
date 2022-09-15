@@ -1,32 +1,33 @@
-import 'dart:convert';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
 import 'package:merge2mkv/data/app_data.dart';
 import 'package:merge2mkv/models/models.dart';
 import 'package:merge2mkv/services/app_services.dart';
 import 'package:merge2mkv/utilities/utilities.dart';
 
-abstract class Show extends Equatable {
+abstract class Show {
   late final String title;
   final Directory directory;
 
   Show({
     required this.directory,
   }) : title = directory.name;
-
-  @override
-  List<Object> get props => [title, directory];
 }
 
 class Video extends Equatable {
   final File mainFile;
   final List<Subtitle> subtitles;
+  late final MediaInfo info;
 
-  const Video({
+  Video({
     required this.mainFile,
     required this.subtitles,
-  });
-
-  Future<MediaInfo> get info async => (await MetadataScanner.scan(mainFile));
+  }) {
+    // You can't hot restart DLL so use CLI version when debugging.
+    // TODO: Change method to DLL in Production.
+    MetadataScanner.scanViaCLI(mainFile).then((value) => info = value);
+    //MetadataScanner.scanViaDLL(mainFile).then((value) => info = value);
+  }
 
   @override
   List<Object> get props => [mainFile, subtitles];
@@ -49,9 +50,6 @@ class Movie extends Show {
         directory: directory ?? this.directory,
         video: video ?? this.video,
       );
-
-  @override
-  List<Object> get props => [...super.props, video];
 }
 
 class Series extends Show {
@@ -71,9 +69,6 @@ class Series extends Show {
         directory: directory ?? this.directory,
         seasons: seasons ?? this.seasons,
       );
-
-  @override
-  List<Object> get props => [...super.props, seasons];
 }
 
 class Seasons {
@@ -87,28 +82,28 @@ class Seasons {
 }
 
 class Subtitle {
-  final File sub;
-  late final String language;
-  late final bool isSDH;
+  final File file;
+  late LanguageCode language;
+  late bool isSDH;
 
-  Subtitle(this.sub) {
-    language = _language;
+  Subtitle(this.file) {
+    language = AppData.languageCodes.identifyTitle(file.title);
     isSDH = _isSDH;
   }
 
   bool get _isSDH {
     LineSplitter ls = const LineSplitter();
-    var content = ls.convert(sub.readAsStringSync());
+    var content = ls.convert(file.readAsStringSync());
     var result = content.take(500).where(
         (element) => RegExp(r'\-\[(.*?)\]|\-\((.*?)\)').hasMatch(element));
     return result.length > 2;
   }
 
-  String get _language =>
-      AppData.languageCodes
-          .items.firstWhereOrNull((element) => element.englishSplit.any(
-              (language) =>
-                  sub.title.toLowerCase().contains(language.toLowerCase())))
-          ?.alpha2 ??
-      'und';
+  void update({
+    LanguageCode? language,
+    bool? isSDH,
+  }) {
+    this.language = language ?? this.language;
+    this.isSDH = isSDH ?? this.isSDH;
+  }
 }

@@ -1,53 +1,63 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:merge2mkv/models/models.dart';
+import 'package:merge2mkv/services/app_services.dart';
 import 'package:merge2mkv/utilities/utilities.dart';
 import 'app_data.dart';
 
-class ShowNotifier extends ChangeNotifier {
-  ShowNotifier(this.item, this.profileIndex);
+class ShowNotifier extends InputBasic with ChangeNotifier {
+  ShowNotifier(
+    final Show item,
+    UserProfile profile,
+  ) : super(item: item, profile: profile);
 
-  final Show item;
-  int profileIndex;
   final Set<String> collapsedTrees = {};
 
-  updateProfileIndex(int index) {
-    profileIndex = index;
+  void refresh() => notifyListeners();
+
+  void updateProfile(UserProfile profile) {
+    this.profile = profile;
     notifyListeners();
   }
 
-  addToCollapsedTrees(String path) {
+  void addToCollapsedTrees(String path) {
     collapsedTrees.add(path);
     notifyListeners();
   }
 
-  removeFromCollapsedTrees(String path) {
+  void removeFromCollapsedTrees(String path) {
     collapsedTrees.remove(path);
     notifyListeners();
   }
 }
 
 class ShowListNotifier extends ChangeNotifier {
-  final List<ShowNotifier> _items = [];
-  int? selectedIndex;
-  List<ShowNotifier> get items => _items;
+  int? selectedID;
+  final Map<int, ShowNotifier> _items = {};
+  Map<int, ShowNotifier> get items => _items;
 
-  void addShow(List<String> paths) async {
-    List<FailedPath> failedPaths = [];
+  Future<void> add(List<String> paths) async {
+    List<ScanError> failedPaths = [];
     for (var path in paths) {
       if (await PathScanner.isDirectory(path)) {
         try {
-          if (_items.isEmpty || !_items.any((element) => element.item.directory.path == path)) {
+          if (_items.isEmpty ||
+              !_items.values.any((e) => e.item.directory.path == path)) {
             var show = await PathScanner.scan(path).then((value) {
               if (value.failedGroups.isNotEmpty) {
-                failedPaths.add(FailedPath('No subtitles found for Seasons: ${value.failedGroups.join(', ')}', path));
+                failedPaths.add(ScanError(
+                    'No subtitles found for: ${value.failedGroups.join(', ')}',
+                    path));
               }
               return value.show;
             });
-            _items.add(ShowNotifier(show, 0));
+            _items.addAll({
+              DateTime.now().millisecondsSinceEpoch:
+                  ShowNotifier(show, AppData.profiles.items.entries.first.value)
+            });
             notifyListeners();
           }
         } catch (e) {
-          failedPaths.add(FailedPath(e.toString(), path));
+          failedPaths.add(ScanError(e.toString(), path));
         }
       }
     }
@@ -57,90 +67,36 @@ class ShowListNotifier extends ChangeNotifier {
         builder: (context) => ParserResultDialog(failedPaths: failedPaths),
       );
     }
+    return;
   }
 
-  void removeShow(int index) {
-    if (selectedIndex == index) {
-      updateSelectedIndex(null);
+  void remove(int id) {
+    if (selectedID == id) {
+      selectID(null);
     }
-    _items.removeAt(index);
+    _items.remove(id);
     notifyListeners();
   }
 
-  void removeShows() {
-    updateSelectedIndex(null);
+  void removeAll() {
+    selectID(null);
     _items.clear();
     notifyListeners();
   }
 
-  void deletedProfile(int index) {
-    for (var showN in _items) {
-      if (showN.profileIndex != index) return;
-      showN.updateProfileIndex(0);
+  void modifiedProfile(UserProfile profile) {
+    for (var showN in _items.values) {
+      if (showN.profile != profile) return;
+      showN.updateProfile(AppData.profiles.items.entries.first.value);
     }
   }
 
-  void updateSelectedIndex(int? index) {
-    if (selectedIndex == null || selectedIndex != index) {
-      selectedIndex = index;
+  void selectID(int? id) {
+    if (selectedID == null || selectedID != id) {
+      selectedID = id;
     } else {
-      selectedIndex = null;
+      selectedID = null;
     }
     notifyListeners();
-  }
-}
-
-class ShowQueueNotifier extends ChangeNotifier {
-  ShowQueueNotifier(this.show, this.profileIndex);
-
-  final Show show;
-  int profileIndex;
-
-  double progress = 0;
-
-  void updateProgress(double value) async {
-    if (value > 100 || value < 0) return;
-    progress = value;
-    notifyListeners();
-  }
-
-  updateProfileIndex(int index) {
-    profileIndex = index;
-    notifyListeners();
-  }
-}
-
-class ShowQueueListNotifier extends ChangeNotifier {
-  final List<ShowQueueNotifier> _items = [];
-  List<ShowQueueNotifier> get items => _items;
-  int? activeIndex;
-  double progress = 0;
-
-  void updateActiveIndex(int? index) {
-    activeIndex = index;
-    notifyListeners();
-  }
-
-  void updateProgress() async {
-    double prog = _items.map((e) => e.progress).average;
-    progress = prog;
-    notifyListeners();
-  }
-
-  void addQueue(ShowNotifier show) {
-    _items.add(ShowQueueNotifier(show.item, show.profileIndex));
-    notifyListeners();
-  }
-
-  void removeQueue(int index) {
-    _items.removeAt(index);
-    notifyListeners();
-  }
-
-  void deletedProfile(int index) {
-    for (var showQN in _items) {
-      if (showQN.profileIndex != index) return;
-      showQN.updateProfileIndex(0);
-    }
   }
 }

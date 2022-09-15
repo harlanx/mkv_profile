@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
@@ -22,7 +21,6 @@ enum WindowsFluentEffect {
 
 class AppSettingsNotifier extends ChangeNotifier {
   int recursiveLimit;
-  ViewMode viewMode;
   ThemeMode themeMode;
   WindowsFluentEffect windowEffect;
   Size windowSize;
@@ -34,7 +32,6 @@ class AppSettingsNotifier extends ChangeNotifier {
 
   AppSettingsNotifier({
     this.recursiveLimit = 50,
-    this.viewMode = ViewMode.compact,
     this.themeMode = ThemeMode.system,
     this.windowEffect = WindowsFluentEffect.disabled,
     this.windowSize = const Size(1280, 720),
@@ -43,23 +40,23 @@ class AppSettingsNotifier extends ChangeNotifier {
     this.infoPanelWidth = 500,
   });
 
-  factory AppSettingsNotifier.fromJson(String str) => AppSettingsNotifier.fromMap(json.decode(str));
+  factory AppSettingsNotifier.fromJson(String str) =>
+      AppSettingsNotifier.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
   AppSettingsNotifier.fromMap(Map<String, dynamic> json)
       : recursiveLimit = json['recursiveLimit'],
-        viewMode = ViewMode.values.byName(json['viewMode']),
         themeMode = ThemeMode.values.byName(json['themeMode']),
         windowEffect = WindowsFluentEffect.values.byName(json['windowEffect']),
-        windowSize = Size(json['windowSize']['width'], json['windowSize']['height']),
+        windowSize =
+            Size(json['windowSize']['width'], json['windowSize']['height']),
         isMaximized = json['isMaximized'],
         folderPanelWidth = json['folderPanelWidth'],
         infoPanelWidth = json['infoPanelWidth'];
 
   Map<String, dynamic> toMap() => {
         'recursiveLimit': recursiveLimit,
-        'viewMode': viewMode.name,
         'themeMode': themeMode.name,
         'windowEffect': windowEffect.name,
         'windowSize': {'width': windowSize.width, 'height': windowSize.height},
@@ -70,11 +67,6 @@ class AppSettingsNotifier extends ChangeNotifier {
 
   void setRecursiveLimit(int limit) {
     recursiveLimit = limit;
-    notifyListeners();
-  }
-
-  void setViewMode(ViewMode viewMode) {
-    this.viewMode = viewMode;
     notifyListeners();
   }
 

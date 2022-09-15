@@ -9,12 +9,12 @@ class ParserResultDialog extends StatelessWidget {
     required this.failedPaths,
   }) : super(key: key);
 
-  final List<FailedPath> failedPaths;
+  final List<ScanError> failedPaths;
 
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: const Text('Parser Info'),
+      title: const Text('Scan Result'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -22,22 +22,25 @@ class ParserResultDialog extends StatelessWidget {
           for (var failedPath in failedPaths)
             Text.rich(
               TextSpan(
-                text: '${failedPath.reason}\n',
-                style: FluentTheme.of(context)
-                    .typography
-                    .body
-                    ?.copyWith(color: Colors.errorPrimaryColor),
+                text: 'Folder: ',
                 children: [
                   TextSpan(
-                    text: '${failedPath.path}\n\n',
+                    text: '${failedPath.path}\n',
                     style: FluentTheme.of(context).typography.body?.copyWith(
                           color: Colors.blue,
                           decoration: TextDecoration.underline,
                         ),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        launchUrl(Uri.parse(failedPath.path));
+                        launchUrl(Uri.parse('file:${failedPath.path}'));
                       },
+                  ),
+                  TextSpan(
+                    text: failedPath.reason,
+                    style: FluentTheme.of(context)
+                        .typography
+                        .body
+                        ?.copyWith(color: Colors.errorSecondaryColor),
                   ),
                 ],
               ),

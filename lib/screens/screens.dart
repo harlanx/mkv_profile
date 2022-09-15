@@ -1,12 +1,5 @@
-import 'package:fluent_ui/fluent_ui.dart';
-import 'home/home_screen.dart';
-import 'queue/queue_screen.dart';
-import 'settings/settings_screen.dart';
-import 'settings/test_screen.dart';
-
-const List<Widget> screens = [
-  HomeScreen(),
-  QueueScreen(),
-  TestScreen(),
-  SettingsScreen(),
-];
+export 'home/home_screen.dart';
+export 'task/task_screen.dart';
+export 'output/output_screen.dart';
+export 'settings/settings_screen.dart';
+export 'test/test_screen.dart';

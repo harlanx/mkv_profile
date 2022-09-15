@@ -10,41 +10,55 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appData = context.watch<AppData>();
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<ShowListNotifier>(create: (_) => ShowListNotifier()),
-        ChangeNotifierProvider<ShowQueueListNotifier>(create: (_) => ShowQueueListNotifier()),
-        ChangeNotifierProvider<UserProfilesNotifier>.value(value: AppData.profiles),
-      ],
-      child: NavigationView(
-        appBar: FluentAppBar(),
-        pane: NavigationPane(
-          selected: appData.currentPage,
-          onChanged: (index) => appData.updatePage(index),
-          displayMode: PaneDisplayMode.auto,
-          items: [
-            PaneItem(
-              icon: const Icon(FluentIcons.home),
-              title: const Text('Home'),
+    return NavigationView(
+      appBar: FluentAppBar(),
+      pane: NavigationPane(
+        selected: appData.currentPage,
+        onChanged: (index) => appData.updatePage(index),
+        displayMode: PaneDisplayMode.auto,
+        size: const NavigationPaneSize(openMaxWidth: 200),
+        items: [
+          PaneItem(
+            key: const Key('/screens/home'),
+            icon: const Icon(FluentIcons.home),
+            title: const Text('Home'),
+            body: HomeScreen(),
+          ),
+          PaneItem(
+            key: const Key('/screens/task'),
+            icon: const Icon(FluentIcons.build_queue),
+            title: const Text('Tasks'),
+            body: TaskScreen(
+              key: AppData.taskStateKey,
             ),
-            PaneItem(
-              icon: const Icon(FluentIcons.build_queue),
-              title: const Text('Queue'),
+          ),
+          PaneItem(
+            key: const Key('/screens/output'),
+            icon: const Icon(FluentIcons.task_list),
+            title: const Text('Output'),
+            body: OutputScreen(
+              key: AppData.outputStateKey,
             ),
-            PaneItem(
-              icon: const Icon(FluentIcons.test_impact_solid),
-              title: const Text('Testing'),
-            ),
-          ],
-          footerItems: [
-            PaneItemSeparator(),
-            PaneItem(icon: const Icon(FluentIcons.settings), title: const Text('Settings')),
-          ],
-        ),
-        content: NavigationBody(
-          index: appData.currentPage,
-          children: screens,
-        ),
+          ),
+        ],
+        footerItems: [
+          PaneItemSeparator(),
+          PaneItem(
+            key: const Key('/screens/settings'),
+            icon: const Icon(FluentIcons.settings),
+            title: const Text('Settings'),
+            body: const SettingsScreen(),
+          ),
+
+          // Page for testing various components.
+          // TODO: Remove/Comment out in Production
+          PaneItem(
+            key: const Key('/screens/testing'),
+            icon: const Icon(FluentIcons.test_impact_solid),
+            title: const Text('Testing'),
+            body: const TestScreen(),
+          ),
+        ],
       ),
     );
   }

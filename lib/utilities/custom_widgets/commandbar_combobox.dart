@@ -22,7 +22,7 @@ class CommandBarCombobox<T> extends CommandBarItem {
   final ValueChanged<T?>? onChanged;
 
   /// The items to show in the drop down list
-  final List<ComboboxItem<T>>? items;
+  final List<ComboBoxItem<T>>? items;
 
   /// The value of the currently selected [ComboboxItem].
   ///
@@ -62,7 +62,7 @@ class CommandBarCombobox<T> extends CommandBarItem {
         if (showIcon || showLabel) const SizedBox(width: 6),
         SizedBox(
           width: width,
-          child: Combobox<T>(
+          child: ComboBox<T>(
             onChanged: onChanged,
             value: value,
             items: items,
