@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
 class Similarity {
-  static double nGramCosineSimilarity(String str1, String str2,
-      [int nGramSize = 2]) {
+  static Future<double> nGramCosineSimilarity(String str1, String str2,
+      [int nGramSize = 2]) async {
     final str1Bigrams = _getNGrams(str1, nGramSize);
     final str2Bigrams = _getNGrams(str2, nGramSize);
 
@@ -24,7 +24,7 @@ class Similarity {
     return nGrams;
   }
 
-  static int levenshteinDistance(String s1, String s2) {
+  static Future<int> levenshteinDistance(String s1, String s2) async {
     var m = s1.length, n = s2.length;
     var d = List.generate(m + 1, (_) => List<int>.filled(n + 1, 0));
     for (var i = 1; i <= m; i++) {
@@ -46,15 +46,15 @@ class Similarity {
     return d[m][n];
   }
 
-  static double jaroWinklerDistance(String str1, String str2) {
-    final jDistance = _jaroDistance(str1, str2);
+  static Future<double> jaroWinklerDistance(String str1, String str2) async {
+    final jDistance = await _jaroDistance(str1, str2);
     final prefixLength = _getCommonPrefixLength(str1, str2);
     const scalingFactor = 0.1;
 
     return jDistance + (prefixLength * scalingFactor * (1 - jDistance));
   }
 
-  static double _jaroDistance(String str1, String str2) {
+  static Future<double> _jaroDistance(String str1, String str2) async {
     if (str1 == str2) {
       return 1.0;
     }

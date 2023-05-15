@@ -1,6 +1,6 @@
-import 'package:merge2mkv/data/app_data.dart';
-import 'package:merge2mkv/services/app_services.dart';
-import 'package:merge2mkv/utilities/utilities.dart';
+import '../data/app_data.dart';
+import '../services/app_services.dart';
+import '../utilities/utilities.dart';
 
 class PathScanner {
   FileSystemEntity entity = Directory.current;
@@ -18,13 +18,13 @@ class PathScanner {
     }
 
     var dir = Directory(entityForAbsolutePath.absolute.path);
-    var allContents = await _recursiveScan(dir);
+    var dirContents = await _recursiveScan(dir);
     try {
-      _isForGrouping(allContents);
+      _isForGrouping(dirContents);
     } catch (e) {
       rethrow;
     }
-    return FileGrouper.group(allContents);
+    return FileGrouper.group(dirContents);
   }
 
   static Future<PathData> _recursiveScan(Directory dir) async {

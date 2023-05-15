@@ -1,30 +1,41 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:merge2mkv/data/app_data.dart';
-import 'package:merge2mkv/screens/main_screen.dart';
+
 import 'package:provider/provider.dart';
 import 'package:system_theme/system_theme.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
 
+import '../data/app_data.dart';
+import '../screens/main_screen.dart';
+
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // flutter bindings
-  await SystemTheme.accentColor.load(); // system_theme
-  await WindowManager.instance.ensureInitialized(); // window_manager
-  await Window.initialize(); // flutter_acrylic
-  Window.hideWindowControls(); // hide window controls of flutter_acrylic
-  await AppData.init(); // this app
+  // flutter bindings
+  WidgetsFlutterBinding.ensureInitialized();
+  // system_theme
+  // We could use windows_ui package instead but as of
+  // writing this app it has some dependency constraint issues.
+  await SystemTheme.accentColor.load();
+  // flutter_acrylic
+  await Window.initialize();
+  await Window.hideWindowControls();
+  // window_manager
+  await WindowManager.instance.ensureInitialized();
+  // this app
+  await AppData.init();
 
   var windowOptions = WindowOptions(
     fullScreen: AppData.appSettings.isMaximized,
     size: AppData.appSettings.windowSize,
     minimumSize: const Size(800, 500),
     titleBarStyle: TitleBarStyle.hidden,
+    windowButtonVisibility: false,
     center: true,
     skipTaskbar: false,
     backgroundColor: Colors.transparent,
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.setPreventClose(true);
+    await windowManager.show();
     // Handles default title bar theme changes at startup
     // await windowManager.setBrightness(
     //   SystemTheme.isDarkMode ? Brightness.dark : Brightness.light,
@@ -47,12 +58,6 @@ class _MyAppState extends State<MyApp>
     super.initState();
     windowManager.addListener(this);
     WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Future.delayed(const Duration(milliseconds: 200), () {
-        AppData.appSettings
-            .applyWindowEffect(AppData.appSettings.windowEffect, context);
-      });
-    });
   }
 
   @override
@@ -63,20 +68,31 @@ class _MyAppState extends State<MyApp>
   }
 
   @override
-  void onWindowClose() {
-    AppData.save();
-    super.onWindowClose();
+  void onWindowClose() async {
+    if (AppData.tasks.active) {
+      await windowManager.minimize();
+    } else {
+      await AppData.save().then((value) async {
+        await windowManager.destroy();
+      });
+    }
   }
 
   @override
-  void didChangePlatformBrightness() async {
-    SystemTheme.accentColor.load(); // reload system_theme
-    AppData.appSettings
-        .setThemeMode(AppData.appSettings.themeMode); // update app theme
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      AppData.appSettings.applyWindowEffect(
-          AppData.appSettings.windowEffect, context); // update window effect
+  void didChangePlatformBrightness() {
+    // Update app theme when user changes dark or light mode in windows personalization settings
+    AppData.appSettings.setThemeMode(AppData.appSettings.themeMode);
+
+    // Force update window effect since it won't match the thememode light
+    // and dark mode colors if changed on runtime.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 150), () {
+        AppData.appSettings.setWindowEffect(
+            AppData.mainNavigatorKey.currentContext!,
+            AppData.appSettings.windowEffect);
+      });
     });
+
     super.didChangePlatformBrightness();
   }
 
@@ -84,13 +100,14 @@ class _MyAppState extends State<MyApp>
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<AppData>.value(value: AppData()),
-        ChangeNotifierProvider<AppSettingsNotifier>.value(
-            value: AppData.appSettings),
+        ChangeNotifierProvider<PageNotifier>(
+          create: (context) => PageNotifier(),
+        ),
         ChangeNotifierProvider<ShowListNotifier>(
             create: (_) => ShowListNotifier()),
-        ChangeNotifierProvider<TaskListNotifier>(
-            create: (_) => TaskListNotifier()),
+        ChangeNotifierProvider<TaskListNotifier>.value(value: AppData.tasks),
+        ChangeNotifierProvider<AppSettingsNotifier>.value(
+            value: AppData.appSettings),
         ChangeNotifierProvider<OutputNotifier>.value(value: AppData.outputs),
         ChangeNotifierProvider<UserProfilesNotifier>.value(
             value: AppData.profiles),
@@ -98,27 +115,16 @@ class _MyAppState extends State<MyApp>
       builder: (context, _) {
         final appSettings = context.watch<AppSettingsNotifier>();
         return FluentApp(
-          title: AppData.kAppTitle,
-          navigatorKey: AppData.mainNavigatorKey,
+          //showPerformanceOverlay: true,
           debugShowCheckedModeBanner: false,
-          color: appSettings.systemAccentColor,
+          title: AppData.appTitle,
+          navigatorKey: AppData.mainNavigatorKey,
+          color: appSettings.accentColor,
           themeMode: appSettings.themeMode,
-          theme: AppData.lightTheme,
-          darkTheme: AppData.darkTheme,
+          theme: appSettings.lightTheme,
+          darkTheme: appSettings.darkTheme,
           initialRoute: '/',
-          routes: {'/': (context) => const MainScreen()},
-          builder: (context, child) {
-            return NavigationPaneTheme(
-              data: NavigationPaneThemeData(
-                highlightColor: appSettings.systemAccentColor,
-                backgroundColor:
-                    appSettings.windowEffect.value != WindowEffect.disabled
-                        ? Colors.transparent
-                        : null,
-              ),
-              child: child!,
-            );
-          },
+          home: const MainScreen(),
         );
       },
     );

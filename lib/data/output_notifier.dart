@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:merge2mkv/models/models.dart';
-import 'package:merge2mkv/utilities/utilities.dart';
+
+import '../models/models.dart';
+import '../utilities/utilities.dart';
 
 class OutputNotifier extends ChangeNotifier {
   final Map<int, OutputBasic> _items = {};
@@ -8,7 +9,7 @@ class OutputNotifier extends ChangeNotifier {
   final Set<int> _selected = {};
   Set<int> get selected => _selected;
 
-  static OutputNotifier load() {
+  void load() {
     List<String> rawOutputList =
         SharedPrefs.getStringList('OutputNotifier') ?? [];
     Map<int, OutputBasic> imported = {};
@@ -16,12 +17,12 @@ class OutputNotifier extends ChangeNotifier {
       var output = OutputBasic.fromJson(rawOutput);
       imported.addAll({output.dateTime.millisecondsSinceEpoch: output});
     }
-    return OutputNotifier().._items.addAll(imported);
+    _items.addAll(imported);
   }
 
-  void save() {
+  Future<void> save() async {
     List<String> tobeSaved = _items.values.map((e) => e.toJson()).toList();
-    SharedPrefs.setStringList('OutputNotifier', tobeSaved);
+    await SharedPrefs.setStringList('OutputNotifier', tobeSaved);
   }
 
   void add(List<OutputBasic> outputResults) {

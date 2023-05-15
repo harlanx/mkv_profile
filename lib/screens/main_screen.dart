@@ -1,65 +1,94 @@
+import 'package:flutter/foundation.dart' as foundation;
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:merge2mkv/data/app_data.dart';
-import 'package:merge2mkv/screens/screens.dart';
+
 import 'package:provider/provider.dart';
-import 'package:merge2mkv/utilities/utilities.dart';
+
+import '../data/app_data.dart';
+import '../screens/screens.dart';
+import '../utilities/utilities.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final appData = context.watch<AppData>();
-    return NavigationView(
-      appBar: FluentAppBar(),
-      pane: NavigationPane(
-        selected: appData.currentPage,
-        onChanged: (index) => appData.updatePage(index),
-        displayMode: PaneDisplayMode.auto,
-        size: const NavigationPaneSize(openMaxWidth: 200),
-        items: [
-          PaneItem(
-            key: const Key('/screens/home'),
-            icon: const Icon(FluentIcons.home),
-            title: const Text('Home'),
-            body: HomeScreen(),
+    return Selector<PageNotifier, int>(
+      selector: (context, page) => page.current,
+      builder: (context, currentPage, child) {
+        return NavigationView(
+          appBar: FluentAppBar(context: context),
+          pane: NavigationPane(
+            selected: currentPage,
+            onChanged: (index) => context.read<PageNotifier>().update(index),
+            displayMode: PaneDisplayMode.auto,
+            size: const NavigationPaneSize(openMaxWidth: 200),
+            items: [
+              PaneItem(
+                key: const Key('/home'),
+                icon: const Icon(FluentIcons.home),
+                title: const Text('Home'),
+                body: HomeScreen(),
+              ),
+              PaneItem(
+                key: const Key('/tasks'),
+                icon: const Icon(FluentIcons.build_queue),
+                title: const Text('Tasks'),
+                infoBadge: Selector<TaskListNotifier, Map<int, TaskNotifier>>(
+                  selector: (context, tasks) => tasks.items,
+                  shouldRebuild: (previous, next) => true,
+                  builder: (context, items, _) {
+                    if (items.isEmpty) {
+                      return const SizedBox.shrink();
+                    } else {
+                      return InfoBadge(
+                        color: FluentTheme.of(context).accentColor,
+                        source: Text('${items.length}'),
+                      );
+                    }
+                  },
+                ),
+                body: TasksScreen(
+                  key: AppData.taskStateKey,
+                ),
+              ),
+              PaneItem(
+                key: const Key('/outputs'),
+                icon: const Icon(FluentIcons.task_list),
+                title: const Text('Outputs'),
+                body: OutputsScreen(
+                  key: AppData.outputStateKey,
+                ),
+              ),
+            ],
+            footerItems: [
+              PaneItemSeparator(),
+              PaneItem(
+                key: const Key('/settings'),
+                icon: const Icon(FluentIcons.settings),
+                title: const Text('Settings'),
+                body: const SettingsScreen(),
+              ),
+              if (foundation.kDebugMode) ...[
+                PaneItem(
+                  key: const Key('/testing'),
+                  icon: const Icon(FluentIcons.test_impact_solid),
+                  title: const Text('Testing Page'),
+                  body: const TestScreen(),
+                ),
+                PaneItemAction(
+                  key: const Key('/testing_button'),
+                  icon: const Icon(FluentIcons.ctrl_button),
+                  title: const Text('Pane Test Button'),
+                  onTap: () {
+                    AppData.tasks.active = !AppData.tasks.active;
+                    debugPrint(AppData.tasks.active.toString());
+                  },
+                ),
+              ],
+            ],
           ),
-          PaneItem(
-            key: const Key('/screens/task'),
-            icon: const Icon(FluentIcons.build_queue),
-            title: const Text('Tasks'),
-            body: TaskScreen(
-              key: AppData.taskStateKey,
-            ),
-          ),
-          PaneItem(
-            key: const Key('/screens/output'),
-            icon: const Icon(FluentIcons.task_list),
-            title: const Text('Output'),
-            body: OutputScreen(
-              key: AppData.outputStateKey,
-            ),
-          ),
-        ],
-        footerItems: [
-          PaneItemSeparator(),
-          PaneItem(
-            key: const Key('/screens/settings'),
-            icon: const Icon(FluentIcons.settings),
-            title: const Text('Settings'),
-            body: const SettingsScreen(),
-          ),
-
-          // Page for testing various components.
-          // TODO: Remove/Comment out in Production
-          PaneItem(
-            key: const Key('/screens/testing'),
-            icon: const Icon(FluentIcons.test_impact_solid),
-            title: const Text('Testing'),
-            body: const TestScreen(),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

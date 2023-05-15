@@ -1,302 +1,684 @@
+import 'dart:ui';
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:merge2mkv/data/app_data.dart';
-import 'package:merge2mkv/models/models.dart';
-import 'package:merge2mkv/utilities/utilities.dart';
-import 'package:provider/provider.dart';
-import 'name_dialog.dart';
+import 'package:flutter/material.dart' as mt;
+import 'package:flutter/services.dart';
 
-class ProfilePage extends StatefulWidget {
-  final int id;
-  late final UserProfile profile;
-  ProfilePage({Key? key, required this.id}) : super(key: key) {
-    if (id <= 2) {
+import 'package:provider/provider.dart';
+
+import '../../../data/app_data.dart';
+import '../../../models/models.dart';
+import '../../../utilities/utilities.dart';
+
+import 'profile_page_dialogs.dart';
+
+class ProfilePage extends StatelessWidget {
+  ProfilePage({
+    Key? key,
+    required this.sourceProfile,
+    required this.isNew,
+  }) : super(key: key) {
+    if (isNew) {
       // Default profile (Shouldn't be deleted nor edited) so we just clone it.
       // This is for creating new profile.
-      profile = AppData.profiles.items[id]!.copyWith(name: 'My New Profile');
+      editProfile = sourceProfile.copyWith(name: 'My New Profile');
     } else {
       // This is for editing existing profiles.
       // Pass profile by reference.
-      profile = AppData.profiles.items[id]!;
+      editProfile = sourceProfile.copyWith();
     }
   }
-
-  @override
-  State<ProfilePage> createState() => _ProfilePageState();
-}
-
-class _ProfilePageState extends State<ProfilePage> {
-  late final appData = context.read<AppData>();
-  late final editProfile =
-      widget.profile.copyWith(); // Copy without reference.;
-  late final nameController = TextEditingController(text: widget.profile.name);
-
-  @override
-  void dispose() {
-    nameController.dispose();
-    super.dispose();
-  }
-
+  final UserProfile sourceProfile;
+  late final UserProfile editProfile;
+  final bool isNew;
+  late final showCtrl =
+      TextEditingController(text: editProfile.showTitleFormat);
+  late final videoCtrl =
+      TextEditingController(text: editProfile.videoTitleFormat);
+  late final audioCtrl =
+      TextEditingController(text: editProfile.audioTitleFormat);
+  late final subtitleCtrl =
+      TextEditingController(text: editProfile.subtitleTitleFormat);
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () => _onWillPop(),
+      onWillPop: () => _onWillPop(context),
       child: NavigationView(
-        appBar: FluentAppBar(),
+        appBar: FluentAppBar(context: context),
         content: ChangeNotifierProvider<UserProfile>.value(
-            value: editProfile,
-            builder: (context, child) {
-              return Consumer<UserProfile>(
-                builder: (context, profile, child) {
-                  return ScaffoldPage(
-                    padding: EdgeInsets.zero,
-                    header: CommandBarCard(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 25.0, vertical: 8.0),
-                      margin: const EdgeInsets.only(bottom: 10.0),
-                      child: CommandBar(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        primaryItems: [
-                          CommandBarButton(
-                            icon: const Icon(FluentIcons.save),
-                            label: const Text('Save'),
-                            onPressed: () => _saveChanges(),
+          value: editProfile,
+          builder: (context, child) {
+            return Consumer<UserProfile>(
+              builder: (context, profile, child) {
+                return ScaffoldPage(
+                  padding: EdgeInsets.zero,
+                  header: CommandBarCard(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 25.0, vertical: 8.0),
+                    margin: const EdgeInsets.only(bottom: 10.0),
+                    child: CommandBar(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      primaryItems: [
+                        CommandBarButton(
+                          icon: const Icon(FluentIcons.save),
+                          label: const Text('Save'),
+                          onPressed: () => _saveChanges(context),
+                        ),
+                        CommandBarButton(
+                          icon: const Icon(FluentIcons.cancel),
+                          label: const Text('Cancel'),
+                          onPressed: () => Navigator.maybePop(context),
+                        ),
+                      ],
+                    ),
+                  ),
+                  content: ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            profile.name,
+                            style: FluentTheme.of(context).typography.title,
                           ),
-                          CommandBarButton(
-                            icon: const Icon(FluentIcons.cancel),
-                            label: const Text('Cancel'),
-                            onPressed: () => Navigator.pop(context),
+                          const SizedBox(width: 6),
+                          IconButton(
+                            icon: const Icon(FluentIcons.edit),
+                            onPressed: () => _updateNameDialog(context),
                           ),
                         ],
                       ),
-                    ),
-                    content: ListView(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
-                      children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
+                      const SizedBox(height: 10),
+                      Expander(
+                        header: const Text('Show title template'),
+                        trailing: Text(editProfile.showTitleFormat),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              profile.name,
-                              style: FluentTheme.of(context).typography.title,
+                            TextBox(
+                              controller: showCtrl,
+                              onChanged: (value) {
+                                editProfile.update(showTitleFormat: value);
+                              },
                             ),
-                            const SizedBox(width: 5),
-                            IconButton(
-                              icon: const Icon(FluentIcons.edit),
-                              onPressed: () => _updateNameDialog(),
+                            const SizedBox(height: 10),
+                            InfoLabel(
+                              label: 'Available show title variables',
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text.rich(
+                                    TextSpan(
+                                      text: 'Note: ',
+                                      style: FluentTheme.of(context)
+                                          .typography
+                                          .bodyStrong,
+                                      children: [
+                                        TextSpan(
+                                          text:
+                                              'This will apply to the show(input)\'s first video file\'s name of unless the useFolderName is set to true which will use the folder\'s name instead as a source title to modify.',
+                                          style: FluentTheme.of(context)
+                                              .typography
+                                              .body,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Wrap(
+                                    direction: Axis.horizontal,
+                                    runSpacing: 6,
+                                    spacing: 6,
+                                    children: [
+                                      for (var variable
+                                          in UserProfile.showTitleVars) ...[
+                                        Button(
+                                          child: Text(variable),
+                                          onPressed: () async {
+                                            Clipboard.setData(
+                                                ClipboardData(text: variable));
+                                            displayInfoBar(context,
+                                                builder: (context, close) {
+                                              return InfoBar(
+                                                title: const Text(
+                                                    'Copied to clipboard!'),
+                                                action: IconButton(
+                                                  icon: const Icon(
+                                                      FluentIcons.clear),
+                                                  onPressed: close,
+                                                ),
+                                                severity: InfoBarSeverity.info,
+                                              );
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
-                        Expander(
-                          header: const Text(
-                              'Select languages to include and choose to set as default.'),
-                          trailing: Visibility(
-                            visible: editProfile.defaultLanguage.isNotEmpty,
-                            child: Text(AppData.languageCodes.items
-                                    .firstWhereOrNull((code) =>
-                                        code.iso6393 ==
-                                        editProfile.defaultLanguage)
-                                    ?.name ??
-                                ''),
-                          ),
-                          content: ConstrainedBox(
-                            constraints: const BoxConstraints(maxHeight: 500),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    const Text(' Langauge: '),
-                                    Flexible(
-                                      child: AutoSuggestBox<LanguageCode>(
-                                        trailingIcon:
-                                            const Icon(FluentIcons.search),
-                                        onSelected: (selected) {
-                                          if (selected.value != null) {
-                                            editProfile.updateLanguages(
-                                                selected.value!.iso6393);
-                                          }
-                                        },
-                                        items: AppData.languageCodes.items.map(
+                      ),
+                      Expander(
+                        header: const Text('Video title template'),
+                        trailing: Text(editProfile.videoTitleFormat),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextBox(
+                              controller: videoCtrl,
+                              onChanged: (value) {
+                                editProfile.update(videoTitleFormat: value);
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            InfoLabel(
+                              label: 'Available video title variables',
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text.rich(
+                                    TextSpan(
+                                      text: 'Note: ',
+                                      style: FluentTheme.of(context)
+                                          .typography
+                                          .bodyStrong,
+                                      children: [
+                                        TextSpan(
+                                          text:
+                                              'This will apply to the video file title and the video track title.',
+                                          style: FluentTheme.of(context)
+                                              .typography
+                                              .body,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Wrap(
+                                    direction: Axis.horizontal,
+                                    runSpacing: 6,
+                                    spacing: 6,
+                                    children: [
+                                      for (var variable
+                                          in UserProfile.videoTitleVars) ...[
+                                        Button(
+                                          child: Text(variable),
+                                          onPressed: () async {
+                                            Clipboard.setData(
+                                                ClipboardData(text: variable));
+                                            displayInfoBar(context,
+                                                builder: (context, close) {
+                                              return InfoBar(
+                                                title: const Text(
+                                                    'Copied to clipboard!'),
+                                                action: IconButton(
+                                                  icon: const Icon(
+                                                      FluentIcons.clear),
+                                                  onPressed: close,
+                                                ),
+                                                severity: InfoBarSeverity.info,
+                                              );
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expander(
+                        header: const Text('Audio title template'),
+                        trailing: Text(editProfile.audioTitleFormat),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextBox(
+                              controller: audioCtrl,
+                              onChanged: (value) {
+                                editProfile.update(subtitleTitleFormat: value);
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            InfoLabel(
+                              label: 'Available audio title variables',
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text.rich(
+                                    TextSpan(
+                                      text: 'Note: ',
+                                      style: FluentTheme.of(context)
+                                          .typography
+                                          .bodyStrong,
+                                      children: [
+                                        TextSpan(
+                                          text:
+                                              'This will apply to the audio track title.',
+                                          style: FluentTheme.of(context)
+                                              .typography
+                                              .body,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Wrap(
+                                    direction: Axis.horizontal,
+                                    runSpacing: 6,
+                                    spacing: 6,
+                                    children: [
+                                      for (var variable
+                                          in UserProfile.audioTitleVars) ...[
+                                        Button(
+                                          child: Text(variable),
+                                          onPressed: () async {
+                                            Clipboard.setData(
+                                                ClipboardData(text: variable));
+                                            displayInfoBar(context,
+                                                builder: (context, close) {
+                                              return InfoBar(
+                                                title: const Text(
+                                                    'Copied to clipboard!'),
+                                                action: IconButton(
+                                                  icon: const Icon(
+                                                      FluentIcons.clear),
+                                                  onPressed: close,
+                                                ),
+                                                severity: InfoBarSeverity.info,
+                                              );
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expander(
+                        header: const Text('Subtitle title template'),
+                        trailing: Text(editProfile.subtitleTitleFormat),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextBox(
+                              controller: subtitleCtrl,
+                              onChanged: (value) {
+                                editProfile.update(subtitleTitleFormat: value);
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            InfoLabel(
+                              label: 'Available subtitle title variables',
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text.rich(
+                                    TextSpan(
+                                      text: 'Note: ',
+                                      style: FluentTheme.of(context)
+                                          .typography
+                                          .bodyStrong,
+                                      children: [
+                                        TextSpan(
+                                          text:
+                                              'This will apply to the subtitle track title.',
+                                          style: FluentTheme.of(context)
+                                              .typography
+                                              .body,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Wrap(
+                                    direction: Axis.horizontal,
+                                    runSpacing: 6,
+                                    spacing: 6,
+                                    children: [
+                                      for (var variable
+                                          in UserProfile.subtitleTitleVars) ...[
+                                        Button(
+                                          child: Text(variable),
+                                          onPressed: () async {
+                                            Clipboard.setData(
+                                                ClipboardData(text: variable));
+                                            displayInfoBar(context,
+                                                builder: (context, close) {
+                                              return InfoBar(
+                                                title: const Text(
+                                                    'Copied to clipboard!'),
+                                                action: IconButton(
+                                                  icon: const Icon(
+                                                      FluentIcons.clear),
+                                                  onPressed: close,
+                                                ),
+                                                severity: InfoBarSeverity.info,
+                                              );
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expander(
+                        header: const Text(
+                            'Select languages to include and choose to set as default.'),
+                        trailing: Visibility(
+                          visible: profile.defaultLanguage.isNotEmpty,
+                          child: Text(profile.defaultLanguage.isNotEmpty
+                              ? AppData.languageCodes
+                                  .identifyByCode(profile.defaultLanguage)
+                                  .name
+                              : ''),
+                        ),
+                        content: ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 500),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Text(' Languages: '),
+                                  Flexible(
+                                    child: AutoSuggestBox<LanguageCode>(
+                                      key: const Key('Search Languages'),
+                                      trailingIcon:
+                                          const Icon(FluentIcons.search),
+                                      onSelected: (selected) {
+                                        if (selected.value != null) {
+                                          profile.updateLanguages(
+                                              selected.value!.iso6393);
+                                        }
+                                      },
+                                      items: List.from(
+                                        AppData.languageCodes.items.map(
                                           (code) {
-                                            var title =
-                                                '${code.name} (${code.iso6393}';
-                                            if (code.iso6392 != null) {
-                                              title += ', ${code.iso6392}';
-                                            }
-                                            if (code.iso6391 != null) {
-                                              title += ', ${code.iso6391}';
-                                            }
-                                            title += ')';
-                                            return AutoSuggestBoxItem<
-                                                LanguageCode>(
+                                            return AutoSuggestBoxItem(
                                               value: code,
-                                              label: title,
+                                              label: code.fullCleanName,
                                             );
                                           },
-                                        ).toList(),
+                                        ),
                                       ),
                                     ),
-                                  ],
-                                ),
-                                const Text(' Selected Languages: '),
-                                Flexible(
+                                  ),
+                                ],
+                              ),
+                              Flexible(
+                                child: InfoLabel(
+                                  label: ' Selected Languages: ',
                                   child: ReorderableListView.builder(
                                     shrinkWrap: true,
                                     buildDefaultDragHandles: false,
-                                    itemCount: editProfile.languages.length,
-                                    onReorder: (oldIndex, newIndex) =>
-                                        editProfile.reorderLanguages(
-                                            oldIndex, newIndex),
+                                    itemCount: profile.languages.length,
+                                    onReorder: (oldIndex, newIndex) => profile
+                                        .reorderLanguages(oldIndex, newIndex),
+                                    proxyDecorator: (child, index, animation) =>
+                                        _proxyDecorator(
+                                            child, index, animation),
                                     itemBuilder: (context, index) {
-                                      final language = AppData
-                                          .languageCodes.items
-                                          .firstWhere((code) =>
-                                              code.iso6393 ==
-                                              editProfile.languages
-                                                  .elementAt(index));
-                                      var title =
-                                          '${language.name} (${language.iso6393}';
-                                      if (language.iso6392 != null) {
-                                        title += ', ${language.iso6392}';
-                                      }
-                                      if (language.iso6391 != null) {
-                                        title += ', ${language.iso6391}';
-                                      }
-                                      title += ')';
+                                      final code = AppData.languageCodes
+                                          .identifyByCode(profile.languages
+                                              .elementAt(index));
 
-                                      final isDefault = language.iso6393 ==
-                                          editProfile.defaultLanguage;
+                                      final isDefault = code.iso6393 ==
+                                          profile.defaultLanguage;
                                       return ReorderableDragStartListener(
-                                        key: ValueKey(language),
+                                        key: ValueKey(code),
                                         index: index,
-                                        child: ListTile(
-                                          onPressed: () {},
-                                          trailing: IconButton(
-                                            onPressed: () =>
-                                                editProfile.updateLanguages(
-                                                    language.iso6393, false),
-                                            icon:
-                                                const Icon(FluentIcons.remove),
-                                          ),
-                                          title: Text(title),
-                                          leading: Checkbox(
-                                            semanticLabel: 'isDefault',
-                                            checked: isDefault,
-                                            onChanged: (val) => editProfile
-                                                .updateDefaultLanguage(
-                                                    language.iso6393),
+                                        child: FluentTheme(
+                                          data: FluentTheme.of(context),
+                                          child: ListTile(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(4)),
+                                            onPressed: () {},
+                                            leading: SizedBox(
+                                              height: 30,
+                                              child: Center(
+                                                child: Checkbox(
+                                                  semanticLabel: 'isDefault',
+                                                  checked: isDefault,
+                                                  onChanged: (val) => profile
+                                                      .updateDefaultLanguage(
+                                                          code.iso6393),
+                                                ),
+                                              ),
+                                            ),
+                                            trailing: IconButton(
+                                              icon: const Icon(
+                                                  FluentIcons.remove),
+                                              onPressed: () =>
+                                                  profile.updateLanguages(
+                                                      code.iso6393, false),
+                                            ),
+                                            title: SizedBox(
+                                              height: 28,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  if (code.warn) ...[
+                                                    const Tooltip(
+                                                      message:
+                                                          'Indicates Non ISO 639-2 Language Codes. Players that do not support ISO 639-3 Language Codes will display different language such as \'und\' (Undetermined)',
+                                                      child: Icon(
+                                                          FluentIcons.warning),
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                  ],
+                                                  Flexible(
+                                                    child: Text(code.fullName),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       );
                                     },
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                        Expander(
-                          header: const Text(
-                              'Remove text. Regex is allowed. (Entry per line).'),
-                          content: ConstrainedBox(
-                            constraints: const BoxConstraints(
-                                minHeight: 80, maxHeight: 200),
-                            child: TextBox(
-                              controller: TextEditingController.fromValue(
-                                TextEditingValue(
-                                  text: editProfile.removeString.join('\n'),
+                      ),
+                      Expander(
+                        header: const Text(
+                            'Select track flags and sort to set the Default flag based on order fallbacks.'),
+                        content: ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 500),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Text(' Flags: '),
+                                  Flexible(
+                                    child: AutoSuggestBox<String>(
+                                      key: const Key('Search Flags'),
+                                      trailingIcon:
+                                          const Icon(FluentIcons.search),
+                                      onSelected: (selected) {
+                                        if (selected.value != null) {
+                                          profile
+                                              .updateFlagOrder(selected.value!);
+                                        }
+                                      },
+                                      items: List.from(
+                                        TrackProperties.flagNames.map(
+                                          (flag) {
+                                            return AutoSuggestBoxItem(
+                                              value: flag,
+                                              label: flag,
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Text(' Selected Flags: '),
+                              Flexible(
+                                child: ReorderableListView.builder(
+                                  shrinkWrap: true,
+                                  buildDefaultDragHandles: false,
+                                  itemCount: profile.defaultFlagOrder.length,
+                                  onReorder: (oldIndex, newIndex) => profile
+                                      .reorderFlagOrder(oldIndex, newIndex),
+                                  proxyDecorator: (child, index, animation) =>
+                                      _proxyDecorator(child, index, animation),
+                                  itemBuilder: (context, index) {
+                                    final flag = profile.defaultFlagOrder
+                                        .elementAt(index);
+                                    return ReorderableDragStartListener(
+                                      key: ValueKey(flag),
+                                      index: index,
+                                      child: FluentTheme(
+                                        data: FluentTheme.of(context),
+                                        child: ListTile(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4)),
+                                          onPressed: () {},
+                                          trailing: IconButton(
+                                            icon:
+                                                const Icon(FluentIcons.remove),
+                                            onPressed: () => profile
+                                                .updateFlagOrder(flag, false),
+                                          ),
+                                          title: SizedBox(
+                                            height: 28,
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(flag),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
-                              //initialValue: editProfile.removeString.join('\n'),
-                              maxLines: null,
-                              onChanged: (value) =>
-                                  profile.removeString = value.split('\n'),
-                              onSubmitted: (value) => profile.update(
-                                  removeString: value.split('\n')),
-                            ),
+                            ],
                           ),
                         ),
-                        Expander(
-                          header: const Text(
-                              'Replace with space. Regex is allowed. (Entry per line).'),
-                          content: ConstrainedBox(
-                            constraints: const BoxConstraints(
-                                minHeight: 80, maxHeight: 200),
-                            child: TextBox(
-                              controller: TextEditingController.fromValue(
-                                TextEditingValue(
-                                  text: editProfile.replaceString.join('\n'),
+                      ),
+                      Expander(
+                        header: const Text(
+                            'Replace texts with custom replacements.'),
+                        trailing: FilledButton(
+                          onPressed: () => _textModifierDialog(context, profile,
+                              UserProfile.defaultModifiers.first, true),
+                          child: const Text('Add'),
+                        ),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: List<Card>.from(
+                            profile.modifiers.map(
+                              (e) => Card(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 4.0),
+                                borderRadius: BorderRadius.circular(4),
+                                child: ListTile(
+                                  title: Text(
+                                    e.replaceablePreview,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  subtitle: Text(
+                                    e.replacementPreview,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(FluentIcons.edit),
+                                        onPressed: () => _textModifierDialog(
+                                            context, profile, e, false),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(FluentIcons.delete),
+                                        onPressed: () =>
+                                            profile.deleteModifier(e.id),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              //initialValue: editProfile.replaceString.join('\n'),
-                              maxLines: null,
-                              onChanged: (value) =>
-                                  profile.replaceString = value.split('\n'),
-                              onSubmitted: (value) => profile.update(
-                                  replaceString: value.split('\n')),
                             ),
                           ),
                         ),
-                        Checkbox(
-                          content: const Text(
-                              '''Use folder name (Recommended) instead of video file's name when scanning the title.'''),
-                          checked: profile.useFolderName,
-                          onChanged: (value) =>
-                              profile.update(useFolderName: value),
-                        ),
-                        Checkbox(
-                          content: const Text(
-                              'Set case sensitivity for the specified strings used when manipulating titles.'),
-                          checked: profile.caseSensitive,
-                          onChanged: (value) {
-                            profile.update(caseSensitive: value);
-                          },
-                        ),
-                        Checkbox(
-                          content: const Text(
-                              'Set SDH version for the default language subtitle if available'),
-                          checked: profile.defaultSdh,
-                          onChanged: (value) =>
-                              profile.update(defaultSdh: value),
-                        ),
-                        Checkbox(
-                          content:
-                              const Text('Remove language names from titles.'),
-                          checked: profile.removeLanguageTitle,
-                          onChanged: (value) =>
-                              profile.update(removeLanguageTitle: value),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            }),
+                      ),
+                      const SizedBox(height: 10),
+                      Checkbox(
+                        content: const Text(
+                            '''Use folder name (Recommended) instead of video file's name when scanning the title.'''),
+                        checked: profile.useFolderName,
+                        onChanged: (value) =>
+                            profile.update(useFolderName: value),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
 
-  Future<bool> _onWillPop() async {
-    if (editProfile == widget.profile) {
+  Future<bool> _onWillPop(BuildContext context) async {
+    if (editProfile == sourceProfile) {
       return true;
     }
     final shouldPop = await showDialog<bool>(
       context: context,
       builder: (context) => ContentDialog(
-        title: const Text('Discard changes?'),
-        content: const Text('Are you sure you want to discard changes?'),
+        title: const Text('Unsaved changes'),
+        content: const Text(
+            'You have made some changes without saving. Do you want to save or discard them?'),
         actions: [
           FilledButton(
-            child: const Text('Save Changes'),
-            onPressed: () => _saveChanges(),
+            child: const Text('Save'),
+            onPressed: () {
+              // Close dialog
+              Navigator.pop(context, false);
+
+              // Close profile page
+              _saveChanges(context);
+            },
           ),
           Button(
-            child: const Text('''Don't Save'''),
+            child: const Text('Discard'),
             onPressed: () => Navigator.pop(context, true),
           ),
           Button(
@@ -310,25 +692,22 @@ class _ProfilePageState extends State<ProfilePage> {
     return shouldPop ?? false;
   }
 
-  void _saveChanges() {
-    if (widget.id <= 2) {
-      editProfile.id = DateTime.now().millisecondsSinceEpoch;
+  void _saveChanges(BuildContext context) {
+    if (isNew) {
+      editProfile.id =
+          DateTime.now().millisecondsSinceEpoch + editProfile.hashCode;
       AppData.profiles.add(
         editProfile.id,
         editProfile,
       );
     } else {
-      widget.profile.update(
-        caseSensitive: editProfile.caseSensitive,
+      sourceProfile.update(
         defaultLanguage: editProfile.defaultLanguage,
-        defaultSdh: editProfile.defaultSdh,
-        episodeTitleFormat: editProfile.episodeTitleFormat,
+        showTitleFormat: editProfile.showTitleFormat,
+        videoTitleFormat: editProfile.videoTitleFormat,
         languages: editProfile.languages,
         name: editProfile.name,
-        removeLanguageTitle: editProfile.removeLanguageTitle,
-        removeString: editProfile.removeString,
-        replaceString: editProfile.replaceString,
-        titleFormat: editProfile.titleFormat,
+        modifiers: editProfile.modifiers,
         useFolderName: editProfile.useFolderName,
       );
       AppData.profiles.refresh();
@@ -336,16 +715,42 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.pop(context);
   }
 
-  void _updateNameDialog() async {
+  void _updateNameDialog(BuildContext context) async {
     final result = await showDialog<String>(
       context: context,
-      builder: (context) => NameDialog(
-        profile: editProfile,
-        controller: nameController,
-      ),
+      builder: (context) => NameDialog(profile: editProfile),
     );
     if (result != null) {
       editProfile.update(name: result);
     }
+  }
+
+  void _textModifierDialog(BuildContext context, UserProfile profile,
+      TextModifier modifier, bool isNew) async {
+    await showDialog<TextModifier>(
+      context: context,
+      builder: (context) => TextModifierDialog(
+        profile: profile,
+        sourceModifier: modifier,
+        isNew: isNew,
+      ),
+    );
+  }
+
+  Widget _proxyDecorator(Widget child, int index, Animation<double> animation) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (BuildContext context, Widget? child) {
+        final double animValue = Curves.easeInOut.transform(animation.value);
+        final double elevation = lerpDouble(0, 6, animValue)!;
+        return mt.Material(
+          elevation: elevation,
+          color: Colors.transparent,
+          shadowColor: Colors.transparent,
+          child: child,
+        );
+      },
+      child: child,
+    );
   }
 }

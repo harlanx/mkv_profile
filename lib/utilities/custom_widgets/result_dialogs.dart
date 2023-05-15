@@ -1,7 +1,50 @@
-import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/gestures.dart';
-import 'package:merge2mkv/models/models.dart';
+import 'package:fluent_ui/fluent_ui.dart';
+
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../models/models.dart';
+
+class ToolNotExistDialog extends StatelessWidget {
+  const ToolNotExistDialog({
+    Key? key,
+    required this.toolName,
+    required this.info,
+  }) : super(key: key);
+
+  final String toolName;
+  final String info;
+
+  @override
+  Widget build(BuildContext context) {
+    return ContentDialog(
+      title: const Text('Requirements'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Missing Tool: $toolName',
+            style: FluentTheme.of(context).typography.bodyLarge,
+          ),
+          const SizedBox(height: 6),
+          Text(
+            info,
+            style: FluentTheme.of(context).typography.body,
+          ),
+        ],
+      ),
+      actions: [
+        FilledButton(
+          child: const Text('OK'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
+  }
+}
 
 class ParserResultDialog extends StatelessWidget {
   const ParserResultDialog({

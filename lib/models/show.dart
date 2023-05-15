@@ -1,109 +1,269 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:equatable/equatable.dart';
-import 'package:merge2mkv/data/app_data.dart';
-import 'package:merge2mkv/models/models.dart';
-import 'package:merge2mkv/services/app_services.dart';
-import 'package:merge2mkv/utilities/utilities.dart';
+import '../data/app_data.dart';
+import '../models/models.dart';
+import '../services/app_services.dart';
+import '../utilities/utilities.dart';
 
 abstract class Show {
-  late final String title;
-  final Directory directory;
-
   Show({
     required this.directory,
   }) : title = directory.name;
+
+  String title;
+  final Directory directory;
 }
 
-class Video extends Equatable {
-  final File mainFile;
-  final List<Subtitle> subtitles;
-  late final MediaInfo info;
-
+class Video extends TrackProperties {
   Video({
     required this.mainFile,
-    required this.subtitles,
-  }) {
-    // You can't hot restart DLL so use CLI version when debugging.
-    // TODO: Change method to DLL in Production.
-    MetadataScanner.scanViaCLI(mainFile).then((value) => info = value);
-    //MetadataScanner.scanViaDLL(mainFile).then((value) => info = value);
+    this.season,
+    this.episode,
+    this.removeChapters = false,
+    this.removeAttachments = false,
+    String? title,
+    bool include = true,
+  })  : fileTitle = mainFile.title,
+        super(title: mainFile.title, include: include);
+
+  final File mainFile;
+  final int? season;
+  final int? episode;
+  String fileTitle;
+  late final MediaInfo info;
+  final List<EmbeddedTrack> embeddedAudios = [];
+  final List<AddedTrack> addedAudios = [];
+  final List<EmbeddedTrack> embeddedSubtitles = [];
+  final List<AddedTrack> addedSubtitles = [];
+
+  List<File> chapterFiles = [];
+  List<File> fontFiles = [];
+  List<File> imageFiles = [];
+  bool removeChapters;
+  bool removeAttachments;
+
+  Future<void> loadInfo() async {
+    info = await MetadataScanner.video(mainFile);
+
+    for (var embAud in info.audioInfo) {
+      embeddedAudios.add(
+        EmbeddedTrack(
+          id: embAud.id,
+          uid: embAud.uid!,
+          info: embAud,
+          title: embAud.title,
+          include: true,
+        )
+          ..language = embAud.language
+          ..flags = embAud.flags,
+      );
+    }
+    for (var embSub in info.textInfo) {
+      embeddedSubtitles.add(
+        EmbeddedTrack(
+          id: embSub.id,
+          uid: embSub.uid!,
+          info: embSub,
+          title: embSub.title,
+          include: true,
+        )
+          ..language = embSub.language
+          ..flags = embSub.flags,
+      );
+    }
   }
 
-  @override
-  List<Object> get props => [mainFile, subtitles];
+  /// Generates an mkvmerge command for the the video file
+  List<String> command(String output) {
+    var videoInfo = info.videoInfo.first;
+    return [
+      // Output File
+      '--output',
+      output,
+      // Video
+      if ((title ?? '').isNotEmpty) ...[
+        '--title',
+        title!,
+        '--track-name',
+        '${videoInfo.id}:${title!}',
+      ],
+      '--language',
+      '${videoInfo.id}:${videoInfo.language.iso6393}',
+      for (var flag in flags.values) ...[...flag.command(videoInfo.id)],
+
+      // Remove non-included Embedded Audios
+      if (embeddedAudios.any((ea) => !ea.include)) ...[
+        '--audio-tracks',
+        '!${List<String>.from(embeddedAudios.where((ea) => !ea.include).map((e) => e.id)).join(',')}',
+      ],
+      // Embedded Audios
+      for (var embedAudio in embeddedAudios) ...[...embedAudio.command],
+
+      // Remove non-included Embedded Subtitles
+      if (embeddedSubtitles.any((es) => !es.include)) ...[
+        '--subtitle-tracks',
+        '!${List<String>.from(embeddedSubtitles.where((es) => !es.include).map((e) => e.id)).join(',')}',
+      ],
+      // Embedded Subtitles
+      for (var embedSub in embeddedSubtitles) ...[...embedSub.command],
+
+      // Input File
+      mainFile.path,
+      // Added Audios
+      for (var addAudio in addedAudios) ...[...addAudio.command],
+      // Added Subtitles
+      for (var addSub in addedSubtitles) ...[...addSub.command],
+      // Remove embedded chapters in the input file.
+      // Usually exist on mkv
+      if (removeChapters) ...[
+        '--no-chapters',
+      ],
+      // Chapter Files
+      for (var chapter in chapterFiles) ...[
+        ...['--chapter', chapter.path],
+      ],
+      // Remove fonts and images/poster
+      if (removeAttachments) ...[
+        '--no-attachments',
+      ],
+      // Font Files
+      for (var font in fontFiles) ...[
+        ...['--attach-file', font.path],
+      ],
+      // Image Files
+      for (var image in imageFiles) ...[
+        ...['--attach-file', image.path],
+      ],
+    ];
+  }
 }
 
 class Movie extends Show {
-  final Video video;
-
   Movie({
     required Directory directory,
     required this.video,
   }) : super(directory: directory);
 
-  Movie copyWith({
-    String? title,
-    Directory? directory,
-    Video? video,
-  }) =>
-      Movie(
-        directory: directory ?? this.directory,
-        video: video ?? this.video,
-      );
+  final Video video;
 }
 
 class Series extends Show {
-  final List<Seasons> seasons;
-
   Series({
     required Directory directory,
     required this.seasons,
   }) : super(directory: directory);
 
-  Series copyWith({
-    String? title,
-    Directory? directory,
-    List<Seasons>? seasons,
-  }) =>
-      Series(
-        directory: directory ?? this.directory,
-        seasons: seasons ?? this.seasons,
-      );
+  final List<Season> seasons;
+
+  List<Video> get allVideos =>
+      seasons.fold([], (all, season) => all..addAll(season.videos));
 }
 
-class Seasons {
-  final int season;
-  final List<Video> videos;
-
-  Seasons({
-    required this.season,
+class Season {
+  Season({
+    required this.number,
     required this.videos,
-  });
+  }) : folderTitle = 'Season ${number.toString().padLeft(2, '0')}';
+
+  final int number;
+  String folderTitle;
+  final List<Video> videos;
 }
 
-class Subtitle {
-  final File file;
-  late LanguageCode language;
-  late bool isSDH;
+class EmbeddedTrack extends TrackProperties {
+  EmbeddedTrack({
+    required this.id,
+    required this.uid,
+    required this.info,
+    String? title,
+    bool include = true,
+  }) : super(title: title, include: include);
+  final int id;
+  final String uid;
+  final dynamic info;
 
-  Subtitle(this.file) {
-    language = AppData.languageCodes.identifyTitle(file.title);
-    isSDH = _isSDH;
+  /// Generates an mkvmerge command for the the embedded track
+  List<String> get command {
+    return [
+      if (include) ...[
+        if ((title ?? '').isNotEmpty) ...[
+          '--track-name',
+          '$id:$title',
+        ],
+        '--language',
+        '$id:${language.iso6393}',
+        for (var flag in flags.values) ...[...flag.command(id)],
+      ],
+    ];
+  }
+}
+
+class AddedTrack extends TrackProperties {
+  AddedTrack({
+    required this.file,
+    String? title,
+    bool include = false,
+  }) : super(title: title, include: include);
+
+  final File file;
+  dynamic info;
+
+  Future<void> loadInfo() async {
+    if (AppData.audioFormats.contains(file.extension)) {
+      info = await MetadataScanner.audio(file);
+    } else if (AppData.subtitleFormats.contains(file.extension)) {
+      info = await MetadataScanner.subtitle(file);
+    }
+
+    language = await AppData.languageCodes.identifyByText(file.title);
+    if (AppData.subtitleFormats.contains(file.extension)) {
+      flags['forced']!.value = await _isForced;
+      flags['hearing_impaired']!.value = await _isHearingImpaired;
+      flags['text_description']!.value = await _isTextDescription;
+    }
   }
 
-  bool get _isSDH {
+  Future<bool> get _isForced async {
+    // Usually Forced Subtitles are less than 20KB
+    return await file.length() < 20000;
+  }
+
+  Future<bool> get _isHearingImpaired async {
     LineSplitter ls = const LineSplitter();
     var content = ls.convert(file.readAsStringSync());
-    var result = content.take(500).where(
-        (element) => RegExp(r'\-\[(.*?)\]|\-\((.*?)\)').hasMatch(element));
-    return result.length > 2;
+    var samples = content.take(500);
+    // Matches (), []. For  <i> </i>, we can use '\<i>(.*?)\<\/i>' however sometimes it exist in non sdh subtitles
+    var hearingIndicator = RegExp(r'\[(.*?)\]|\((.*?)\)');
+    var visualIndicator = RegExp(
+        r'\[(.*?)Description\]|\((.*?)Description\)|\[(.*?)AD\]|\((.*?)AD\)');
+    var hearingResult =
+        samples.where((text) => hearingIndicator.hasMatch(text));
+    var visualResult = samples.where((text) => visualIndicator.hasMatch(text));
+    return hearingResult.length > 3 && visualResult.isEmpty;
   }
 
-  void update({
-    LanguageCode? language,
-    bool? isSDH,
-  }) {
-    this.language = language ?? this.language;
-    this.isSDH = isSDH ?? this.isSDH;
+  Future<bool> get _isTextDescription async {
+    LineSplitter ls = const LineSplitter();
+    var content = ls.convert(file.readAsStringSync());
+    var samples = content.take(500);
+    // Matches (), []. For  <i> </i>, we can use '\<i>(.*?)\<\/i>' however sometimes it exist in non sdh subtitles
+    var visualIndicator = RegExp(
+        r'\[(.*?)Description\]|\((.*?)Description\)|\[(.*?)TD\]|\((.*?)TD\)|\[(.*?)AD\]|\((.*?)AD\)');
+    var visualResult = samples.where((text) => visualIndicator.hasMatch(text));
+    return visualResult.length > 3;
+  }
+
+  /// Generates an mkvmerge command for the the added track
+  List<String> get command {
+    return [
+      if (include) ...[
+        if ((title ?? '').isNotEmpty) ...[
+          '--track-name',
+          '0:$title',
+        ],
+        '--language',
+        '0:${language.iso6393}',
+        for (var flag in flags.values) ...[...flag.command(0)],
+        file.path,
+      ],
+    ];
   }
 }

@@ -1,38 +1,32 @@
 import 'package:flutter/foundation.dart';
-import 'package:merge2mkv/data/app_data.dart';
-import 'package:merge2mkv/models/models.dart';
+
+import '../data/app_data.dart';
+import '../models/models.dart';
+import '../services/app_services.dart';
 
 class TaskNotifier extends InputBasic with ChangeNotifier {
   TaskNotifier(final Show item, UserProfile profile)
-      : super(item: item, profile: profile) {
-    _totalVideos = item is Movie
-        ? 1
-        : (item as Series)
-            .seasons
-            .map((e) => e.videos.length)
-            .fold(0, (p, c) => p + c);
+      : super(show: item, profile: profile) {
+    total = item is Movie ? 1 : (item as Series).allVideos.length;
   }
 
   double progress = 0;
-  late final int _totalVideos;
-  int _completed = 0;
+  late final int total;
+  int completed = 0;
 
   void updateProgress(double value) async {
     value.clamp(0, 100);
 
-    if (item is Movie) {
-      progress = value;
-    } else {
-      var overallPercentage =
-          ((_completed + (value / 100)) / _totalVideos) * 100;
-      progress = overallPercentage;
-    }
+    progress = ((completed + (value / 100)) / total) * 100;
 
     notifyListeners();
   }
 
-  void updateCompleted() {
-    _completed++;
+  void increaseCompleted({int count = 1, bool notify = false}) {
+    completed += count;
+    if (notify) {
+      notifyListeners();
+    }
   }
 
   void updateProfile(UserProfile profile) {
@@ -50,13 +44,14 @@ class TaskListNotifier extends ChangeNotifier {
 
   void updateStatus(bool value) {
     active = value;
+    ShowMerger.active = active;
     notifyListeners();
   }
 
   void add(ShowNotifier show) {
     _items.addAll({
-      DateTime.now().millisecondsSinceEpoch:
-          TaskNotifier(show.item, show.profile)
+      DateTime.now().millisecondsSinceEpoch + show.hashCode:
+          TaskNotifier(show.show, show.profile)
     });
     notifyListeners();
   }

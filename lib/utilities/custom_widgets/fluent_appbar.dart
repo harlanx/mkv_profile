@@ -1,12 +1,14 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:merge2mkv/data/app_data.dart';
+
 import 'package:window_manager/window_manager.dart';
+
+import '../../data/app_data.dart';
 
 /// FluentAppBar is a custom app bar that matches the Fluent Theme (Windows 11).
 /// It is not the same as the generic title bar for windows which can also be
-/// configured with the [WindowManager] package.
+/// configured with the window_manager package.
 class FluentAppBar extends NavigationAppBar {
-  FluentAppBar()
+  FluentAppBar({required this.context})
       : super(
           automaticallyImplyLeading: false,
           actions: const WindowButtons(),
@@ -16,15 +18,20 @@ class FluentAppBar extends NavigationAppBar {
               alignment: AlignmentDirectional.centerStart,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Icon(FluentIcons.my_movies_t_v),
-                  SizedBox(width: 10),
-                  Text(AppData.kAppTitle),
+                children: [
+                  Image.asset(
+                    'assets/icons/mkv_profile.png',
+                    height: FluentTheme.of(context).iconTheme.size,
+                    width: FluentTheme.of(context).iconTheme.size,
+                  ),
+                  const SizedBox(width: 6),
+                  const Text(AppData.appTitle),
                 ],
               ),
             ),
           ),
         );
+  final BuildContext context;
 }
 
 class WindowButtons extends StatelessWidget {

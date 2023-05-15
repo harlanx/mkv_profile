@@ -1,5 +1,5 @@
-name: merge2mkv
-description: Automatically merge downloaded series or movies to the common convention used by media servers.
+name: mkv_profile
+description: Automatically manage and merge to mkv your downloaded series or movie files to the common conventions used by media players and media servers. The GUI is intentionally made simple and is designed for least user interactions by implementing per profile configuration to manage files and generate a command to be used on mkvmerge process.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -8,42 +8,52 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.17.1 <3.0.0"
+  sdk: ">=2.19.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  ffi: ^2.0.1
-  path: ^1.8.2
-  intl: ^0.17.0
+  ffi: ^2.0.2
+  path: ^1.8.3
+  intl: ^0.18.0
+  win32: ^4.1.4
   async: ^2.11.0
-  provider: ^6.0.4
+  shimmer: ^2.0.0
+  provider: ^6.0.5
   equatable: ^2.0.5
   diacritic: ^0.1.3
-  fluent_ui: ^4.0.3+1
-  translator: ^0.1.7
-  pluto_grid: ^5.4.9
-  file_picker: ^5.2.2
-  collection: ^1.16.0
-  url_launcher: ^6.1.6
-  desktop_drop: ^0.4.0
-  system_theme: ^2.0.0
-  window_manager: ^0.3.1
-  path_provider: ^2.0.14
-  multi_split_view: ^2.1.0
-  flutter_acrylic: ^1.0.0+2
-  shared_preferences: ^2.0.15
-  fc_native_video_thumbnail: ^0.4.0
-  
+  fluent_ui: ^4.6.0
+  pluto_grid: ^7.0.1
+  collection: ^1.17.1
+  url_launcher: ^6.1.11
+  desktop_drop: ^0.4.1
+  system_theme: ^2.1.0
+  file_selector: ^0.9.3
+  path_provider: ^2.0.15
+  window_manager: ^0.3.2
+  flutter_acrylic: ^1.1.2
+  multi_split_view: ^2.4.0
+  flex_color_picker: ^3.2.2
+  flex_color_scheme: ^7.1.2
+  package_info_plus: ^4.0.0
+  shared_preferences: ^2.1.1
 
 dev_dependencies:
   flutter_lints: ^2.0.1
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  windows:
+    generate: true
+    image_path: "assets/icons/mkv_profile.png"
+    icon_size: 256
 
 
 flutter:
   uses-material-design: true
 
   assets:
+    - assets/icons/
     - assets/json/
     - assets/mkvmerge/
     - assets/mediainfo/

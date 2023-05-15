@@ -1,55 +1,61 @@
-import 'package:fluent_ui/fluent_ui.dart';
-import 'package:merge2mkv/models/models.dart';
-import 'package:merge2mkv/utilities/utilities.dart';
+import 'package:flutter/foundation.dart';
+
+import '../models/models.dart';
+import '../utilities/utilities.dart';
 
 class UserProfilesNotifier extends ChangeNotifier {
   late final Map<int, UserProfile> _items = {};
   Map<int, UserProfile> get items => _items;
 
-  static UserProfilesNotifier load() {
-    var profilesNotifier = UserProfilesNotifier()
-      .._items.addAll(
-        {
-          0: UserProfile(
-            name: 'None',
-            id: 0,
-          ),
-          1: UserProfile(
-            name: 'Default (Movie)',
-            id: 1,
-            titleFormat: '%title%<M (%year%)>',
-            defaultLanguage: 'eng',
-            languages: UserProfile.defaultLanguages,
-            removeString: List.from(UserProfile.defaultRemove)
-              ..addAll(['RARBG', 'YIFY', 'ION265', 'ION10']),
-            replaceString: UserProfile.defaultReplace,
-          ),
-          2: UserProfile(
-            name: 'Default (Series)',
-            id: 2,
-            titleFormat: '%title%',
-            episodeTitleFormat: '%title% - S%season%E%episode%',
-            defaultLanguage: 'eng',
-            languages: UserProfile.defaultLanguages,
-            removeString: List.from(UserProfile.defaultRemove)
-              ..addAll(['RARBG', 'YIFY', 'ION265', 'ION10']),
-            replaceString: UserProfile.defaultReplace,
-          ),
-        },
-      );
+  static List<UserProfile> defaultProfiles = [
+    UserProfile(
+      id: 0,
+      name: 'None',
+    ),
+    UserProfile(
+      id: 1,
+      name: 'Default (Movie)',
+      showTitleFormat: '%title% (%year%)',
+      videoTitleFormat: '%title% (%year%)',
+      subtitleTitleFormat: '%hearing_impaired% %forced%',
+      defaultFlagOrder: [
+        'default',
+        'hearing_impaired',
+      ],
+      defaultLanguage: 'eng',
+      languages: UserProfile.defaultLanguages,
+      modifiers: UserProfile.defaultModifiers,
+    ),
+    UserProfile(
+      id: 2,
+      name: 'Default (Series)',
+      showTitleFormat: '%title%',
+      videoTitleFormat: '%title% - S%season%E%episode%',
+      subtitleTitleFormat: '%hearing_impaired% %forced%',
+      defaultFlagOrder: [
+        'default',
+        'hearing_impaired',
+      ],
+      defaultLanguage: 'eng',
+      languages: UserProfile.defaultLanguages,
+      modifiers: UserProfile.defaultModifiers,
+    ),
+  ];
+
+  void load() {
+    _items.addEntries(defaultProfiles.map((e) => MapEntry(e.id, e)));
 
     List<String>? profilesJson = SharedPrefs.getStringList('UserProfiles');
     if (profilesJson != null) {
-      profilesNotifier._items.addAll({
+      _items.addAll({
         for (var profile in profilesJson.map((e) => UserProfile.fromJson(e)))
           profile.id: profile
       });
     }
-    return profilesNotifier;
   }
 
-  void save() {
-    SharedPrefs.setStringList(
+  Future<void> save() async {
+    await SharedPrefs.setStringList(
       'UserProfiles',
       _items.values.map((e) => e.toJson()).toList(),
     );

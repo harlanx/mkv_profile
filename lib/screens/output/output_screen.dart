@@ -1,20 +1,22 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart' as mt;
+
 import 'package:intl/intl.dart';
-import 'package:merge2mkv/data/app_data.dart';
-import 'package:merge2mkv/utilities/extensions.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:provider/provider.dart';
 import 'package:system_theme/system_theme.dart';
 
-class OutputScreen extends StatefulWidget {
-  const OutputScreen({super.key});
+import '../../data/app_data.dart';
+import '../../utilities/extensions.dart';
+
+class OutputsScreen extends StatefulWidget {
+  const OutputsScreen({super.key});
 
   @override
-  State<OutputScreen> createState() => OutputScreenState();
+  State<OutputsScreen> createState() => OutputsScreenState();
 }
 
-class OutputScreenState extends State<OutputScreen>
+class OutputsScreenState extends State<OutputsScreen>
     with WidgetsBindingObserver {
   late final appSettings = context.watch<AppSettingsNotifier>();
   late final outputs = context.watch<OutputNotifier>();
@@ -61,7 +63,7 @@ class OutputScreenState extends State<OutputScreen>
                   CommandBarButton(
                     icon: const Icon(FluentIcons.delete),
                     label: const Text('Remove'),
-                    onPressed: outputs.items.isEmpty
+                    onPressed: outputs.selected.isEmpty
                         ? null
                         : () {
                             _infoPreview.value = null;
@@ -84,20 +86,14 @@ class OutputScreenState extends State<OutputScreen>
             configuration: _plutoConfig(context, appSettings.themeMode),
             onLoaded: (event) => _manager = event.stateManager,
             onSelected: (event) {
-              _infoPreview.value = outputs
-                      .items[event.row!.cells.entries.first.value.value]
-                      ?.info
-                      .log ??
-                  'No Info';
+              _infoPreview.value = outputs.items[event.cell?.value]?.info.log;
             },
             onRowChecked: (event) {
               if (event.row != null && event.rowIdx != null) {
                 if (event.isChecked!) {
-                  outputs.addSelected(
-                      {event.row!.cells.entries.first.value.value});
+                  outputs.addSelected({event.row!.cells['info']!.value});
                 } else {
-                  outputs.removeSelected(
-                      {event.row!.cells.entries.first.value.value});
+                  outputs.removeSelected({event.row!.cells['info']!.value});
                 }
               } else {
                 if (event.isChecked!) {
@@ -189,7 +185,7 @@ class OutputScreenState extends State<OutputScreen>
                   output.title,
                   maxLines: 1,
                   softWrap: false,
-                  overflow: TextOverflow.ellipsis,
+                  overflow: TextOverflow.fade,
                 ),
               ),
               Flexible(
@@ -197,7 +193,7 @@ class OutputScreenState extends State<OutputScreen>
                   output.path,
                   maxLines: 1,
                   softWrap: false,
-                  overflow: TextOverflow.ellipsis,
+                  overflow: TextOverflow.fade,
                 ),
               ),
             ],
@@ -245,6 +241,7 @@ class OutputScreenState extends State<OutputScreen>
         title: 'Status',
         field: 'status',
         type: PlutoColumnType.number(),
+        frozen: PlutoColumnFrozen.end,
         readOnly: true,
         enableRowDrag: false,
         enableSorting: false,
@@ -256,19 +253,23 @@ class OutputScreenState extends State<OutputScreen>
         renderer: (rendererContext) {
           int id = rendererContext.cell.value;
           var output = outputs.items[id]!;
-          return Text(output.info.taskStatus.name.toCapitalized());
+          return Text(output.info.taskStatus.name.capitalized);
         },
       ),
     ]);
 
-    _manager.appendRows(outputs.items.entries
-        .map((e) => PlutoRow(cells: {
-              'info': PlutoCell(value: e.key),
-              'profile': PlutoCell(value: e.key),
-              'date': PlutoCell(value: e.key),
-              'status': PlutoCell(value: e.key),
-            }))
-        .toList());
+    _manager.appendRows(
+      List.from(
+        outputs.items.entries.map(
+          (e) => PlutoRow(cells: {
+            'info': PlutoCell(value: e.key),
+            'profile': PlutoCell(value: e.key),
+            'date': PlutoCell(value: e.key),
+            'status': PlutoCell(value: e.key),
+          }),
+        ),
+      ),
+    );
   }
 
   // Theme styling
@@ -279,7 +280,7 @@ class OutputScreenState extends State<OutputScreen>
       return PlutoGridConfiguration.dark(
         style: PlutoGridStyleConfig.dark(
           rowColor: FluentThemeData.dark().cardColor.withOpacity(0.1),
-          activatedColor: context.read<AppSettingsNotifier>().systemAccentColor,
+          activatedColor: context.read<AppSettingsNotifier>().accentColor,
           activatedBorderColor: FluentThemeData.dark().borderInputColor,
           gridBackgroundColor:
               FluentThemeData.dark().micaBackgroundColor.withOpacity(0.15),
@@ -290,7 +291,7 @@ class OutputScreenState extends State<OutputScreen>
     return PlutoGridConfiguration(
       style: PlutoGridStyleConfig(
         rowColor: FluentThemeData.light().cardColor.withOpacity(0.1),
-        activatedColor: context.read<AppSettingsNotifier>().systemAccentColor,
+        activatedColor: context.read<AppSettingsNotifier>().accentColor,
         activatedBorderColor: FluentThemeData.light().borderInputColor,
         gridBackgroundColor:
             FluentThemeData.light().micaBackgroundColor.withOpacity(0.15),

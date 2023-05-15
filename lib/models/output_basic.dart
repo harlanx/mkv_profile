@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 enum TaskStatus {
@@ -8,72 +7,71 @@ enum TaskStatus {
   error;
 
   String toJson() => name;
-  static TaskStatus fromJson(String json) => values.byName(json);
+  factory TaskStatus.fromJson(String json) => values.byName(json);
 }
 
 class OutputInfo {
-  TaskStatus taskStatus;
-  String log;
-
   OutputInfo({
     required this.taskStatus,
+    required this.outputPath,
     required this.log,
   });
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'taskStatus': taskStatus.toJson(),
-      'info': log,
-    };
-  }
+  TaskStatus taskStatus;
+  String outputPath;
+  String log;
 
-  factory OutputInfo.fromMap(Map<String, dynamic> json) {
+  factory OutputInfo.fromJson(String source) {
+    Map<String, dynamic> json = jsonDecode(source);
     return OutputInfo(
       taskStatus: TaskStatus.fromJson(json['taskStatus']),
+      outputPath: json['outputPath'],
       log: json['info'],
     );
   }
 
-  String toJson() => json.encode(toMap());
-
-  factory OutputInfo.fromJson(String source) =>
-      OutputInfo.fromMap(json.decode(source) as Map<String, dynamic>);
+  String toJson() {
+    return jsonEncode(
+      <String, dynamic>{
+        'taskStatus': taskStatus.toJson(),
+        'outputPath': outputPath,
+        'info': log,
+      },
+    );
+  }
 
   OutputInfo copyWith({
     TaskStatus? taskStatus,
+    String? outputPath,
     String? log,
   }) {
     return OutputInfo(
       taskStatus: taskStatus ?? this.taskStatus,
+      outputPath: outputPath ?? this.outputPath,
       log: log ?? this.log,
     );
   }
 }
 
 class OutputBasic {
-  final String title;
-  final String path;
-  final String profile;
-  final OutputInfo info;
-  final DateTime dateTime;
-
   OutputBasic({
     required this.title,
     required this.path,
     required this.profile,
     required this.info,
     required this.dateTime,
+    required this.duration,
   });
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'title': title,
-      'path': path,
-      'profile': profile,
-      'info': info.toJson(),
-      'dateTime': dateTime.millisecondsSinceEpoch,
-    };
-  }
+  final String title;
+  final String path;
+  final String profile;
+  final OutputInfo info;
+  final DateTime dateTime;
+  final Duration duration;
+
+  factory OutputBasic.fromJson(String source) =>
+      OutputBasic.fromMap(json.decode(source) as Map<String, dynamic>);
 
   factory OutputBasic.fromMap(Map<String, dynamic> json) {
     return OutputBasic(
@@ -82,11 +80,20 @@ class OutputBasic {
       profile: json['profile'] as String,
       info: OutputInfo.fromJson(json['info']),
       dateTime: DateTime.fromMillisecondsSinceEpoch(json['dateTime'] as int),
+      duration: Duration(seconds: json['duration']),
     );
   }
 
-  String toJson() => json.encode(toMap());
-
-  factory OutputBasic.fromJson(String source) =>
-      OutputBasic.fromMap(json.decode(source) as Map<String, dynamic>);
+  String toJson() {
+    return jsonEncode(
+      <String, dynamic>{
+        'title': title,
+        'path': path,
+        'profile': profile,
+        'info': info.toJson(),
+        'dateTime': dateTime.millisecondsSinceEpoch,
+        'duration': duration.inSeconds,
+      },
+    );
+  }
 }

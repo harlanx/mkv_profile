@@ -1,24 +1,24 @@
-import 'package:merge2mkv/models/models.dart';
+import '../models/models.dart';
 
 abstract class InputBasic {
-  Show item;
-  UserProfile profile;
-
   InputBasic({
-    required this.item,
+    required this.show,
     required this.profile,
   });
 
+  Show show;
+  UserProfile profile;
+
   @override
-  String toString() => 'InputNotifier(item: $item, profile: $profile)';
+  String toString() => 'InputNotifier(item: $show, profile: $profile)';
 
   @override
   bool operator ==(covariant InputBasic other) {
     if (identical(this, other)) return true;
 
-    return other.item == item && other.profile == profile;
+    return other.show == show && other.profile == profile;
   }
 
   @override
-  int get hashCode => item.hashCode ^ profile.hashCode;
+  int get hashCode => show.hashCode ^ profile.hashCode;
 }

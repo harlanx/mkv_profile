@@ -1,25 +1,27 @@
-import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart' as mt;
-import 'package:merge2mkv/data/app_data.dart';
-import 'package:merge2mkv/services/app_services.dart';
+import 'package:fluent_ui/fluent_ui.dart';
+
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:provider/provider.dart';
 import 'package:system_theme/system_theme.dart';
 
-class TaskScreen extends StatefulWidget {
-  const TaskScreen({Key? key}) : super(key: key);
+import '../../data/app_data.dart';
+import '../../services/app_services.dart';
+import '../../utilities/utilities.dart';
+
+class TasksScreen extends StatefulWidget {
+  const TasksScreen({Key? key}) : super(key: key);
 
   @override
-  State<TaskScreen> createState() => TaskScreenState();
+  State<TasksScreen> createState() => TasksScreenState();
 }
 
-class TaskScreenState extends State<TaskScreen> with WidgetsBindingObserver {
+class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
   late final appSettings = context.watch<AppSettingsNotifier>();
   late final tasks = context.watch<TaskListNotifier>();
   late final PlutoGridStateManager _manager;
   final List<PlutoColumn> _columns = [];
   final List<PlutoRow> _rows = [];
-  final ShowMerger _merger = ShowMerger();
 
   @override
   void initState() {
@@ -27,7 +29,7 @@ class TaskScreenState extends State<TaskScreen> with WidgetsBindingObserver {
     // Refer to https://github.com/bosskmk/pluto_grid/issues/283#issuecomment-944137222 and https://stackoverflow.com/a/68607804/15589545
     // Pluto Grid has it's own state management so it's better
     // to make sure that it is fully built before accessing the manager
-    // rather than accessing it after "our" widgets is built.
+    // rather than accessing it after our widgets is built.
     Future.delayed(Duration.zero, () {
       if (mounted) fetchData();
     });
@@ -65,7 +67,7 @@ class TaskScreenState extends State<TaskScreen> with WidgetsBindingObserver {
                     onPressed: _enableButtons
                         ? null
                         : () {
-                            _merger.start(tasks);
+                            ShowMerger.start(tasks);
                           },
                   ),
                   CommandBarButton(
@@ -83,7 +85,7 @@ class TaskScreenState extends State<TaskScreen> with WidgetsBindingObserver {
                       icon: const Icon(FluentIcons.cancel),
                       label: const Text('Cancel'),
                       onPressed: () async {
-                        _merger.process?.cancel();
+                        await ShowMerger.process?.operation.cancel();
                       },
                     ),
                 ],
@@ -106,11 +108,9 @@ class TaskScreenState extends State<TaskScreen> with WidgetsBindingObserver {
             onRowChecked: (event) {
               if (event.row != null && event.rowIdx != null) {
                 if (event.isChecked!) {
-                  tasks.addSelected(
-                      {event.row!.cells.entries.first.value.value});
+                  tasks.addSelected({event.row!.cells['show']!.value});
                 } else {
-                  tasks.removeSelected(
-                      {event.row!.cells.entries.first.value.value});
+                  tasks.removeSelected({event.row!.cells['show']!.value});
                 }
               } else {
                 if (event.isChecked!) {
@@ -149,11 +149,12 @@ class TaskScreenState extends State<TaskScreen> with WidgetsBindingObserver {
         enableHideColumnMenuItem: false,
         renderer: (rendererContext) {
           int id = rendererContext.cell.value;
-          var show = tasks.items[id]!;
+          var tn = tasks.items[id]!;
           return Text(
-            show.item.title,
+            tn.show.directory.name,
             maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+            softWrap: false,
+            overflow: TextOverflow.fade,
           );
         },
       ),
@@ -171,8 +172,8 @@ class TaskScreenState extends State<TaskScreen> with WidgetsBindingObserver {
         enableHideColumnMenuItem: false,
         renderer: (rendererContext) {
           int id = rendererContext.cell.value;
-          var show = tasks.items[id]!;
-          return Text(show.profile.name);
+          var tn = tasks.items[id]!;
+          return Text(tn.profile.name);
         },
       ),
       PlutoColumn(
@@ -195,10 +196,10 @@ class TaskScreenState extends State<TaskScreen> with WidgetsBindingObserver {
           return ChangeNotifierProvider.value(
             value: tasks.items[id],
             builder: (context, child) {
-              final show = context.watch<TaskNotifier>();
+              final tn = context.watch<TaskNotifier>();
               return Align(
                 alignment: AlignmentDirectional.center,
-                child: Text('${show.progress.toStringAsFixed(2)}%'),
+                child: Text('${tn.progress.toStringAsFixed(2)}%'),
               );
             },
           );
@@ -206,13 +207,17 @@ class TaskScreenState extends State<TaskScreen> with WidgetsBindingObserver {
       ),
     ]);
 
-    _manager.appendRows(tasks.items.entries
-        .map((e) => PlutoRow(cells: {
-              'show': PlutoCell(value: e.key),
-              'profile': PlutoCell(value: e.key),
-              'progress': PlutoCell(value: e.key)
-            }))
-        .toList());
+    _manager.appendRows(
+      List.from(
+        tasks.items.entries.map(
+          (e) => PlutoRow(cells: {
+            'show': PlutoCell(value: e.key),
+            'profile': PlutoCell(value: e.key),
+            'progress': PlutoCell(value: e.key)
+          }),
+        ),
+      ),
+    );
   }
 
   bool get _enableButtons {
@@ -231,7 +236,7 @@ class TaskScreenState extends State<TaskScreen> with WidgetsBindingObserver {
       return PlutoGridConfiguration.dark(
         style: PlutoGridStyleConfig.dark(
           rowColor: FluentThemeData.dark().cardColor.withOpacity(0.1),
-          activatedColor: context.read<AppSettingsNotifier>().systemAccentColor,
+          activatedColor: context.read<AppSettingsNotifier>().accentColor,
           activatedBorderColor: FluentThemeData.dark().borderInputColor,
           gridBackgroundColor:
               FluentThemeData.dark().micaBackgroundColor.withOpacity(0.15),
@@ -242,7 +247,7 @@ class TaskScreenState extends State<TaskScreen> with WidgetsBindingObserver {
     return PlutoGridConfiguration(
       style: PlutoGridStyleConfig(
         rowColor: FluentThemeData.light().cardColor.withOpacity(0.1),
-        activatedColor: context.read<AppSettingsNotifier>().systemAccentColor,
+        activatedColor: context.read<AppSettingsNotifier>().accentColor,
         activatedBorderColor: FluentThemeData.light().borderInputColor,
         gridBackgroundColor:
             FluentThemeData.light().micaBackgroundColor.withOpacity(0.15),

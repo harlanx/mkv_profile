@@ -1,13 +1,27 @@
 import 'dart:convert';
-import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
+import 'package:equatable/equatable.dart';
+
 class UserProfile extends ChangeNotifier with EquatableMixin {
+  UserProfile({
+    required this.id,
+    required this.name,
+    this.showTitleFormat = '%title%',
+    this.videoTitleFormat = '%title%',
+    this.audioTitleFormat = '',
+    this.subtitleTitleFormat = '',
+    this.defaultLanguage = '',
+    this.languages = const [],
+    this.defaultFlagOrder = const [],
+    this.modifiers = const [],
+    this.useFolderName = true,
+  });
+
   static const List<String> showTitleVars = [
-    '%dimension%',
     '%duration%',
     '%encoding%',
-    '%frames%',
+    '%frame_rate%',
     '%height%',
     '%size%',
     '%title%',
@@ -15,193 +29,196 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
     '%year%',
   ];
 
-  static const List<String> episodeTitleVars = [
-    '%dimension%',
+  static const List<String> videoTitleVars = [
+    '%language%',
+    '%duration%',
     '%encoding%',
     '%episode%',
-    '%frames%',
+    '%frame_rate%',
     '%height%',
     '%season%',
     '%size%',
     '%title%',
     '%width%',
+    '%year%',
   ];
 
-  static const List<String> defaultRemove = [
-    r'\b\d{4}\b', // Year
-    r'Season.\d+|S.\d+', // Season
-    r'\d{3,4}p', //'1080p', '720p', '480p',
-    '1080',
-    '720',
-    '480',
-    r'x.\d{3}|x\d{3}', //'x.264', 'x.265', 'x264', 'x265',
-    r'h.\d{3}|h\d{3}', //'h.264', //'h.265', 'h264', 'h265',
-    r'[\d]+bit', //'10bit', '8bit',
-    r'Part\.\d|Part\s\d', //'Part.1', 'Part.2', 'Part 1','Part 2',
-    r'DDP\d+.\d+', // 'DDP2.0', 'DDP5.1', Dolby Digital Plus
-    r'TrueHD.\d+.\d+', // 'TrueHD.7.1', 'TrueHD.5.1', Atmos
-    'Web-Dl',
-    'WEBRip',
-    'BluRay',
-    'AMZN',
-    'BDRip',
-    'Dolby',
-    'Atmos',
-    'DTS',
-    'AAC',
-    'SDR',
-    'HDR',
-    'HD',
-    'UHD',
-    'Subbed',
-    'Dubbed',
+  static const List<String> audioTitleVars = [
+    '%language%',
+    '%format%',
+    '%bit_rate%',
+    '%channels%',
+    '%sampling_rate%',
+    '%default%',
+    '%original_language%',
+    '%forced%',
+    '%commentary%',
+    '%hearing_impaired%',
+    '%visual_impaired%',
+    '%text_description%',
   ];
 
-  static const List<String> defaultReplace = [
-    '.',
-    '_',
-    '-',
+  static const List<String> subtitleTitleVars = [
+    '%language%',
+    '%format%',
+    '%default%',
+    '%original_language%',
+    '%forced%',
+    '%commentary%',
+    '%hearing_impaired%',
+    '%visual_impaired%',
+    '%text_description%',
+  ];
+
+  static List<TextModifier> defaultModifiers = [
+    TextModifier(
+      id: 0,
+      replaceable: [
+        r'\b\d{4}\b', // Year
+        r'Season.\d+|S.\d+|Season \d+|S \d+', // Season
+        r'Episode.\d+|E.\d+|Episode \d+|E \d+', // Episode
+        r'\d{3,4}p', //'1080p', '720p', '480p',
+        '1080',
+        '720',
+        '480',
+        r'x.\d{3}|x\d{3}', //'x.264', 'x.265', 'x264', 'x265',
+        r'h.\d{3}|h\d{3}', //'h.264', //'h.265', 'h264', 'h265',
+        r'[\d]+bit', //'10bit', '8bit',
+        r'Part\.\d|Part\s\d', //'Part.1', 'Part.2', 'Part 1','Part 2',
+        r'DDP\d+.\d+', // 'DDP2.0', 'DDP5.1', Dolby Digital Plus
+        r'TrueHD.\d+.\d+', // 'TrueHD.7.1', 'TrueHD.5.1', Atmos
+        'Web-Dl',
+        'WEBRip',
+        'BluRay',
+        'AMZN',
+        'BDRip',
+        'Dolby',
+        'Atmos',
+        'DTS',
+        'AAC',
+        'SDR',
+        'HDR',
+        'HD',
+        'UHD',
+        'Subbed',
+        'Dubbed',
+        'Complete',
+        'RARBG',
+        'YIFY',
+        'ION265',
+        'ION10',
+      ],
+      replacement: '',
+    ),
+    TextModifier(
+      id: 1,
+      replaceable: [
+        '.',
+        '_',
+        '-',
+      ],
+      replacement: ' ',
+    ),
   ];
 
   static const List<String> defaultLanguages = ['und', 'eng'];
 
-  String name;
-
-  /// Users can use conditional variables based on the type of show the scanner detects.
-  /// For Movie variables enclosed it with <M%yourVariable>
-  /// For Series variables enclosed it with <S%yourVariable>
-  String titleFormat;
   int id;
-  String episodeTitleFormat;
+  String name;
+  String showTitleFormat;
+  String videoTitleFormat;
+  String audioTitleFormat;
+  String subtitleTitleFormat;
   String defaultLanguage;
   List<String> languages;
-  List<String> removeString;
-  List<String> replaceString;
+  List<String> defaultFlagOrder;
+  List<TextModifier> modifiers;
   bool useFolderName;
-  bool removeLanguageTitle;
-  bool defaultSdh;
-  bool caseSensitive;
-  // Usually for mkv files. Not implemented yet.
-  //final bool removeSubtitles;
-  //final bool removeTrackNames;
-  //final bool removeComment;
 
-  UserProfile({
-    required this.name,
-    required this.id,
-    this.titleFormat = '%title%',
-    this.episodeTitleFormat = '%title%',
-    this.defaultLanguage = '',
-    this.languages = const [],
-    this.removeString = const [],
-    this.replaceString = const [],
-    this.useFolderName = true,
-    this.removeLanguageTitle = false,
-    this.defaultSdh = true,
-    this.caseSensitive = false,
-    // Usually for mkv files.
-    //this.removeSubtitles = true,
-    //this.removeTrackNames = true,
-    //this.removeComment = true,
-  });
+  factory UserProfile.fromJson(String str) {
+    Map<String, dynamic> json = jsonDecode(str);
+    return UserProfile(
+      id: json['id'],
+      name: json['name'],
+      showTitleFormat: json['showTitleFormat'],
+      videoTitleFormat: json['videoTitleFormat'],
+      audioTitleFormat: json['audioTitleFormat'],
+      subtitleTitleFormat: json['subtitleTitleFormat'],
+      defaultLanguage: json['defaultLanguage'],
+      languages: List<String>.from(json['languages']),
+      defaultFlagOrder: List<String>.from(json['defaultFlagOrder']),
+      modifiers: List<TextModifier>.from(
+          json['modifiers'].map((e) => TextModifier.fromJson(e))),
+      useFolderName: json['useFolderName'],
+    );
+  }
 
-  factory UserProfile.fromJson(String str) =>
-      UserProfile.fromMap(json.decode(str));
-
-  String toJson() => json.encode(toMap());
-
-  UserProfile.fromMap(Map<String, dynamic> json)
-      : name = json['name'],
-        id = json['id'],
-        titleFormat = json['titleFormat'],
-        episodeTitleFormat = json['episodeTitleFormat'],
-        defaultLanguage = json['defaultLanguage'],
-        languages = List<String>.from(json['languages']),
-        removeString = List<String>.from(json['removeString']),
-        replaceString = List<String>.from(json['replaceString']),
-        useFolderName = json['useFolderName'],
-        removeLanguageTitle = json['removeLanguageTitle'],
-        defaultSdh = json['defaultSdh'],
-        caseSensitive = json['caseSensitive'];
-  // Usually for mkv files.
-  //removeSubtitles = json['removeSubtitles'],
-  //removeTrackNames = json['removeTrackNames'],
-  //removeComment = json['removeComment'];
-
-  Map<String, dynamic> toMap() => {
-        'name': name,
+  String toJson() {
+    return jsonEncode(
+      <String, dynamic>{
         'id': id,
-        'titleFormat': titleFormat,
-        'episodeTitleFormat': episodeTitleFormat,
+        'name': name,
+        'showTitleFormat': showTitleFormat,
+        'videoTitleFormat': videoTitleFormat,
+        'audioTitleFormat': audioTitleFormat,
+        'subtitleTitleFormat': subtitleTitleFormat,
         'defaultLanguage': defaultLanguage,
-        'languages': List<String>.from(languages),
-        'removeString': List<String>.from(removeString),
-        'replaceString': List<String>.from(replaceString),
+        'languages': languages,
+        'defaultFlagOrder': defaultFlagOrder,
+        'modifiers': List<String>.from(modifiers.map((e) => e.toJson())),
         'useFolderName': useFolderName,
-        'removeLanguageTitle': removeLanguageTitle,
-        'defaultSdh': defaultSdh,
-        'caseSensitive': caseSensitive,
-        // Usually for mkv files.
-        //'removeSubtitles': removeSubtitles,
-        //'removeTrackNames': removeTrackNames,
-        //'removeComment': removeComment,
-      };
+      },
+    );
+  }
 
   UserProfile copyWith({
     String? name,
     int? id,
-    String? titleFormat,
-    String? episodeTitleFormat,
+    String? showTitleFormat,
+    String? videoTitleFormat,
     String? defaultLanguage,
     List<String>? languages,
-    List<String>? removeString,
-    List<String>? replaceString,
+    List<String>? defaultFlagOrder,
+    List<TextModifier>? modifiers,
     bool? useFolderName,
-    bool? removeLanguageTitle,
     bool? defaultSdh,
-    bool? caseSensitive,
   }) =>
       UserProfile(
         name: name ?? this.name,
         id: id ?? this.id,
-        titleFormat: titleFormat ?? this.titleFormat,
-        episodeTitleFormat: episodeTitleFormat ?? this.episodeTitleFormat,
+        showTitleFormat: showTitleFormat ?? this.showTitleFormat,
+        videoTitleFormat: videoTitleFormat ?? this.videoTitleFormat,
         defaultLanguage: defaultLanguage ?? this.defaultLanguage,
         languages: languages ?? this.languages,
-        removeString: removeString ?? this.removeString,
-        replaceString: replaceString ?? this.replaceString,
+        defaultFlagOrder: defaultFlagOrder ?? this.defaultFlagOrder,
+        modifiers: modifiers ?? this.modifiers,
         useFolderName: useFolderName ?? this.useFolderName,
-        removeLanguageTitle: removeLanguageTitle ?? this.removeLanguageTitle,
-        defaultSdh: defaultSdh ?? this.defaultSdh,
-        caseSensitive: caseSensitive ?? this.caseSensitive,
       );
 
   void update({
     String? name,
     int? id,
-    String? titleFormat,
-    String? episodeTitleFormat,
+    String? showTitleFormat,
+    String? videoTitleFormat,
+    String? audioTitleFormat,
+    String? subtitleTitleFormat,
     String? defaultLanguage,
     List<String>? languages,
-    List<String>? removeString,
-    List<String>? replaceString,
+    List<String>? defaultFlagOrder,
+    List<TextModifier>? modifiers,
     bool? useFolderName,
-    bool? removeLanguageTitle,
-    bool? defaultSdh,
-    bool? caseSensitive,
   }) {
     this.name = name ?? this.name;
     this.id = id ?? this.id;
-    this.titleFormat = titleFormat ?? this.titleFormat;
-    this.episodeTitleFormat = episodeTitleFormat ?? this.episodeTitleFormat;
+    this.showTitleFormat = showTitleFormat ?? this.showTitleFormat;
+    this.videoTitleFormat = videoTitleFormat ?? this.videoTitleFormat;
+    this.audioTitleFormat = audioTitleFormat ?? this.audioTitleFormat;
+    this.subtitleTitleFormat = subtitleTitleFormat ?? this.subtitleTitleFormat;
     this.defaultLanguage = defaultLanguage ?? this.defaultLanguage;
     this.languages = languages ?? this.languages;
-    this.removeString = removeString ?? this.removeString;
-    this.replaceString = replaceString ?? this.replaceString;
+    this.defaultFlagOrder = defaultFlagOrder ?? this.defaultFlagOrder;
+    this.modifiers = modifiers ?? this.modifiers;
     this.useFolderName = useFolderName ?? this.useFolderName;
-    this.removeLanguageTitle = removeLanguageTitle ?? this.removeLanguageTitle;
-    this.defaultSdh = defaultSdh ?? this.defaultSdh;
-    this.caseSensitive = caseSensitive ?? this.caseSensitive;
     notifyListeners();
   }
 
@@ -236,19 +253,113 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
     notifyListeners();
   }
 
+  void updateFlagOrder(String flagName, [bool add = true]) {
+    if (add) {
+      if (!defaultFlagOrder.contains(flagName)) {
+        defaultFlagOrder = List.from(defaultFlagOrder)..add(flagName);
+      }
+    } else {
+      defaultFlagOrder = List.from(defaultFlagOrder)..remove(flagName);
+    }
+    notifyListeners();
+  }
+
+  void reorderFlagOrder(int oldIndex, int newIndex) {
+    if (newIndex > oldIndex) newIndex -= 1;
+    List<String> flagOrderCopy = List.from(defaultFlagOrder);
+    final item = flagOrderCopy.removeAt(oldIndex);
+    defaultFlagOrder = flagOrderCopy..insert(newIndex, item);
+    notifyListeners();
+  }
+
+  void addModifier(TextModifier modifier) {
+    modifiers.add(modifier);
+    notifyListeners();
+  }
+
+  void deleteModifier(int id) {
+    modifiers.removeWhere((m) => m.id == id);
+    notifyListeners();
+  }
+
   @override
   List<Object> get props => [
         name,
         id,
-        titleFormat,
-        episodeTitleFormat,
+        showTitleFormat,
+        videoTitleFormat,
         defaultLanguage,
         languages,
-        removeString,
-        replaceString,
+        defaultFlagOrder,
+        modifiers,
         useFolderName,
-        removeLanguageTitle,
-        defaultSdh,
-        caseSensitive,
       ];
+}
+
+class TextModifier {
+  TextModifier({
+    required this.id,
+    required this.replacement,
+    required this.replaceable,
+    this.caseSensitive = false,
+  });
+
+  int id;
+  String replacement;
+  List<String> replaceable;
+  bool caseSensitive;
+
+  String get replaceablePreview => replaceable.join('  •  ');
+
+  String get replacementPreview {
+    String preview = '';
+    if (replacement.isEmpty) {
+      preview = 'Remove String';
+    } else if (replacement.trim().isEmpty) {
+      preview = 'Replace with White Space';
+    } else {
+      preview = replacement;
+    }
+    return preview;
+  }
+
+  TextModifier copyWith({
+    int? id,
+    String? replacement,
+    List<String>? replaceable,
+    bool? caseSensitive,
+  }) =>
+      TextModifier(
+        id: id ?? this.id,
+        replacement: replacement ?? this.replacement,
+        replaceable: replaceable ?? this.replaceable,
+        caseSensitive: caseSensitive ?? this.caseSensitive,
+      );
+
+  void update({
+    int? id,
+    String? replacement,
+    List<String>? replaceable,
+    bool? caseSensitive,
+  }) {
+    this.id = id ?? this.id;
+    this.replacement = replacement ?? this.replacement;
+    this.replaceable = replaceable ?? this.replaceable;
+    this.caseSensitive = caseSensitive ?? this.caseSensitive;
+  }
+
+  String toJson() => jsonEncode(<String, dynamic>{
+        'id': id,
+        'replaceable': replaceable,
+        'replacement': replacement,
+      });
+
+  factory TextModifier.fromJson(String source) {
+    var json = jsonDecode(source);
+    return TextModifier(
+      id: json['id'],
+      replaceable: List<String>.from((json['replaceable'])),
+      replacement: json['replacement'],
+    );
+  }
 }

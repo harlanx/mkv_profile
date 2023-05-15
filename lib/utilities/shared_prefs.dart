@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefs {
@@ -9,22 +10,28 @@ class SharedPrefs {
   static Future<SharedPreferences> init() async {
     _prefs = await SharedPreferences.getInstance();
 
-    if (kDebugMode) { // Clear on debug mode.
+    if (kDebugMode) {
+      // Clear on debug mode.
       _prefs.clear();
     }
     return _prefs;
   }
 
   //Setter Methods
-  static Future<bool> setBool(String key, bool value) async => await _prefs.setBool(key, value);
+  static Future<bool> setBool(String key, bool value) async =>
+      await _prefs.setBool(key, value);
 
-  static Future<bool> setDouble(String key, double value) async => await _prefs.setDouble(key, value);
+  static Future<bool> setDouble(String key, double value) async =>
+      await _prefs.setDouble(key, value);
 
-  static Future<bool> setInt(String key, int value) async => await _prefs.setInt(key, value);
+  static Future<bool> setInt(String key, int value) async =>
+      await _prefs.setInt(key, value);
 
-  static Future<bool> setString(String key, String value) async => await _prefs.setString(key, value);
+  static Future<bool> setString(String key, String value) async =>
+      await _prefs.setString(key, value);
 
-  static Future<bool> setStringList(String key, List<String> value) async => await _prefs.setStringList(key, value);
+  static Future<bool> setStringList(String key, List<String> value) async =>
+      await _prefs.setStringList(key, value);
 
   //Getter Methods
   static bool? getBool(String key) => _prefs.getBool(key);
