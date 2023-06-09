@@ -33,9 +33,10 @@ class FolderTitleDialog extends StatelessWidget {
                   text: season != null
                       ? show.title
                       : show.directory.name.noBreakHyphen,
-                  style: FluentTheme.of(context).typography.body?.copyWith(
-                        color: season != null ? null : Colors.blue,
-                      ),
+                  style:
+                      FluentTheme.of(context).typography.bodyStrong?.copyWith(
+                            color: season != null ? null : Colors.blue,
+                          ),
                   recognizer: season != null
                       ? null
                       : (TapGestureRecognizer()
@@ -105,8 +106,13 @@ class FolderTitleDialog extends StatelessWidget {
 }
 
 class VideoTitleDialog extends StatefulWidget {
-  const VideoTitleDialog({super.key, required this.v});
+  const VideoTitleDialog({
+    super.key,
+    required this.v,
+    required this.show,
+  });
   final Video v;
+  final Show show;
 
   @override
   State<VideoTitleDialog> createState() => _VideoTitleDialogState();
@@ -142,7 +148,32 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
   Widget build(BuildContext context) {
     return ContentDialog(
       constraints: const BoxConstraints(maxWidth: 500),
-      title: const Text('Video'),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text('Video'),
+          Tooltip(
+            message: 'Copy the generated mkvmerge command for this file.',
+            child: IconButton(
+              icon: const Icon(FluentIcons.text_document_settings),
+              onPressed: () async {
+                Clipboard.setData(ClipboardData(
+                    text: widget.v.command(widget.show).join(' ')));
+                displayInfoBar(context, builder: (context, close) {
+                  return InfoBar(
+                    title: const Text('Copied to clipboard!'),
+                    action: IconButton(
+                      icon: const Icon(FluentIcons.clear),
+                      onPressed: close,
+                    ),
+                    severity: InfoBarSeverity.info,
+                  );
+                });
+              },
+            ),
+          ),
+        ],
+      ),
       content: mt.Material(
         color: Colors.transparent,
         child: ListView(
@@ -155,9 +186,10 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                 children: [
                   TextSpan(
                     text: widget.v.mainFile.name.noBreakHyphen,
-                    style: FluentTheme.of(context).typography.body?.copyWith(
-                          color: Colors.blue,
-                        ),
+                    style:
+                        FluentTheme.of(context).typography.bodyStrong?.copyWith(
+                              color: Colors.blue,
+                            ),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () async {
                         await widget.v.mainFile.revealInExplorer();
@@ -411,7 +443,10 @@ class _TrackDialogState extends State<TrackDialog> {
                               .file
                               .name
                               .noBreakHyphen,
-                      style: FluentTheme.of(context).typography.body?.copyWith(
+                      style: FluentTheme.of(context)
+                          .typography
+                          .bodyStrong
+                          ?.copyWith(
                             color: embedded ? null : Colors.blue,
                           ),
                       recognizer: embedded

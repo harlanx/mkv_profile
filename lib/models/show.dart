@@ -1,3 +1,5 @@
+import 'package:path/path.dart' as path;
+
 import '../data/app_data.dart';
 import '../models/models.dart';
 import '../services/app_services.dart';
@@ -72,8 +74,21 @@ class Video extends TrackProperties {
   }
 
   /// Generates an mkvmerge command for the the video file
-  List<String> command(String output) {
+  List<String> command(Show show, [String? folder]) {
     var videoInfo = info.videoInfo.first;
+    String fileName = '$fileTitle.mkv';
+    String seasonName = '';
+    if (season != null) {
+      var seasonInfo =
+          (show as Series).seasons.singleWhere((s) => s.number == season);
+      seasonName = seasonInfo.folderTitle;
+    }
+    folder ??= path.join(show.directory.parent.path, show.title);
+    String output = path.join(
+      folder,
+      seasonName,
+      fileName,
+    );
     return [
       // Output File
       '--output',

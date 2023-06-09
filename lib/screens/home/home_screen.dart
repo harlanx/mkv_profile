@@ -388,7 +388,7 @@ class InfoPanel extends StatelessWidget {
   ) async {
     bool? updated = await showDialog(
       context: ctx,
-      builder: (context) => VideoTitleDialog(v: v),
+      builder: (context) => VideoTitleDialog(v: v, show: sn.show),
     );
     updated ??= false;
     if (updated) {

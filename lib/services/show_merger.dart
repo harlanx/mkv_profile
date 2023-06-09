@@ -156,9 +156,9 @@ class ShowMerger {
     }
 
     final String mkvmergeDir = AppData.appSettings.mkvMergePath;
-    var mainFolder = path.join(tn.show.directory.parent.path,
+    var folder = path.join(tn.show.directory.parent.path,
         tn.show.directory.parent.nameSafe(tn.show.title, '(d)', true));
-    result.outputPath = mainFolder;
+    result.outputPath = folder;
     List<Video> videos = [];
     if (tn.show is Movie) {
       videos.add((tn.show as Movie).video);
@@ -172,8 +172,9 @@ class ShowMerger {
     final completer = Completer<OutputInfo>();
 
     Map<String, double> batchPercents = {};
-    Future<void> processVideo(Video video, String output) async {
-      var process = await Process.start(mkvmergeDir, video.command(output));
+    Future<void> processVideo(Video video, String folder) async {
+      var process =
+          await Process.start(mkvmergeDir, video.command(tn.show, folder));
 
       // Verbose listener
       await for (String verbose in process.stdout.transform(utf8.decoder)) {
@@ -213,21 +214,7 @@ class ShowMerger {
       List<Future<void>> processingTasks = [];
       for (var v in batch) {
         if (hasError == true) break;
-        String fileName = '${v.fileTitle}.mkv';
-        String seasonName = '';
-        if (v.season != null) {
-          var season = (tn.show as Series)
-              .seasons
-              .singleWhere((s) => s.number == v.season);
-          seasonName = season.folderTitle;
-        }
-        String output = path.join(
-          mainFolder,
-          seasonName,
-          fileName,
-        );
-
-        processingTasks.add(processVideo(v, output));
+        processingTasks.add(processVideo(v, folder));
       }
 
       await Future.wait(processingTasks);
