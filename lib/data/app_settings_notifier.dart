@@ -131,7 +131,7 @@ class AppSettingsNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setThemeMode(ThemeMode themeMode) async {
+  Future<void> setThemeMode(ThemeMode themeMode) async {
     // reload system_theme
     // this is currently the only way to reload the system's accent color
     // there's no built in listener in flutter for system accent color yet
@@ -167,18 +167,20 @@ class AppSettingsNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setWindowEffect(BuildContext context, WindowsFluentEffect effect) {
+  Future<void> setWindowEffect(
+      BuildContext context, WindowsFluentEffect effect) async {
     windowEffect = effect;
-    Window.setEffect(
-        effect: windowEffect.value,
-        color: [
-          WindowEffect.solid,
-          WindowEffect.acrylic,
-        ].contains(effect.value)
-            ? FluentTheme.of(context).micaBackgroundColor.withOpacity(0.05)
-            : Colors.transparent,
-        dark: FluentTheme.of(context).brightness.isDark);
     notifyListeners();
+    await Window.setEffect(
+      effect: windowEffect.value,
+      color: [
+        WindowEffect.solid,
+        WindowEffect.acrylic,
+      ].contains(effect.value)
+          ? FluentTheme.of(context).micaBackgroundColor.withOpacity(0.05)
+          : Colors.transparent,
+      dark: FluentTheme.of(context).brightness.isDark,
+    );
   }
 
   Future<void> updateMediaInfoPath(String path) async {

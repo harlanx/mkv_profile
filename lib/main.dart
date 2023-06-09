@@ -79,15 +79,15 @@ class _MyAppState extends State<MyApp>
   }
 
   @override
-  void didChangePlatformBrightness() {
+  void didChangePlatformBrightness() async {
     // Update app theme when user changes dark or light mode in windows personalization settings
-    AppData.appSettings.setThemeMode(AppData.appSettings.themeMode);
+    await AppData.appSettings.setThemeMode(AppData.appSettings.themeMode);
 
     // Force update window effect since it won't match the thememode light
     // and dark mode colors if changed on runtime.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(milliseconds: 150), () {
-        AppData.appSettings.setWindowEffect(
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(milliseconds: 150), () async {
+        await AppData.appSettings.setWindowEffect(
             AppData.mainNavigatorKey.currentContext!,
             AppData.appSettings.windowEffect);
       });

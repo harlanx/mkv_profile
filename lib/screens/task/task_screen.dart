@@ -231,26 +231,27 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
   // Theme styling
   PlutoGridConfiguration _plutoConfig(
       BuildContext context, ThemeMode themeMode) {
+    final accent = context.read<AppSettingsNotifier>().accentColor;
     if (themeMode == ThemeMode.dark ||
         (themeMode == ThemeMode.system && SystemTheme.isDarkMode)) {
       return PlutoGridConfiguration.dark(
         style: PlutoGridStyleConfig.dark(
-          rowColor: FluentThemeData.dark().cardColor.withOpacity(0.1),
-          activatedColor: context.read<AppSettingsNotifier>().accentColor,
-          activatedBorderColor: FluentThemeData.dark().borderInputColor,
+          rowColor: FluentTheme.of(context).cardColor.withOpacity(0.1),
+          activatedColor: accent.dark.withOpacity(0.5),
+          activatedBorderColor: accent.light,
           gridBackgroundColor:
-              FluentThemeData.dark().micaBackgroundColor.withOpacity(0.15),
+              FluentTheme.of(context).micaBackgroundColor.withOpacity(0.15),
           gridBorderColor: Colors.transparent,
         ),
       );
     }
     return PlutoGridConfiguration(
       style: PlutoGridStyleConfig(
-        rowColor: FluentThemeData.light().cardColor.withOpacity(0.1),
-        activatedColor: context.read<AppSettingsNotifier>().accentColor,
-        activatedBorderColor: FluentThemeData.light().borderInputColor,
+        rowColor: FluentTheme.of(context).cardColor.withOpacity(0.1),
+        activatedColor: accent.light.withOpacity(0.5),
+        activatedBorderColor: accent.dark,
         gridBackgroundColor:
-            FluentThemeData.light().micaBackgroundColor.withOpacity(0.15),
+            FluentTheme.of(context).micaBackgroundColor.withOpacity(0.15),
         gridBorderColor: Colors.transparent,
       ),
     );

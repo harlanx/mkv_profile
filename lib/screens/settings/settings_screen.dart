@@ -258,12 +258,13 @@ class PersonalizationSection extends StatelessWidget {
                       child: RadioButton(
                         content: Text(e.name.titleCased),
                         checked: appSettings.themeMode == e,
-                        onChanged: (value) {
-                          appSettings.setThemeMode(e);
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            Future.delayed(const Duration(milliseconds: 150),
-                                () {
-                              appSettings.setWindowEffect(
+                        onChanged: (value) async {
+                          await appSettings.setThemeMode(e);
+                          WidgetsBinding.instance
+                              .addPostFrameCallback((_) async {
+                            await Future.delayed(
+                                const Duration(milliseconds: 150), () async {
+                              await appSettings.setWindowEffect(
                                   context, appSettings.windowEffect);
                             });
                           });
@@ -374,6 +375,7 @@ class PersonalizationSection extends StatelessWidget {
                           enableTonalPalette: false,
                           showColorCode: true,
                           showRecentColors: true,
+                          enableShadesSelection: false,
                           recentColors: [
                             for (var colorInt in AppData.defaultAccents) ...[
                               Color(colorInt),
