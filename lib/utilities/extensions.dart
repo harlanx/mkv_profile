@@ -91,8 +91,21 @@ extension StringExtension on String {
   }
 
   String removeLinesWith(String text) {
-    return replaceAll(RegExp('^.*$text.*\$', multiLine: true), '')
-        .removeBlankLines;
+    return replaceAll(
+      RegExp('(.*$text.*)', multiLine: true),
+      '',
+    ).removeBlankLines;
+  }
+
+  List<String> linesWith(String text) {
+    var lines = split('\n');
+    var matches = <String>[];
+    for (var line in lines) {
+      if (RegExp('(.*$text.*)').hasMatch(line)) {
+        matches.add(line);
+      }
+    }
+    return matches;
   }
 
   String get singleSpace {
@@ -220,7 +233,7 @@ extension DurationExtension on Duration {
 
   /// This is specific only for extracting the duration of the process
   /// from mkvmerge's final verbose line
-  static Duration fromString(String input) {
+  static Duration parseSingle(String input) {
     List<String> words = input.split(' ');
 
     int? hours;
@@ -229,13 +242,13 @@ extension DurationExtension on Duration {
     int? milliseconds;
 
     for (int i = 0; i < words.length; i++) {
-      if (words[i] == 'hours') {
+      if (words[i].contains('hour')) {
         hours = int.tryParse(words[i - 1]);
-      } else if (words[i] == 'minutes') {
+      } else if (words[i].contains('minute')) {
         minutes = int.tryParse(words[i - 1]);
-      } else if (words[i] == 'seconds') {
+      } else if (words[i].contains('second')) {
         seconds = int.tryParse(words[i - 1]);
-      } else if (words[i] == 'milliseconds') {
+      } else if (words[i].contains('millisecond')) {
         milliseconds = int.tryParse(words[i - 1]);
       }
     }
@@ -246,6 +259,14 @@ extension DurationExtension on Duration {
       seconds: seconds ?? 0,
       milliseconds: milliseconds ?? 0,
     );
+  }
+
+  static Duration parseMultiple(List<String> inputs) {
+    Duration result = Duration.zero;
+    for (var input in inputs) {
+      result += parseSingle(input);
+    }
+    return result;
   }
 }
 

@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:system_theme/system_theme.dart';
 
 import '../../data/app_data.dart';
-import '../../utilities/extensions.dart';
+import '../../utilities/utilities.dart';
 
 class OutputsScreen extends StatefulWidget {
   const OutputsScreen({super.key});
@@ -190,11 +190,19 @@ class OutputsScreenState extends State<OutputsScreen>
                 ),
               ),
               Flexible(
-                child: Text(
-                  output.path,
+                child: SelectableText.rich(
+                  TextSpan(
+                    text: output.path.noBreakHyphen,
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
+                        await Directory(output.path).revealInExplorer();
+                      },
+                  ),
                   maxLines: 1,
-                  softWrap: false,
-                  overflow: TextOverflow.fade,
+                  style:
+                      FluentTheme.of(context).typography.bodyStrong?.copyWith(
+                            color: Colors.blue,
+                          ),
                 ),
               ),
             ],
@@ -239,6 +247,24 @@ class OutputsScreenState extends State<OutputsScreen>
         },
       ),
       PlutoColumn(
+        title: 'Duration',
+        field: 'duration',
+        type: PlutoColumnType.number(),
+        readOnly: true,
+        enableRowDrag: false,
+        enableSorting: false,
+        enableColumnDrag: false,
+        enableEditingMode: false,
+        enableFilterMenuItem: false,
+        enableSetColumnsMenuItem: false,
+        enableHideColumnMenuItem: false,
+        renderer: (rendererContext) {
+          int id = rendererContext.cell.value;
+          var output = outputs.items[id]!;
+          return Text(output.duration.formatDuration());
+        },
+      ),
+      PlutoColumn(
         title: 'Status',
         field: 'status',
         type: PlutoColumnType.number(),
@@ -266,6 +292,7 @@ class OutputsScreenState extends State<OutputsScreen>
             'info': PlutoCell(value: e.key),
             'profile': PlutoCell(value: e.key),
             'date': PlutoCell(value: e.key),
+            'duration': PlutoCell(value: e.key),
             'status': PlutoCell(value: e.key),
           }),
         ),

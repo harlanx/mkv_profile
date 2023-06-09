@@ -120,8 +120,8 @@ class ShowMerger {
             profile: task.profile.name,
             info: resultModified,
             dateTime: DateTime.now(),
-            duration: DurationExtension.fromString(
-              resultModified.log.split('\n').last,
+            duration: DurationExtension.parseMultiple(
+              resultModified.log.linesWith('Multiplexing took'),
             ),
           ),
         ]);
