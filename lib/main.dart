@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 
 import 'package:provider/provider.dart';
@@ -41,6 +42,10 @@ void main() async {
     //   SystemTheme.isDarkMode ? Brightness.dark : Brightness.light,
     // );
   });
+  // Disables any printing in production.
+  if (kReleaseMode) {
+    debugPrint = (String? message, {int? wrapWidth}) {};
+  }
   runApp(const MyApp());
 }
 

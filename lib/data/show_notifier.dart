@@ -21,6 +21,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
 
   Future<void> loadInfo() async {
     return await _memoizer.runOnce(() async {
+      MetadataScanner.load();
       MetadataScanner.active = true;
       List<Video> videos =
           show is Movie ? [(show as Movie).video] : (show as Series).allVideos;
@@ -33,6 +34,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
           await addedSub.loadInfo();
         }
       }
+      MetadataScanner.unload();
       MetadataScanner.active = false;
     });
   }
