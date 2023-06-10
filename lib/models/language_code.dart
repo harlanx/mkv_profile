@@ -21,6 +21,18 @@ class LanguageCodes {
   LanguageCode get defaultCode =>
       _items.singleWhere((code) => code.name == 'Undetermined');
 
+  Future<LanguageCode> identify([String? isoCode, String? text]) async {
+    if (isoCode == null && text == null) {
+      return defaultCode;
+    }
+    LanguageCode result;
+    result = identifyByCode(isoCode);
+    if (result == defaultCode && text != null) {
+      result = await identifyByText(text);
+    }
+    return result;
+  }
+
   LanguageCode identifyByCode(String? isoCode) {
     LanguageCode? result;
     if (isoCode == null) {
@@ -34,7 +46,7 @@ class LanguageCodes {
   }
 
   // Still not sure whether allow user to change algorithm since they can manually change the wrong ones.
-  /// Identify the LanguageCode using various similarty algoritms
+  /// Identify the LanguageCode by text using various similarty algoritms
   /// 1 = Jaro-Wrinkler Distance;
   /// 2 = Levenshtein Distance;
   /// 3 = nGram Cosine Similarity
@@ -44,20 +56,16 @@ class LanguageCodes {
     text = text.replaceAll(clean, '');
     switch (algo) {
       case 1:
-        // For string similarity between short strings and where order of characters matter
-        // Longer process but has the most best result.
         return await _jaroWinklerMatch(text) ?? defaultCode;
       case 2:
-        // For string similarity between short strings and where order of characters doesn't matter
-        // Shorter process but has the least best result.
         return await _levenshteinMatch(text) ?? defaultCode;
       default:
-        // For string similarty between long strings and where order of characters matter
-        // Longer process but has the most best result for longer strings such as phrases and sentences.
         return await _bigramCosineSimilarityMatch(text) ?? defaultCode;
     }
   }
 
+  /// For string similarity between short strings and where order of characters matter
+  /// Longer process but has the most best result.
   Future<LanguageCode?> _jaroWinklerMatch(String input) async {
     LanguageCode? bestMatch;
     var highestScore = 0.0;
@@ -84,6 +92,8 @@ class LanguageCodes {
     return bestMatch;
   }
 
+  /// For string similarity between short strings and where order of characters doesn't matter
+  /// Shorter process but has the least best result.
   Future<LanguageCode?> _levenshteinMatch(String input) async {
     LanguageCode? closestMatch;
     var minDistance = double.infinity;
@@ -112,6 +122,8 @@ class LanguageCodes {
     return minDistance < double.infinity ? closestMatch : null;
   }
 
+  /// For string similarty between long strings and where order of characters matter
+  /// Longer process but has the most best result for longer strings such as phrases and sentences.
   Future<LanguageCode?> _bigramCosineSimilarityMatch(String input) async {
     LanguageCode? bestMatch;
     var highestScore = 0.0;
