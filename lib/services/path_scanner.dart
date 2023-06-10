@@ -52,9 +52,6 @@ class PathScanner {
     if (data.videos.isEmpty) {
       throw ('No videos were found. Please check the folder.');
     }
-    if (data.otherFiles.isEmpty) {
-      throw ('Videos detected but subtitle files were not found.');
-    }
   }
 }
 
