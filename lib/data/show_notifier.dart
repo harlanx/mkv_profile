@@ -39,7 +39,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
     });
   }
 
-  void _profilePreview() {
+  void profilePreview() {
     show.title = TitleScanner.show(this);
     if (show is Movie) {
       var movie = show as Movie;
@@ -210,7 +210,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
 
   void updateProfile(UserProfile profile) {
     this.profile = profile;
-    _profilePreview();
+    profilePreview();
     notifyListeners();
   }
 

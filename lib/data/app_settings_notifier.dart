@@ -200,7 +200,7 @@ class AppSettingsNotifier extends ChangeNotifier {
   /// See discussion here:
   /// https://github.com/MicrosoftDocs/windows-dev-docs/issues/1673
   ///
-  ///So we'll just have to rely on flex_color_scheme package and few modifications to slightly match it
+  /// So we'll just have to rely on flex_color_scheme package and few modifications to slightly match it
   AccentColor get accentColor {
     if (accentMode == AccentMode.system) {
       return AccentColor.swatch({
@@ -226,9 +226,9 @@ class AppSettingsNotifier extends ChangeNotifier {
     final tones = FlexCorePalette.fromSeeds(
       primary: colorScheme.primary.value,
     ).primary.asList;
-    final lighterHue = HSLColor.fromColor(customAccent).hue;
-    final bool modify = ((lighterHue >= 0 && lighterHue <= 60) ||
-        lighterHue >= 200 && lighterHue <= 360);
+    final accentHue = HSLColor.fromColor(customAccent).hue;
+    final bool modify = ((accentHue >= 0 && accentHue <= 60) ||
+        accentHue >= 200 && accentHue <= 360);
     final lighter = modify
         ? Color(tones[6]).saturate(1).lighten(12)
         : Color(tones[6]).lighten(30);

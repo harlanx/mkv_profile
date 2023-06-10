@@ -101,7 +101,7 @@ class Video extends TrackProperties {
         '${videoInfo.id}:${title!}',
       ],
       '--language',
-      '${videoInfo.id}:${videoInfo.language.iso6393}',
+      '${videoInfo.id}:${language.iso6392 ?? language.iso6393}',
       for (var flag in flags.values) ...[...flag.command(videoInfo.id)],
 
       // Remove non-included Embedded Audios
@@ -204,7 +204,7 @@ class EmbeddedTrack extends TrackProperties {
           '$id:$title',
         ],
         '--language',
-        '$id:${language.iso6393}',
+        '$id:${language.iso6392 ?? language.iso6393}',
         for (var flag in flags.values) ...[...flag.command(id)],
       ],
     ];
@@ -275,7 +275,7 @@ class AddedTrack extends TrackProperties {
           '0:$title',
         ],
         '--language',
-        '0:${language.iso6393}',
+        '0:${language.iso6392 ?? language.iso6393}',
         for (var flag in flags.values) ...[...flag.command(0)],
         file.path,
       ],

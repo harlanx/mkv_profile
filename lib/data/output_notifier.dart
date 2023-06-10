@@ -10,14 +10,11 @@ class OutputNotifier extends ChangeNotifier {
   Set<int> get selected => _selected;
 
   void load() {
-    List<String> rawOutputList =
-        SharedPrefs.getStringList('OutputNotifier') ?? [];
-    Map<int, OutputBasic> imported = {};
-    for (var rawOutput in rawOutputList) {
-      var output = OutputBasic.fromJson(rawOutput);
-      imported.addAll({output.dateTime.millisecondsSinceEpoch: output});
+    List<String> jsonList = SharedPrefs.getStringList('OutputNotifier') ?? [];
+    for (var json in jsonList) {
+      var output = OutputBasic.fromJson(json);
+      _items.addAll({output.dateTime.millisecondsSinceEpoch: output});
     }
-    _items.addAll(imported);
   }
 
   Future<void> save() async {

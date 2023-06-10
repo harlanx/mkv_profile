@@ -21,8 +21,8 @@ class OutputInfo {
   String outputPath;
   String log;
 
-  factory OutputInfo.fromJson(String source) {
-    Map<String, dynamic> json = jsonDecode(source);
+  factory OutputInfo.fromJson(String str) {
+    Map<String, dynamic> json = jsonDecode(str);
     return OutputInfo(
       taskStatus: TaskStatus.fromJson(json['taskStatus']),
       outputPath: json['outputPath'],
@@ -70,10 +70,8 @@ class OutputBasic {
   final DateTime dateTime;
   final Duration duration;
 
-  factory OutputBasic.fromJson(String source) =>
-      OutputBasic.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  factory OutputBasic.fromMap(Map<String, dynamic> json) {
+  factory OutputBasic.fromJson(String str) {
+    Map<String, dynamic> json = jsonDecode(str);
     return OutputBasic(
       title: json['title'],
       path: json['path'],

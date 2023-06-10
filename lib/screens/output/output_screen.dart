@@ -288,13 +288,16 @@ class OutputsScreenState extends State<OutputsScreen>
     _manager.appendRows(
       List.from(
         outputs.items.entries.map(
-          (e) => PlutoRow(cells: {
-            'info': PlutoCell(value: e.key),
-            'profile': PlutoCell(value: e.key),
-            'date': PlutoCell(value: e.key),
-            'duration': PlutoCell(value: e.key),
-            'status': PlutoCell(value: e.key),
-          }),
+          (e) => PlutoRow(
+            checked: outputs.selected.contains(e.key),
+            cells: {
+              'info': PlutoCell(value: e.key),
+              'profile': PlutoCell(value: e.key),
+              'date': PlutoCell(value: e.key),
+              'duration': PlutoCell(value: e.key),
+              'status': PlutoCell(value: e.key),
+            },
+          ),
         ),
       ),
     );

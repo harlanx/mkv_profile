@@ -85,8 +85,10 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         r'h.\d{3}|h\d{3}', //'h.264', //'h.265', 'h264', 'h265',
         r'[\d]+bit', //'10bit', '8bit',
         r'Part\.\d|Part\s\d', //'Part.1', 'Part.2', 'Part 1','Part 2',
-        r'DDP\d+.\d+', // 'DDP2.0', 'DDP5.1', Dolby Digital Plus
+        r'DD\d+.\d+|DDP\d+.\d+', // 'DDP2.0', 'DDP5.1', Dolby Digital (Plus)
         r'TrueHD.\d+.\d+', // 'TrueHD.7.1', 'TrueHD.5.1', Atmos
+        r'\[(.*?)\]', // [Anything with square brackets]
+        r'\d+(?:\.\d+)?MB|\d+(?:\.\d+)?GB', // 200MB, 150.20MB, 2GB, 2.5GB
         'Web-Dl',
         'WEBRip',
         'BluRay',
@@ -107,6 +109,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         'YIFY',
         'ION265',
         'ION10',
+        'GalaxyRG',
       ],
       replacement: '',
     ),

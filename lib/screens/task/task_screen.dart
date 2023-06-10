@@ -62,23 +62,22 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
                 overflowItemAlignment: MainAxisAlignment.end,
                 primaryItems: [
                   CommandBarButton(
-                    icon: const Icon(FluentIcons.combine),
-                    label: const Text('Start Tasks'),
-                    onPressed: _enableButtons
-                        ? null
-                        : () {
-                            ShowMerger.start(tasks);
-                          },
-                  ),
+                      icon: const Icon(FluentIcons.combine),
+                      label: const Text('Start Tasks'),
+                      onPressed: _enableButtons
+                          ? () {
+                              ShowMerger.start(tasks);
+                            }
+                          : null),
                   CommandBarButton(
                     icon: const Icon(FluentIcons.delete),
                     label: const Text('Remove'),
                     onPressed: _enableButtons
-                        ? null
-                        : () {
+                        ? () {
                             tasks.remove(_selectedIds);
                             _manager.removeRows(_manager.checkedRows);
-                          },
+                          }
+                        : null,
                   ),
                   if (tasks.active)
                     CommandBarButton(
@@ -210,11 +209,15 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
     _manager.appendRows(
       List.from(
         tasks.items.entries.map(
-          (e) => PlutoRow(cells: {
-            'show': PlutoCell(value: e.key),
-            'profile': PlutoCell(value: e.key),
-            'progress': PlutoCell(value: e.key)
-          }),
+          (e) => PlutoRow(
+            // For when user come back from the page and restore selected states.
+            checked: tasks.selected.contains(e.key),
+            cells: {
+              'show': PlutoCell(value: e.key),
+              'profile': PlutoCell(value: e.key),
+              'progress': PlutoCell(value: e.key)
+            },
+          ),
         ),
       ),
     );
@@ -222,9 +225,9 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
 
   bool get _enableButtons {
     if (tasks.selected.isEmpty || tasks.active) {
-      return true;
-    } else {
       return false;
+    } else {
+      return true;
     }
   }
 

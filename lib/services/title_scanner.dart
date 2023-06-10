@@ -2,8 +2,8 @@ import '../models/models.dart';
 import '../utilities/utilities.dart';
 
 class TitleScanner {
-  /// Get source title to be used while considering user preference.
-  /// Thid is only for the show title
+  /// Get source title to be used considering user preference.
+  /// This is only for the show title
   static String _sourceTitle(Show show, UserProfile profile) {
     String fileTitle;
     if (show is Movie) {
@@ -151,17 +151,17 @@ class TitleScanner {
     Map<String, String> formats = {};
 
     if (subtitleTrack is EmbeddedTrack) {
-      // final subtitleInfo = subtitleTrack.info as TextInfo;
-      // formats['%language%'] = subtitleTrack.language.cleanName;
-      // formats['%format%'] = subtitleInfo.format;
+      final subtitleInfo = subtitleTrack.info as TextInfo;
+      formats['%language%'] = subtitleTrack.language.cleanName;
+      formats['%format%'] = subtitleInfo.format;
       for (var subtitleFlag in subtitleTrack.flags.entries) {
         formats['%${subtitleFlag.key}%'] = subtitleFlag.value.titleVar;
       }
     } else {
       subtitleTrack as AddedTrack;
-      // final subtitleInfo = subtitleTrack.info as TextInfo;
-      // formats['%language%'] = subtitleTrack.language.cleanName;
-      // formats['%format%'] = subtitleInfo.format;
+      final subtitleInfo = subtitleTrack.info as TextInfo;
+      formats['%language%'] = subtitleTrack.language.cleanName;
+      formats['%format%'] = subtitleInfo.format;
       for (var subtitleFlag in subtitleTrack.flags.entries) {
         formats['%${subtitleFlag.key}%'] = subtitleFlag.value.titleVar;
       }

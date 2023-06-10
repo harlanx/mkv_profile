@@ -23,7 +23,6 @@ class ProfilePage extends StatelessWidget {
       editProfile = sourceProfile.copyWith(name: 'My New Profile');
     } else {
       // This is for editing existing profiles.
-      // Pass profile by reference.
       editProfile = sourceProfile.copyWith();
     }
   }
