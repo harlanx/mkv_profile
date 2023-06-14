@@ -408,7 +408,7 @@ class InfoPanel extends StatelessWidget {
     );
     updated ??= false;
     if (updated) {
-      sn.profilePreview();
+      sn.sortTracks();
       sn.refresh();
     }
   }

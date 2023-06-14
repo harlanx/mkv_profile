@@ -39,7 +39,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
     });
   }
 
-  void profilePreview() {
+  void _previewProfile() {
     show.title = TitleScanner.show(this);
     if (show is Movie) {
       var movie = show as Movie;
@@ -56,8 +56,8 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
   }
 
   void _previewTracks(Video v) {
-    _assignDefaultFlag([...v.embeddedAudios, ...v.addedAudios]);
-    _assignDefaultFlag([...v.embeddedSubtitles, ...v.addedSubtitles]);
+    _assignDefault([...v.embeddedAudios, ...v.addedAudios]);
+    _assignDefault([...v.embeddedSubtitles, ...v.addedSubtitles]);
     sortTracks();
     for (var a in [...v.embeddedAudios, ...v.addedAudios]) {
       a.title = TitleScanner.audio(a, profile);
@@ -67,61 +67,29 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
     }
   }
 
-  /// Assigning the default flag based on flag order specified.
-  void _assignDefaultFlag(List<TrackProperties> tracks) {
+  void _assignDefault(List<TrackProperties> tracks) {
     for (var track in tracks) {
       if (profile.languages.contains(track.language.iso6393)) {
         track.include = true;
-        bool isSet = false;
         var orderableFlags =
             track.flags.values.where((e) => e.name != 'default').toList();
-        if (profile.defaultLanguage.isNotEmpty) {
-          if (track.language.iso6393 == profile.defaultLanguage) {
-            for (String flag in profile.defaultFlagOrder) {
-              if (flag == 'default') {
-                if (orderableFlags.every((element) => element.value == false) &&
-                    !isSet) {
-                  track.flags['default']!.value = true;
-                  isSet = true;
-                } else if (!isSet) {
-                  track.flags['default']!.value = false;
-                  isSet = true;
-                }
+
+        if (track.language.iso6393 == profile.defaultLanguage) {
+          for (String flagOrder in profile.defaultFlagOrder) {
+            if (flagOrder == 'default' &&
+                orderableFlags.every((flag) => flag.value == false)) {
+              track.flags['default']!.value = true;
+            } else {
+              if (track.flags[flagOrder]!.value) {
+                track.flags['default']!.value = true;
               } else {
-                if (track.flags[flag]!.value && !isSet) {
-                  track.flags['default']!.value = true;
-                  isSet = true;
-                } else if (!isSet) {
-                  track.flags['default']!.value = false;
-                  isSet = true;
-                }
+                track.flags['default']!.value = false;
               }
             }
-          } else if (!isSet) {
-            track.flags['default']!.value = false;
-            isSet = true;
+            break;
           }
         } else {
-          for (String flag in profile.defaultFlagOrder) {
-            if (flag == 'default') {
-              if (orderableFlags.every((element) => element.value == false) &&
-                  !isSet) {
-                track.flags['default']!.value = true;
-                isSet = true;
-              } else if (!isSet) {
-                track.flags['default']!.value = false;
-                isSet = true;
-              }
-            } else {
-              if (track.flags[flag]!.value && !isSet) {
-                track.flags['default']!.value = true;
-                isSet = true;
-              } else if (!isSet) {
-                track.flags['default']!.value = false;
-                isSet = true;
-              }
-            }
-          }
+          track.flags['default']!.value = false;
         }
       } else {
         track.include = false;
@@ -159,12 +127,10 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
     if (a.include == b.include) {
       if (a.language.cleanName == b.language.cleanName) {
         for (int i = 0; i < flags.length; i++) {
-          if (a.flagByIndex(i).value != b.flagByIndex(i).value) {
-            if (a.flagByIndex(i).value) {
-              return -1;
-            } else {
-              return 1;
-            }
+          var aValue = a.flagByIndex(i).value;
+          var bValue = b.flagByIndex(i).value;
+          if (aValue != bValue) {
+            return aValue ? -1 : 1;
           }
         }
       } else {
@@ -176,8 +142,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
       return 1;
     }
 
-    var indexOf = flags.values.map((e) => e.value).toList().indexOf(true);
-    return indexOf.compareTo(indexOf);
+    return 0;
   }
 
   /// This sort method will consider other flags.
@@ -210,7 +175,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
 
   void updateProfile(UserProfile profile) {
     this.profile = profile;
-    profilePreview();
+    _previewProfile();
     notifyListeners();
   }
 
