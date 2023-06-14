@@ -408,6 +408,8 @@ class ProfilePage extends StatelessWidget {
                                       key: const Key('Search Languages'),
                                       trailingIcon:
                                           const Icon(FluentIcons.search),
+                                      sorter: (text, items) =>
+                                          Utilities.searchSorter(text, items),
                                       onSelected: (selected) {
                                         if (selected.value != null) {
                                           profile.updateLanguages(

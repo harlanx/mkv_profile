@@ -33,7 +33,7 @@ class LanguageCodes {
     return result;
   }
 
-  LanguageCode identifyByCode(String? isoCode) {
+  LanguageCode identifyByCode(String? isoCode, [String? isoCodeExtra]) {
     LanguageCode? result;
     if (isoCode == null) {
       return defaultCode;
@@ -41,6 +41,9 @@ class LanguageCodes {
     result ??= _items.firstWhereOrNull((code) => code.iso6393 == isoCode);
     result ??= _items.firstWhereOrNull((code) => code.iso6392 == isoCode);
     result ??= _items.firstWhereOrNull((code) => code.iso6391 == isoCode);
+    result ??= _items.firstWhereOrNull((code) => code.iso6393 == isoCodeExtra);
+    result ??= _items.firstWhereOrNull((code) => code.iso6392 == isoCodeExtra);
+    result ??= _items.firstWhereOrNull((code) => code.iso6391 == isoCodeExtra);
     result ??= defaultCode;
     return result;
   }
@@ -52,33 +55,29 @@ class LanguageCodes {
   /// 3 = nGram Cosine Similarity
   Future<LanguageCode> identifyByText(String text, {int algo = 1}) async {
     // Only retains letters
-    var clean = RegExp(r'[^A-Za-z]+');
-    text = text.replaceAll(clean, '');
+    text = text.replaceAll(RegExp(r'[^A-Za-z]+'), '');
     switch (algo) {
       case 1:
-        return await _jaroWinklerMatch(text) ?? defaultCode;
-      case 2:
         return await _levenshteinMatch(text) ?? defaultCode;
+      case 2:
+        return await _jaroWinklerMatch(text) ?? defaultCode;
       default:
-        return await _bigramCosineSimilarityMatch(text) ?? defaultCode;
+        return await _bigramCosineMatch(text) ?? defaultCode;
     }
   }
 
-  /// For string similarity between short strings and where order of characters matter
-  /// Longer process but has the most best result.
   Future<LanguageCode?> _jaroWinklerMatch(String input) async {
     LanguageCode? bestMatch;
     var highestScore = 0.0;
     for (var code in _items) {
-      var nameScore = await Similarity.jaroWinklerDistance(
+      var nameScore = await Similarity.jaroWinkler(
           input, code.cleanName.replaceAll(RegExp(r'\s?\([^)]*\)'), '').trim());
-      var iso6393Score =
-          await Similarity.jaroWinklerDistance(input, code.iso6393);
+      var iso6393Score = await Similarity.jaroWinkler(input, code.iso6393);
       var iso6392Score = code.iso6392 != null
-          ? await Similarity.jaroWinklerDistance(input, code.iso6392!)
+          ? await Similarity.jaroWinkler(input, code.iso6392!)
           : 0.0;
       var iso6391Score = code.iso6391 != null
-          ? await Similarity.jaroWinklerDistance(input, code.iso6391!)
+          ? await Similarity.jaroWinkler(input, code.iso6391!)
           : 0.0;
 
       var score = (nameScore + iso6393Score + iso6392Score + iso6391Score) / 4;
@@ -92,21 +91,18 @@ class LanguageCodes {
     return bestMatch;
   }
 
-  /// For string similarity between short strings and where order of characters doesn't matter
-  /// Shorter process but has the least best result.
   Future<LanguageCode?> _levenshteinMatch(String input) async {
     LanguageCode? closestMatch;
     var minDistance = double.infinity;
     for (var code in _items) {
-      var nameDistance = await Similarity.levenshteinDistance(
+      var nameDistance = await Similarity.levenshtein(
           input, code.cleanName.replaceAll(RegExp(r'\s?\([^)]*\)'), '').trim());
-      var iso6393Distance =
-          await Similarity.levenshteinDistance(input, code.iso6393);
+      var iso6393Distance = await Similarity.levenshtein(input, code.iso6393);
       var iso6392Distance = code.iso6392 != null
-          ? await Similarity.levenshteinDistance(input, code.iso6392!)
+          ? await Similarity.levenshtein(input, code.iso6392!)
           : double.infinity;
       var iso6391Distance = code.iso6391 != null
-          ? await Similarity.levenshteinDistance(input, code.iso6391!)
+          ? await Similarity.levenshtein(input, code.iso6391!)
           : double.infinity;
       var distance = [
         nameDistance,
@@ -122,24 +118,21 @@ class LanguageCodes {
     return minDistance < double.infinity ? closestMatch : null;
   }
 
-  /// For string similarty between long strings and where order of characters matter
-  /// Longer process but has the most best result for longer strings such as phrases and sentences.
-  Future<LanguageCode?> _bigramCosineSimilarityMatch(String input) async {
+  Future<LanguageCode?> _bigramCosineMatch(String input) async {
     LanguageCode? bestMatch;
     var highestScore = 0.0;
 
     for (var code in _items) {
-      var nameScore = await Similarity.nGramCosineSimilarity(
+      var nameScore = await Similarity.nGramCosine(
         input,
         code.cleanName.replaceAll(RegExp(r'\s?\([^)]*\)'), '').trim(),
       );
-      var iso6393Score =
-          await Similarity.nGramCosineSimilarity(input, code.iso6393);
+      var iso6393Score = await Similarity.nGramCosine(input, code.iso6393);
       var iso6392Score = code.iso6392 != null
-          ? await Similarity.nGramCosineSimilarity(input, code.iso6392!)
+          ? await Similarity.nGramCosine(input, code.iso6392!)
           : 0.0;
       var iso6391Score = code.iso6391 != null
-          ? await Similarity.nGramCosineSimilarity(input, code.iso6391!)
+          ? await Similarity.nGramCosine(input, code.iso6391!)
           : 0.0;
 
       var score = (nameScore + iso6393Score + iso6392Score + iso6391Score) / 4;

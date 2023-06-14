@@ -133,6 +133,7 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
   };
   late final removeChapters = ValueNotifier(widget.v.removeChapters);
   late final removeAttachments = ValueNotifier(widget.v.removeAttachments);
+  late final extraCtrl = TextEditingController(text: widget.v.extraOptions);
 
   @override
   void initState() {
@@ -199,62 +200,69 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
               ),
               style: FluentTheme.of(context).typography.bodyStrong,
             ),
-            Text(
-              'Output File Title:',
-              style: FluentTheme.of(context).typography.bodyStrong,
-            ),
-            Form(
-              key: _formKey,
-              child: TextFormBox(
-                controller: fileTitleCtrl,
-                style: FluentTheme.of(context).typography.body,
-                maxLines: 1,
-                inputFormatters: [
-                  FilteringTextInputFormatter.singleLineFormatter,
-                ],
-                validator: (value) {
-                  if (value != null) {
-                    if (value.isEmpty) {
-                      return 'File name cannot be empty';
+            InfoLabel(
+              label: 'Output File Title:',
+              labelStyle: FluentTheme.of(context).typography.bodyStrong,
+              child: Form(
+                key: _formKey,
+                child: TextFormBox(
+                  controller: fileTitleCtrl,
+                  style: FluentTheme.of(context).typography.body,
+                  maxLines: 1,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.singleLineFormatter,
+                  ],
+                  validator: (value) {
+                    if (value != null) {
+                      if (value.isEmpty) {
+                        return 'File name cannot be empty';
+                      }
+                      if (!value.isValidFileName) {
+                        return 'File name contains invalid characters';
+                      }
                     }
-                    if (!value.isValidFileName) {
-                      return 'File name contains invalid characters';
-                    }
-                  }
-                  return null;
-                },
+                    return null;
+                  },
+                ),
               ),
             ),
-            Text(
-              'Track Title:',
-              style: FluentTheme.of(context).typography.bodyStrong,
+            InfoLabel(
+              label: 'Track Title:',
+              labelStyle: FluentTheme.of(context).typography.bodyStrong,
+              child: TextBox(controller: trackTitleCtrl),
             ),
-            TextBox(controller: trackTitleCtrl),
-            Text(
-              'Language:',
-              style: FluentTheme.of(context).typography.bodyStrong,
-            ),
-            AutoSuggestBox<LanguageCode>(
-              controller: languageCtrl,
-              onSelected: (selected) {
-                if (selected.value != null) {
-                  language = selected.value!;
-                }
-              },
-              focusNode: languageNode,
-              items: List.from(
-                AppData.languageCodes.items.map(
-                  (code) => AutoSuggestBoxItem<LanguageCode>(
-                    value: code,
-                    label: code.cleanName,
-                    child: Text(
-                      code.cleanName,
-                      softWrap: false,
-                      overflow: TextOverflow.fade,
+            InfoLabel(
+              label: 'Language:',
+              labelStyle: FluentTheme.of(context).typography.bodyStrong,
+              child: AutoSuggestBox<LanguageCode>(
+                controller: languageCtrl,
+                focusNode: languageNode,
+                sorter: (text, items) => Utilities.searchSorter(text, items),
+                onSelected: (selected) {
+                  if (selected.value != null) {
+                    language = selected.value!;
+                  }
+                },
+                items: List.from(
+                  AppData.languageCodes.items.map(
+                    (code) => AutoSuggestBoxItem<LanguageCode>(
+                      value: code,
+                      label: code.cleanName,
+                      child: Text(
+                        code.cleanName,
+                        softWrap: false,
+                        overflow: TextOverflow.fade,
+                      ),
                     ),
                   ),
                 ),
               ),
+            ),
+            const SizedBox(height: 10),
+            InfoLabel(
+              label: 'Extra Options: Use variable %id% for track id',
+              labelStyle: FluentTheme.of(context).typography.bodyStrong,
+              child: TextBox(controller: extraCtrl),
             ),
             const SizedBox(height: 10),
             Wrap(
@@ -362,6 +370,7 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                 title: trackTitleCtrl.text,
                 language: language,
                 include: include.value,
+                extraOptions: extraCtrl.text,
               );
               widget.v.removeChapters = removeChapters.value;
               widget.v.removeAttachments = removeAttachments.value;
@@ -400,6 +409,7 @@ class _TrackDialogState extends State<TrackDialog> {
   late final Map<Flag, ValueNotifier<bool>> flagNotifiers = {
     for (var flag in widget.track.flags.values) flag: ValueNotifier(flag.value)
   };
+  late final extraCtrl = TextEditingController(text: widget.track.extraOptions);
 
   @override
   void initState() {
@@ -462,36 +472,43 @@ class _TrackDialogState extends State<TrackDialog> {
                 ),
                 style: FluentTheme.of(context).typography.bodyStrong,
               ),
-              Text(
-                'Track Title:',
-                style: FluentTheme.of(context).typography.bodyStrong,
+              InfoLabel(
+                label: 'Track Title:',
+                labelStyle: FluentTheme.of(context).typography.bodyStrong,
+                child: TextBox(controller: titleCtrl),
               ),
-              TextBox(controller: titleCtrl),
-              Text(
-                'Language:',
-                style: FluentTheme.of(context).typography.bodyStrong,
-              ),
-              AutoSuggestBox<LanguageCode>(
-                controller: languageCtrl,
-                focusNode: languageNode,
-                onSelected: (selected) {
-                  if (selected.value != null) {
-                    language = selected.value!;
-                  }
-                },
-                items: List.from(
-                  AppData.languageCodes.items.map(
-                    (code) => AutoSuggestBoxItem<LanguageCode>(
-                      value: code,
-                      label: code.fullCleanName,
-                      child: Text(
-                        code.fullCleanName,
-                        softWrap: false,
-                        overflow: TextOverflow.fade,
+              InfoLabel(
+                label: 'Language:',
+                labelStyle: FluentTheme.of(context).typography.bodyStrong,
+                child: AutoSuggestBox<LanguageCode>(
+                  controller: languageCtrl,
+                  focusNode: languageNode,
+                  sorter: (text, items) => Utilities.searchSorter(text, items),
+                  onSelected: (selected) {
+                    if (selected.value != null) {
+                      language = selected.value!;
+                    }
+                  },
+                  items: List.from(
+                    AppData.languageCodes.items.map(
+                      (code) => AutoSuggestBoxItem<LanguageCode>(
+                        value: code,
+                        label: code.fullCleanName,
+                        child: Text(
+                          code.fullCleanName,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                        ),
                       ),
                     ),
                   ),
                 ),
+              ),
+              const SizedBox(height: 10),
+              InfoLabel(
+                label: 'Extra Options: Use variable %id% for track id',
+                labelStyle: FluentTheme.of(context).typography.bodyStrong,
+                child: TextBox(controller: extraCtrl),
               ),
               const SizedBox(height: 10),
               Wrap(
@@ -563,6 +580,7 @@ class _TrackDialogState extends State<TrackDialog> {
               title: titleCtrl.text,
               language: language,
               include: include.value,
+              extraOptions: extraCtrl.text,
             );
             Navigator.pop(context, true);
           },

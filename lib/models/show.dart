@@ -14,6 +14,38 @@ abstract class Show {
   final Directory directory;
 }
 
+class Movie extends Show {
+  Movie({
+    required Directory directory,
+    required this.video,
+  }) : super(directory: directory);
+
+  final Video video;
+}
+
+class Series extends Show {
+  Series({
+    required Directory directory,
+    required this.seasons,
+  }) : super(directory: directory);
+
+  final List<Season> seasons;
+
+  List<Video> get allVideos =>
+      seasons.fold([], (all, season) => all..addAll(season.videos));
+}
+
+class Season {
+  Season({
+    required this.number,
+    required this.videos,
+  }) : folderTitle = 'Season ${number.toString().padLeft(2, '0')}';
+
+  final int number;
+  String folderTitle;
+  final List<Video> videos;
+}
+
 class Video extends TrackProperties {
   Video({
     required this.mainFile,
@@ -96,18 +128,22 @@ class Video extends TrackProperties {
       // Video
       if ((title ?? '').isNotEmpty) ...[
         '--title',
-        title!,
+        '"$title"',
         '--track-name',
-        '${videoInfo.id}:${title!}',
+        '${videoInfo.id}:"$title"',
       ],
       '--language',
       '${videoInfo.id}:${language.iso6392 ?? language.iso6393}',
       for (var flag in flags.values) ...[...flag.command(videoInfo.id)],
 
+      if ((extraOptions ?? '').isNotEmpty) ...[
+        extraOptions!.replaceAll('%id%', videoInfo.id.toString()),
+      ],
+
       // Remove non-included Embedded Audios
       if (embeddedAudios.any((ea) => !ea.include)) ...[
         '--audio-tracks',
-        '!${List<String>.from(embeddedAudios.where((ea) => !ea.include).map((e) => e.id)).join(',')}',
+        '!${List<String>.from(embeddedAudios.where((ea) => !ea.include).map((e) => e.id.toString())).join(',')}',
       ],
       // Embedded Audios
       for (var embedAudio in embeddedAudios) ...[...embedAudio.command],
@@ -115,7 +151,7 @@ class Video extends TrackProperties {
       // Remove non-included Embedded Subtitles
       if (embeddedSubtitles.any((es) => !es.include)) ...[
         '--subtitle-tracks',
-        '!${List<String>.from(embeddedSubtitles.where((es) => !es.include).map((e) => e.id)).join(',')}',
+        '!${List<String>.from(embeddedSubtitles.where((es) => !es.include).map((e) => e.id.toString())).join(',')}',
       ],
       // Embedded Subtitles
       for (var embedSub in embeddedSubtitles) ...[...embedSub.command],
@@ -151,38 +187,6 @@ class Video extends TrackProperties {
   }
 }
 
-class Movie extends Show {
-  Movie({
-    required Directory directory,
-    required this.video,
-  }) : super(directory: directory);
-
-  final Video video;
-}
-
-class Series extends Show {
-  Series({
-    required Directory directory,
-    required this.seasons,
-  }) : super(directory: directory);
-
-  final List<Season> seasons;
-
-  List<Video> get allVideos =>
-      seasons.fold([], (all, season) => all..addAll(season.videos));
-}
-
-class Season {
-  Season({
-    required this.number,
-    required this.videos,
-  }) : folderTitle = 'Season ${number.toString().padLeft(2, '0')}';
-
-  final int number;
-  String folderTitle;
-  final List<Video> videos;
-}
-
 class EmbeddedTrack extends TrackProperties {
   EmbeddedTrack({
     required this.id,
@@ -201,11 +205,14 @@ class EmbeddedTrack extends TrackProperties {
       if (include) ...[
         if ((title ?? '').isNotEmpty) ...[
           '--track-name',
-          '$id:$title',
+          '$id:"$title"',
         ],
         '--language',
         '$id:${language.iso6392 ?? language.iso6393}',
         for (var flag in flags.values) ...[...flag.command(id)],
+        if ((extraOptions ?? '').isNotEmpty) ...[
+          extraOptions!.replaceAll('%id%', id.toString()),
+        ],
       ],
     ];
   }
@@ -272,11 +279,14 @@ class AddedTrack extends TrackProperties {
       if (include) ...[
         if ((title ?? '').isNotEmpty) ...[
           '--track-name',
-          '0:$title',
+          '0:"$title"',
         ],
         '--language',
         '0:${language.iso6392 ?? language.iso6393}',
         for (var flag in flags.values) ...[...flag.command(0)],
+        if ((extraOptions ?? '').isNotEmpty) ...[
+          extraOptions!.replaceAll('%id%', '0'),
+        ],
         file.path,
       ],
     ];

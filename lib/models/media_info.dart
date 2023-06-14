@@ -105,8 +105,8 @@ class VideoInfo extends TrackProperties {
       encoding: json["Encoded_Library_Name"],
       title: json["Title"],
     )
-      ..language =
-          AppData.languageCodes.identifyByCode(json["Language_String3"])
+      ..language = AppData.languageCodes
+          .identifyByCode(json["Language_String3"], json["Language"])
       ..update(
         isDefault: mkvVideoInfo?.defaultFlag ?? false,
         isOriginal: mkvVideoInfo?.originalFlag ?? false,
@@ -154,8 +154,8 @@ class AudioInfo extends TrackProperties {
       samplingRate: int.parse(json["SamplingRate"]),
       title: json["Title"],
     )
-      ..language =
-          AppData.languageCodes.identifyByCode(json["Language_String3"])
+      ..language = AppData.languageCodes
+          .identifyByCode(json["Language_String3"], json["Language"])
       ..update(
         isDefault: mkvAudioInfo?.defaultFlag ?? false,
         isOriginal: mkvAudioInfo?.originalFlag ?? false,
@@ -190,8 +190,8 @@ class TextInfo extends TrackProperties {
       format: json["Format"],
       title: json["Title"],
     )
-      ..language =
-          AppData.languageCodes.identifyByCode(json["Language_String3"])
+      ..language = AppData.languageCodes
+          .identifyByCode(json["Language_String3"], json["Language"])
       ..update(
         isDefault: mkvTextInfo?.defaultFlag ?? false,
         isOriginal: mkvTextInfo?.originalFlag ?? false,

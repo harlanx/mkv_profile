@@ -10,6 +10,7 @@ abstract class TrackProperties {
   String? title;
   late LanguageCode language;
   bool include;
+  String? extraOptions;
   Map<String, Flag> flags = {
     'default': Flag(
       name: 'Default',
@@ -109,6 +110,7 @@ abstract class TrackProperties {
     LanguageCode? language,
     bool? include,
     Map<String, Flag>? flags,
+    String? extraOptions,
     bool? isDefault,
     bool? isOriginal,
     bool? isForced,
@@ -121,6 +123,7 @@ abstract class TrackProperties {
     this.language = language ?? this.language;
     this.include = include ?? this.include;
     this.flags = flags ?? this.flags;
+    this.extraOptions = extraOptions ?? this.extraOptions;
     this.flags['default']!.value = isDefault ?? this.flags['default']!.value;
     this.flags['original_language']!.value =
         isOriginal ?? this.flags['original_language']!.value;
