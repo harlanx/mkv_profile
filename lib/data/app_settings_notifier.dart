@@ -200,7 +200,8 @@ class AppSettingsNotifier extends ChangeNotifier {
   /// See discussion here:
   /// https://github.com/MicrosoftDocs/windows-dev-docs/issues/1673
   ///
-  /// So we'll just have to rely on flex_color_scheme package and few modifications to slightly match it
+  /// So when set to custom, we'll just have to rely on flex_color_scheme package
+  /// and few modifications to approximately match it.
   AccentColor get accentColor {
     if (accentMode == AccentMode.system) {
       return AccentColor.swatch({
@@ -258,6 +259,35 @@ class AppSettingsNotifier extends ChangeNotifier {
           showDuration: Duration.zero,
           waitDuration: Duration.zero,
         ),
+        infoBarTheme: InfoBarThemeData(
+          decoration: (severity) {
+            late Color color;
+            final theme = FluentThemeData.light();
+            switch (severity) {
+              case InfoBarSeverity.info:
+                // Microsoft UI's InfoBar info background has transparency.
+                // Override to menu color.
+                color = theme.menuColor;
+                break;
+              case InfoBarSeverity.warning:
+                color = theme.resources.systemFillColorCautionBackground;
+                break;
+              case InfoBarSeverity.success:
+                color = theme.resources.systemFillColorSuccessBackground;
+                break;
+              case InfoBarSeverity.error:
+                color = theme.resources.systemFillColorCriticalBackground;
+                break;
+            }
+            return BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(4.0),
+              border: Border.all(
+                color: theme.resources.cardStrokeColorDefault,
+              ),
+            );
+          },
+        ),
       );
 
   FluentThemeData get darkTheme => FluentThemeData(
@@ -274,6 +304,35 @@ class AppSettingsNotifier extends ChangeNotifier {
           padding: EdgeInsets.all(8),
           showDuration: Duration.zero,
           waitDuration: Duration.zero,
+        ),
+        infoBarTheme: InfoBarThemeData(
+          decoration: (severity) {
+            late Color color;
+            final theme = FluentThemeData.dark();
+            switch (severity) {
+              case InfoBarSeverity.info:
+                // Microsoft UI's InfoBar info background has transparency.
+                // Override to menu color.
+                color = theme.menuColor;
+                break;
+              case InfoBarSeverity.warning:
+                color = theme.resources.systemFillColorCautionBackground;
+                break;
+              case InfoBarSeverity.success:
+                color = theme.resources.systemFillColorSuccessBackground;
+                break;
+              case InfoBarSeverity.error:
+                color = theme.resources.systemFillColorCriticalBackground;
+                break;
+            }
+            return BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(4.0),
+              border: Border.all(
+                color: theme.resources.cardStrokeColorDefault,
+              ),
+            );
+          },
         ),
       );
 }

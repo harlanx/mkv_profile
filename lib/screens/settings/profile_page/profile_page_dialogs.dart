@@ -96,8 +96,8 @@ class TextModifierDialog extends StatelessWidget {
               valueListenable: caseSensitive,
               builder: (context, value, _) {
                 return Checkbox(
-                  content:
-                      const Text('Case sensitivity for the specified strings.'),
+                  content: const Text(
+                      'Enable case sensitivity for the specified strings.'),
                   checked: value,
                   onChanged: (val) {
                     if (val != null) {

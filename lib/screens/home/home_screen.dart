@@ -72,9 +72,9 @@ class HomeScreen extends StatelessWidget {
           return Divider(
             direction: Axis.vertical,
             style: DividerThemeData(
-              thickness: 3,
-              decoration:
-                  BoxDecoration(color: FluentTheme.of(context).cardColor),
+              decoration: BoxDecoration(
+                color: FluentTheme.of(context).cardColor,
+              ),
             ),
           );
         },

@@ -186,10 +186,10 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                 children: [
                   TextSpan(
                     text: widget.v.mainFile.name.noBreakHyphen,
-                    style:
-                        FluentTheme.of(context).typography.bodyStrong?.copyWith(
-                              color: Colors.blue,
-                            ),
+                    style: FluentTheme.of(context)
+                        .typography
+                        .bodyStrong
+                        ?.copyWith(color: Colors.blue),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () async {
                         await widget.v.mainFile.revealInExplorer();

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' as mt;
 import 'package:fluent_ui/fluent_ui.dart';
 
@@ -95,8 +96,35 @@ class PreferencesSection extends StatelessWidget {
                 children: [
                   const Icon(FluentIcons.processing),
                   const SizedBox(width: 6),
-                  Text(
-                    'Maximum active task (mkvmerge)',
+                  Text.rich(
+                    TextSpan(text: 'Maximum active processes ', children: [
+                      WidgetSpan(
+                        child: Tooltip(
+                          message:
+                              'Reccomended value: 1. MKVMerge is not CPU intensive.\nIts bound to bandwidth of storage/networking devices and RAM. Running in parallel is not beneficial at all.',
+                          child: RichText(
+                            text: TextSpan(
+                              text: '[?]',
+                              style: FluentTheme.of(context)
+                                  .typography
+                                  .bodyStrong
+                                  ?.copyWith(
+                                    color: Colors.blue,
+                                    fontSize: 12,
+                                  ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  const url =
+                                      'https://www.reddit.com/r/mkvtoolnix/comments/pee0h0/comment/hawy8bv/?utm_source=reddit&utm_medium=web2x&context=3';
+                                  if (await canLaunchUrl(Uri.parse(url))) {
+                                    await launchUrl(Uri.parse(url));
+                                  }
+                                },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ]),
                     style: FluentTheme.of(context).typography.body,
                   ),
                   const Spacer(),
@@ -432,7 +460,31 @@ class MiscSection extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('MediaInfo Location'),
+                  Text.rich(
+                    TextSpan(
+                      text: 'MediaInfo Location: ',
+                      children: [
+                        TextSpan(
+                          text: '[download]',
+                          style: FluentTheme.of(context)
+                              .typography
+                              .bodyStrong
+                              ?.copyWith(
+                                color: Colors.blue,
+                                fontSize: 12,
+                              ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () async {
+                              const url =
+                                  'https://mediaarea.net/en/MediaInfo/Download/Windows';
+                              if (await canLaunchUrl(Uri.parse(url))) {
+                                await launchUrl(Uri.parse(url));
+                              }
+                            },
+                        )
+                      ],
+                    ),
+                  ),
                   TextBox(
                     readOnly: true,
                     controller:
@@ -479,7 +531,28 @@ class MiscSection extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const Text('MKVMerge Location'),
+                  Text.rich(
+                    TextSpan(
+                      text: 'MKVMerge Location: ',
+                      children: [
+                        TextSpan(
+                          text: '[download]',
+                          style: FluentTheme.of(context)
+                              .typography
+                              .bodyStrong
+                              ?.copyWith(color: Colors.blue, fontSize: 12),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () async {
+                              const url =
+                                  'https://mkvtoolnix.download/downloads.html#windows';
+                              if (await canLaunchUrl(Uri.parse(url))) {
+                                await launchUrl(Uri.parse(url));
+                              }
+                            },
+                        ),
+                      ],
+                    ),
+                  ),
                   TextBox(
                     readOnly: true,
                     controller:

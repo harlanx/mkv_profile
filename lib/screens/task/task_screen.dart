@@ -103,6 +103,9 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
             rows: _rows,
             onLoaded: (event) {
               _manager = event.stateManager;
+              for (var col in _columns) {
+                _manager.autoFitColumn(context, col);
+              }
             },
             onRowChecked: (event) {
               if (event.row != null && event.rowIdx != null) {
@@ -138,7 +141,6 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         field: 'show',
         type: PlutoColumnType.number(),
         readOnly: true,
-        enableRowDrag: false,
         enableSorting: false,
         enableColumnDrag: false,
         enableRowChecked: tasks.items.isNotEmpty,
@@ -162,7 +164,6 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         field: 'profile',
         type: PlutoColumnType.number(),
         readOnly: true,
-        enableRowDrag: false,
         enableSorting: false,
         enableColumnDrag: false,
         enableEditingMode: false,
@@ -180,9 +181,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         field: 'progress',
         width: 100,
         type: PlutoColumnType.number(),
-        frozen: PlutoColumnFrozen.end,
         readOnly: true,
-        enableRowDrag: false,
         enableSorting: false,
         enableColumnDrag: false,
         enableEditingMode: false,

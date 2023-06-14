@@ -104,6 +104,8 @@ class ProfilePage extends StatelessWidget {
                             const SizedBox(height: 10),
                             InfoLabel(
                               label: 'Available show title variables',
+                              labelStyle:
+                                  FluentTheme.of(context).typography.bodyStrong,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -116,7 +118,7 @@ class ProfilePage extends StatelessWidget {
                                       children: [
                                         TextSpan(
                                           text:
-                                              'This will apply to the show(input)\'s first video file\'s name of unless the useFolderName is set to true which will use the folder\'s name instead as a source title to modify.',
+                                              'This will apply to the show\'s folder title.',
                                           style: FluentTheme.of(context)
                                               .typography
                                               .body,
@@ -175,6 +177,8 @@ class ProfilePage extends StatelessWidget {
                             const SizedBox(height: 10),
                             InfoLabel(
                               label: 'Available video title variables',
+                              labelStyle:
+                                  FluentTheme.of(context).typography.bodyStrong,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -246,6 +250,8 @@ class ProfilePage extends StatelessWidget {
                             const SizedBox(height: 10),
                             InfoLabel(
                               label: 'Available audio title variables',
+                              labelStyle:
+                                  FluentTheme.of(context).typography.bodyStrong,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -317,6 +323,8 @@ class ProfilePage extends StatelessWidget {
                             const SizedBox(height: 10),
                             InfoLabel(
                               label: 'Available subtitle title variables',
+                              labelStyle:
+                                  FluentTheme.of(context).typography.bodyStrong,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -503,7 +511,7 @@ class ProfilePage extends StatelessWidget {
                       ),
                       Expander(
                         header: const Text(
-                            'Select track flags and sort to set the Default flag based on order fallbacks.'),
+                            'Select track flags and reorder which will set the Default flag based on order fallbacks.'),
                         content: ConstrainedBox(
                           constraints: const BoxConstraints(maxHeight: 500),
                           child: Column(
@@ -639,7 +647,7 @@ class ProfilePage extends StatelessWidget {
                       const SizedBox(height: 10),
                       Checkbox(
                         content: const Text(
-                            '''Use folder name (Recommended) instead of video file's name when scanning the title.'''),
+                            '''Use folder name as source title (Recommended). Otherwise it will use the first video file's name as a source title of the show.'''),
                         checked: profile.useFolderName,
                         onChanged: (value) =>
                             profile.update(useFolderName: value),
