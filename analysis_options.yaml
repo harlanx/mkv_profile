@@ -5,6 +5,13 @@
 # IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
 # invoked from the command line by running `flutter analyze`.
 
+# NOTE: You can only use one set of lint rules using include so just 
+# uncomment the set of rules you need and comment out those which are not.
+
+# The following line activates a set of lints for dart,
+# include: package:lints/core.yaml
+# include: package:lints/recommended.yaml
+
 # The following line activates a set of recommended lints for Flutter apps,
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
@@ -22,8 +29,16 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
+    # There's also a style I'm following where I don't annotate types when
+    # type is clearly understood except for assigning dynamic value and
+    # variables declared with empty items.
+    # This is purely optional as mentioned in dart effective style available in
+    # https://dart.dev/effective-dart/design#types
     # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    prefer_final_locals: true
+    prefer_relative_imports: true
+    always_declare_return_types: true
 
 analyzer:
   errors:

@@ -15,8 +15,8 @@ class MkvInfo {
 
   factory MkvInfo.fromJson(String str) {
     final cleanSource = preprocessJsonString(str, 16);
-    Map<String, dynamic> json = jsonDecode(cleanSource);
-    List tracks = json['tracks'];
+    final Map<String, dynamic> json = jsonDecode(cleanSource);
+    final List tracks = json['tracks'];
     return MkvInfo(
       fileName: json['file_name'],
       videoInfo: List<MkvExtraInfo>.from(tracks
@@ -33,10 +33,10 @@ class MkvInfo {
 
   /// Converts the LongInt/BigInt in the json into string so that it won't lose the precision on decode
   static String preprocessJsonString(String jsonString, int maxLength) {
-    RegExp numberRegex = RegExp(
+    final numberRegex = RegExp(
         r'(?<![\d."])[+-]?\b\d{' + maxLength.toString() + r',}\b(?![\d."])');
     return jsonString.replaceAllMapped(numberRegex, (match) {
-      String numericValue = match.group(0)!; // Assert non-nullability with '!'
+      final numericValue = match.group(0)!; // Assert non-nullability with '!'
       if (!numericValue.startsWith('"') && !numericValue.endsWith('"')) {
         return '"$numericValue"';
       } else {
@@ -70,7 +70,7 @@ class MkvExtraInfo {
   final bool textDescriptionFlag;
 
   factory MkvExtraInfo.fromJson(Map<String, dynamic> json) {
-    Map<String, dynamic> props = json['properties'];
+    final props = json['properties'];
     String? uid = props['uid'];
     uid ??= json.hashCode.toString();
     return MkvExtraInfo(

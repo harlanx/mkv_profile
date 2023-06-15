@@ -149,8 +149,8 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
         renderer: (rendererContext) {
-          int id = rendererContext.cell.value;
-          var tn = tasks.items[id]!;
+          final int id = rendererContext.cell.value;
+          final tn = tasks.items[id]!;
           return Text(
             tn.show.directory.name,
             maxLines: 1,
@@ -171,8 +171,8 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
         renderer: (rendererContext) {
-          int id = rendererContext.cell.value;
-          var tn = tasks.items[id]!;
+          final int id = rendererContext.cell.value;
+          final tn = tasks.items[id]!;
           return Text(tn.profile.name);
         },
       ),
@@ -190,7 +190,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
         renderer: (rendererContext) {
-          int id = rendererContext.cell.value;
+          final int id = rendererContext.cell.value;
           return ChangeNotifierProvider.value(
             value: tasks.items[id],
             builder: (context, child) {

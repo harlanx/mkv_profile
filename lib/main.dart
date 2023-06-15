@@ -24,7 +24,7 @@ void main() async {
   // this app
   await AppData.init();
 
-  var windowOptions = WindowOptions(
+  final windowOptions = WindowOptions(
     fullScreen: AppData.appSettings.isMaximized,
     size: AppData.appSettings.windowSize,
     minimumSize: const Size(800, 500),

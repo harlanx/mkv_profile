@@ -21,11 +21,15 @@ export 'user_profiles_notifier.dart';
 export 'output_notifier.dart';
 
 class AppData {
-  static const String appTitle = 'MKVProfile';
-  static const String appDescription =
+  static const appTitle = 'MKVProfile';
+  static const appDescription =
       '''Automatically manage and merge to mkv your downloaded series or movie files to the common conventions used by media players and media servers. The GUI is intentionally made simple and is designed for least user interactions by implementing per profile configuration to manage files and generate a command to be used on mkvmerge process.''';
 
-  static const String projectURL = '''https://github.com/harlanx''';
+  static const projectURL = r'https://github.com/harlanx';
+  static const mediainfoURL =
+      r'https://mediaarea.net/en/MediaInfo/Download/Windows';
+  static const mkvmergeURL =
+      r'https://mkvtoolnix.download/downloads.html#windows';
 
   static List<int> defaultAccents = [
     0xffb4831d,
@@ -36,10 +40,10 @@ class AppData {
 
   static final mainNavigatorKey = GlobalKey<NavigatorState>();
   // Directory of our executable
-  static final Directory exeDir = File(Platform.resolvedExecutable).parent;
+  static final exeDir = File(Platform.resolvedExecutable).parent;
   // External tools' file names in assets
-  static const String _mediainfoFile = 'MediaInfo.dll';
-  static const String _mkvmergeFile = 'mkvmerge.exe';
+  static const _mediainfoFile = 'MediaInfo.dll';
+  static const _mkvmergeFile = 'mkvmerge.exe';
 
   static bool mediaInfoLoaded = false;
   static bool mkvMergeLoaded = false;
@@ -83,16 +87,16 @@ class AppData {
     'png',
   ];
 
-  static final LanguageCodes languageCodes = LanguageCodes();
-  static final AppSettingsNotifier appSettings = AppSettingsNotifier();
-  static final UserProfilesNotifier profiles = UserProfilesNotifier();
-  static final TaskListNotifier tasks = TaskListNotifier();
-  static final OutputNotifier outputs = OutputNotifier();
+  static final languageCodes = LanguageCodes();
+  static final appSettings = AppSettingsNotifier();
+  static final profiles = UserProfilesNotifier();
+  static final tasks = TaskListNotifier();
+  static final outputs = OutputNotifier();
 
-  static final GlobalKey<TasksScreenState> taskStateKey = GlobalKey();
-  static final GlobalKey<OutputsScreenState> outputStateKey = GlobalKey();
+  static final taskStateKey = GlobalKey<TasksScreenState>();
+  static final outputStateKey = GlobalKey<OutputsScreenState>();
 
-  static init() async {
+  static Future<void> init() async {
     // Loads from json file
     await languageCodes.load();
     // Loads from share preferences xml file
@@ -122,12 +126,12 @@ class AppData {
   }
 
   static Future<bool> checkMediaInfo() async {
-    var file = File(appSettings.mediaInfoPath);
+    final file = File(appSettings.mediaInfoPath);
     mediaInfoLoaded = false;
     if (await file.exists() && file.name == _mediainfoFile) {
       try {
         final miw = MediaInfoWrapper(dllPath: file.path);
-        var result = miw.option('Info_Version');
+        final result = miw.option('Info_Version');
         miw.library.unload();
         if (result.isNotEmpty && result.contains('MediaInfoLib')) {
           mediaInfoLoaded = true;
@@ -141,11 +145,11 @@ class AppData {
   }
 
   static Future<bool> checkMkvMerge() async {
-    var file = File(appSettings.mkvMergePath);
+    final file = File(appSettings.mkvMergePath);
     mkvMergeLoaded = false;
     if (await file.exists() && file.name == _mkvmergeFile) {
       try {
-        String result = (await Process.run(file.path, ['--version'])).stdout;
+        final result = (await Process.run(file.path, ['--version'])).stdout;
         if (result.isNotEmpty && result.contains('mkvmerge')) {
           mkvMergeLoaded = true;
           return true;

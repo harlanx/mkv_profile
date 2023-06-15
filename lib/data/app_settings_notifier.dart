@@ -26,7 +26,7 @@ enum AccentMode {
 class AppSettingsNotifier extends ChangeNotifier {
   AppSettingsNotifier({
     this.recursiveLimit = 20,
-    this.maximumProcess = 3,
+    this.maximumProcess = 1,
     this.themeMode = ThemeMode.system,
     this.accentMode = AccentMode.custom,
     this.customAccent = const Color(0xff468600),
@@ -58,7 +58,7 @@ class AppSettingsNotifier extends ChangeNotifier {
   String mkvMergePath;
 
   AppSettingsNotifier fromJson(String source) {
-    Map<String, dynamic> json = jsonDecode(source);
+    final Map<String, dynamic> json = jsonDecode(source);
     return AppSettingsNotifier(
       recursiveLimit: json['recursiveLimit'],
       maximumProcess: json['maximumProcess'],
@@ -98,10 +98,10 @@ class AppSettingsNotifier extends ChangeNotifier {
   }
 
   void load() {
-    String? appSettingsJson = SharedPrefs.getString('AppSettings');
+    final appSettingsJson = SharedPrefs.getString('AppSettings');
 
     if (appSettingsJson != null) {
-      var data = fromJson(appSettingsJson);
+      final data = fromJson(appSettingsJson);
       recursiveLimit = data.recursiveLimit;
       maximumProcess = data.maximumProcess;
       themeMode = data.themeMode;

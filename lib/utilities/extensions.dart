@@ -35,7 +35,7 @@ extension DirectoryExtension on Directory {
     String format = '(d)',
     bool space = true,
   }) {
-    var result = nameSafe(name, format, space);
+    final result = nameSafe(name, format, space);
     return Directory(p.join(path, result)).create();
   }
 
@@ -46,7 +46,7 @@ extension DirectoryExtension on Directory {
     String format = '(d)',
     bool space = true,
   }) {
-    var result = nameSafe(name, format, space);
+    final result = nameSafe(name, format, space);
     return Directory(p.join(path, result)).createSync();
   }
 
@@ -55,10 +55,10 @@ extension DirectoryExtension on Directory {
   /// it uses the specified name.
   String nameSafe(String name, String format, bool space) {
     // get all from directory path
-    var list = Directory(path).listSync();
+    final list = Directory(path).listSync();
 
     // list all folder names
-    var nameList = list.map((e) => e.absolute.path.split('\\').last).toList();
+    final nameList = list.map((e) => e.absolute.path.split('\\').last).toList();
 
     // set initial value
     var result = name;
@@ -98,8 +98,8 @@ extension StringExtension on String {
   }
 
   List<String> linesWith(String text) {
-    var lines = split('\n');
-    var matches = <String>[];
+    final lines = split('\n');
+    final matches = <String>[];
     for (var line in lines) {
       if (RegExp('(.*$text.*)').hasMatch(line)) {
         matches.add(line);
@@ -109,7 +109,7 @@ extension StringExtension on String {
   }
 
   String get singleSpace {
-    return replaceAll(RegExp(r"\s+"), " ");
+    return replaceAll(RegExp(r'\s+'), ' ');
   }
 
   String get noBreakHyphen => replaceAll('-', '\u2011');
@@ -145,12 +145,12 @@ extension StringExtension on String {
 extension IntExtension on int {
   String formatByteSize(
       {int decimals = 1, bool binaryPrefixes = false, bool space = false}) {
-    if (this <= 0) return "0 B";
+    if (this <= 0) return '0 B';
     int fac = 1000;
-    List suffixes = ["B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+    List suffixes = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     if (binaryPrefixes) {
       fac = 1024;
-      suffixes = ["B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
+      suffixes = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
     }
 
     var i = (log(this) / log(fac)).floor();
@@ -162,14 +162,14 @@ extension IntExtension on int {
     double bytes = toDouble();
     int i = -1;
     const byteUnits = [
-      "kbps",
-      "Mbps",
-      "Gbps",
-      "Tbps",
-      "Pbps",
-      "Ebps",
-      "Zbps",
-      "Ybps"
+      'kbps',
+      'Mbps',
+      'Gbps',
+      'Tbps',
+      'Pbps',
+      'Ebps',
+      'Zbps',
+      'Ybps'
     ];
     do {
       bytes = bytes / 1024;
@@ -185,15 +185,15 @@ extension IntExtension on int {
     double hertz = toDouble();
     int i = -1;
     const frequencyUnits = [
-      "Hz",
-      "KHz",
-      "MHz",
-      "GHz",
-      "THz",
-      "PHz",
-      "EHz",
-      "ZHz",
-      "YHz"
+      'Hz',
+      'KHz',
+      'MHz',
+      'GHz',
+      'THz',
+      'PHz',
+      'EHz',
+      'ZHz',
+      'YHz'
     ];
     do {
       hertz = hertz / 1000;
@@ -234,7 +234,7 @@ extension DurationExtension on Duration {
   /// This is specific only for extracting the duration of the process
   /// from mkvmerge's final verbose line
   static Duration parseSingle(String input) {
-    List<String> words = input.split(' ');
+    final words = input.split(' ');
 
     int? hours;
     int? minutes;

@@ -72,9 +72,9 @@ class _TestScreenState extends State<TestScreen> {
                 // Note: Isolate doesn't get to access data from the main thread so
                 // the Isolate process duration can be indefinite. Any data to be used in the process
                 // in the isolate must be passed on that function.
-                var isoModel = IsolateModel(50, 500);
-                var computeResult = await computeTask(isoModel);
-                var identifyResult = await isPrime(computeResult);
+                final isoModel = IsolateModel(50, 500);
+                final computeResult = await computeTask(isoModel);
+                final identifyResult = await isPrime(computeResult);
                 setState(() {
                   value = 'Result: $computeResult, $identifyResult';
                 });

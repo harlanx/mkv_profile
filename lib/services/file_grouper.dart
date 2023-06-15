@@ -6,7 +6,7 @@ import '../utilities/utilities.dart';
 class FileGrouper {
   static Future<GroupingResult> group(PathData pathData) async {
     if (pathData.videos.length == 1) {
-      var videoFile = pathData.videos.first;
+      final videoFile = pathData.videos.first;
       return GroupingResult(
         Movie(
           directory: pathData.mainDir,
@@ -22,31 +22,31 @@ class FileGrouper {
       );
     }
 
-    Set<String> successGroup = {};
-    Set<String> failGroup = {};
-    Set<String> seasonsStr = {};
+    final Set<String> successGroup = {};
+    final Set<String> failGroup = {};
+    final Set<String> seasonsStr = {};
     // Get available seasons through directory names;
     for (var dir in pathData.directories) {
-      var season = await _fetchSeason(dir.name);
+      final season = await _fetchSeason(dir.name);
       if (season != null) {
         seasonsStr.add(season);
       }
     }
     // Get available seasons through video file names;
     for (var vid in pathData.videos) {
-      var season = await _fetchSeason(vid.title);
+      final season = await _fetchSeason(vid.title);
       if (season != null) {
         seasonsStr.add(season);
       }
     }
 
-    List<Season> seasons = [];
+    final List<Season> seasons = [];
     for (var s in seasonsStr) {
-      int seasonInt = int.parse(s.replaceAll(RegExp(r'[^0-9]'), ''));
-      List<Video> videos = [];
+      final seasonInt = int.parse(s.replaceAll(RegExp(r'[^0-9]'), ''));
+      final List<Video> videos = [];
       for (var v in pathData.videos) {
         if (v.title.contains(s)) {
-          Set<File> relatedFiles = {};
+          final Set<File> relatedFiles = {};
           // Get files with same name as the video
           relatedFiles.addAll(pathData.otherFiles
               .where((element) => element.title == v.title)
@@ -99,9 +99,9 @@ class FileGrouper {
   }
 
   static Future<String?> _fetchSeason(String fileName) async {
-    RegExp extractSeason = RegExp(r'Season.\d+|S.\d+', caseSensitive: false);
+    final extractSeason = RegExp(r'Season.\d+|S.\d+', caseSensitive: false);
     if (extractSeason.hasMatch(fileName)) {
-      var result = extractSeason.firstMatch(fileName)![0].toString();
+      final result = extractSeason.firstMatch(fileName)![0].toString();
       return result;
     } else {
       return null;
@@ -111,13 +111,13 @@ class FileGrouper {
   static Future<int?> _fetchEpisode(String fileName) async {
     int? result;
     // Extract the episode string
-    var episodeFullStr = RegExp(
+    final episodeFullStr = RegExp(
       r'Episode.\d+|E.\d+|Episode \d+|E \d+',
       caseSensitive: false,
     ).stringMatch(fileName);
     if (episodeFullStr != null) {
       // Extract the episode number
-      var episodeNumStr = RegExp(
+      final episodeNumStr = RegExp(
         r'\d+',
         caseSensitive: false,
       ).stringMatch(episodeFullStr);

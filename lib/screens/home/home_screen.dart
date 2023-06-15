@@ -16,10 +16,9 @@ final _selectedID = ValueNotifier<int?>(null);
 class HomeScreen extends StatelessWidget {
   HomeScreen({Key? key}) : super(key: key);
 
-  final MultiSplitViewController _splitViewController =
-      MultiSplitViewController(areas: [
+  final _splitViewCtrl = MultiSplitViewController(areas: [
     Area(size: AppData.appSettings.folderPanelWidth, minimalSize: 300),
-    Area(size: AppData.appSettings.infoPanelWidth, minimalSize: 500)
+    Area(size: AppData.appSettings.infoPanelWidth, minimalSize: 500),
   ]);
 
   final _isDragging = ValueNotifier<bool>(false);
@@ -34,7 +33,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context) {
-    var showList = context.watch<ShowListNotifier>();
+    final showList = context.watch<ShowListNotifier>();
     if (showList.items.isEmpty) {
       return DropTarget(
         enable: showList.items.isEmpty,
@@ -65,7 +64,7 @@ class HomeScreen extends StatelessWidget {
     return MultiSplitViewTheme(
       data: MultiSplitViewThemeData(dividerThickness: 3),
       child: MultiSplitView(
-        controller: _splitViewController,
+        controller: _splitViewCtrl,
         antiAliasingWorkaround: true,
         axis: Axis.horizontal,
         dividerBuilder: (p0, p1, p2, p3, p4, p5) {
@@ -416,16 +415,17 @@ class InfoPanel extends StatelessWidget {
   List<TreeViewItem> _treeViewNodes(
       FluentThemeData theme, BuildContext context, ShowNotifier sn) {
     if (sn.show is Movie) {
-      var movie = sn.show as Movie;
+      final movie = sn.show as Movie;
       return [_videoTree(context, movie.video, sn)];
     } else {
-      var series = sn.show as Series;
+      final series = sn.show as Series;
       return List.from(
         series.seasons.map(
           (s) {
             final treeValue =
                 '${series.directory.name}${'Season ${s.number.toString().padLeft(2, '0')}'}';
-            var expanded = sn.expandedTrees.any((value) => value == treeValue);
+            final expanded =
+                sn.expandedTrees.any((value) => value == treeValue);
             return TreeViewItem(
               value: treeValue,
               expanded: expanded,
@@ -447,11 +447,11 @@ class InfoPanel extends StatelessWidget {
   }
 
   TreeViewItem _videoTree(BuildContext context, Video video, ShowNotifier sn) {
-    var expandedVideo =
+    final expandedVideo =
         sn.expandedTrees.any((value) => value == video.mainFile.path);
-    var expandedAudio = sn.expandedTrees
+    final expandedAudio = sn.expandedTrees
         .any((value) => value == '${video.mainFile.path}Audios');
-    var expandedSubs = sn.expandedTrees
+    final expandedSubs = sn.expandedTrees
         .any((value) => value == '${video.mainFile.path}Subtitles');
     return TreeViewItem(
       value: video.mainFile.path,
@@ -517,7 +517,7 @@ class InfoPanel extends StatelessWidget {
     TrackProperties sub,
     ShowNotifier sn,
   ) {
-    bool embedded = sub is EmbeddedTrack;
+    final bool embedded = sub is EmbeddedTrack;
     final theme = FluentTheme.of(context);
     return TreeViewItem(
       value: embedded ? sub.uid : (sub as AddedTrack).file.path,

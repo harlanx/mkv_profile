@@ -13,9 +13,9 @@ class HomeScreenMenuBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var shows = context.read<ShowListNotifier>();
-    var tasks = context.read<TaskListNotifier>();
-    var profiles = context.read<UserProfilesNotifier>();
+    final shows = context.read<ShowListNotifier>();
+    final tasks = context.read<TaskListNotifier>();
+    final profiles = context.read<UserProfilesNotifier>();
 
     return CommandBarCard(
       child: ValueListenableBuilder<int?>(
@@ -101,8 +101,8 @@ class HomeScreenMenuBar extends StatelessWidget {
   }
 
   Future<void> _openFolder(BuildContext context) async {
-    var shows = context.read<ShowListNotifier>();
-    var paths = await getDirectoryPaths();
+    final shows = context.read<ShowListNotifier>();
+    final paths = await getDirectoryPaths();
 
     shows.add(paths);
   }

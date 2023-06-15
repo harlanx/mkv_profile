@@ -17,8 +17,8 @@ class PathScanner {
           : File(path);
     }
 
-    var dir = Directory(entityForAbsolutePath.absolute.path);
-    var dirContents = await _recursiveScan(dir);
+    final dir = Directory(entityForAbsolutePath.absolute.path);
+    final dirContents = await _recursiveScan(dir);
     try {
       _isForGrouping(dirContents);
     } catch (e) {
@@ -28,9 +28,9 @@ class PathScanner {
   }
 
   static Future<PathData> _recursiveScan(Directory dir) async {
-    var dirMain = dir.list(recursive: true);
-    List<File> files = [];
-    List<Directory> dirs = [dir];
+    final dirMain = dir.list(recursive: true);
+    final List<File> files = [];
+    final dirs = [dir];
     await for (final FileSystemEntity entity in dirMain) {
       if (entity is File) {
         files.add(entity);
@@ -48,7 +48,7 @@ class PathScanner {
     );
   }
 
-  static _isForGrouping(PathData data) {
+  static void _isForGrouping(PathData data) {
     if (data.videos.isEmpty) {
       throw ('No videos were found. Please check the folder.');
     }

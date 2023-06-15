@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../data/app_data.dart';
 import '../screens/screens.dart';
+import '../services/app_services.dart';
 import '../utilities/utilities.dart';
 
 class MainScreen extends StatelessWidget {
@@ -80,8 +81,10 @@ class MainScreen extends StatelessWidget {
                   icon: const Icon(FluentIcons.ctrl_button),
                   title: const Text('Pane Test Button'),
                   onTap: () {
-                    AppData.tasks.active = !AppData.tasks.active;
-                    debugPrint(AppData.tasks.active.toString());
+                    MetadataScanner.active = !MetadataScanner.active;
+                    ShowMerger.active = !ShowMerger.active;
+                    debugPrint(MetadataScanner.active.toString() +
+                        ShowMerger.active.toString());
                   },
                 ),
               ],

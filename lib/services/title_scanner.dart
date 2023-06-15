@@ -30,7 +30,8 @@ class TitleScanner {
   }
 
   static String _year(String rawTitle) {
-    var year = RegExp(r'\b\d{4}\b', caseSensitive: false).stringMatch(rawTitle);
+    final year =
+        RegExp(r'\b\d{4}\b', caseSensitive: false).stringMatch(rawTitle);
     if (year != null) {
       if (int.parse(year) > 1440) {
         return year;
@@ -40,9 +41,9 @@ class TitleScanner {
   }
 
   static String show(InputBasic input) {
-    var profile = input.profile;
-    var show = input.show;
-    String rawTitle = _sourceTitle(show, profile);
+    final profile = input.profile;
+    final show = input.show;
+    final rawTitle = _sourceTitle(show, profile);
     String titleFormat = profile.showTitleFormat;
 
     MediaInfo info;
@@ -53,9 +54,9 @@ class TitleScanner {
       info = show.allVideos.first.info;
     }
 
-    var videoInfo = info.videoInfo.first;
+    final videoInfo = info.videoInfo.first;
 
-    Map<String, String> formats = {};
+    final Map<String, String> formats = {};
     // Setting variable values
     formats['%duration%'] =
         Duration(milliseconds: (videoInfo.duration * 1000).toInt())
@@ -81,9 +82,9 @@ class TitleScanner {
     if (profile.id == 0) return video.mainFile.title;
 
     String titleFormat = profile.videoTitleFormat;
-    var videoInfo = video.info.videoInfo.first;
+    final videoInfo = video.info.videoInfo.first;
 
-    Map<String, String> formats = {};
+    final Map<String, String> formats = {};
     formats['%language%'] = video.language.cleanName;
     formats['%duration%'] =
         Duration(milliseconds: (videoInfo.duration * 1000).toInt())
@@ -110,7 +111,7 @@ class TitleScanner {
     if (profile.id == 0) return audioTrack.title ?? '';
 
     String titleFormat = profile.audioTitleFormat;
-    Map<String, String> formats = {};
+    final Map<String, String> formats = {};
 
     // Reflection is kinda bad in flutter so just use the good ol if-else
     // condition and type casting to access property.
@@ -148,7 +149,7 @@ class TitleScanner {
     if (profile.id == 0) return subtitleTrack.title ?? '';
 
     String titleFormat = profile.subtitleTitleFormat;
-    Map<String, String> formats = {};
+    final Map<String, String> formats = {};
 
     if (subtitleTrack is EmbeddedTrack) {
       final subtitleInfo = subtitleTrack.info as TextInfo;

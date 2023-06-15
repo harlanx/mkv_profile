@@ -21,22 +21,22 @@ class MediaInfo {
   final List<MenuInfo> menuInfo;
 
   factory MediaInfo.fromJson(String str, MkvInfo? mkvInfo) {
-    Map<String, dynamic> json = jsonDecode(str)["media"];
+    final Map<String, dynamic> json = jsonDecode(str)['media'];
     return MediaInfo(
-      ref: json["@ref"],
+      ref: json['@ref'],
       generalInfo: GeneralInfo.fromJson(
-          json["track"].singleWhere((item) => item["@type"] == "General")),
-      videoInfo: List<VideoInfo>.from(json["track"]
-          .where((item) => item["@type"] == "Video")
+          json['track'].singleWhere((item) => item['@type'] == 'General')),
+      videoInfo: List<VideoInfo>.from(json['track']
+          .where((item) => item['@type'] == 'Video')
           .map((e) => VideoInfo.fromJson(e, mkvInfo))),
-      audioInfo: List<AudioInfo>.from(json["track"]
-          .where((item) => item["@type"] == "Audio")
+      audioInfo: List<AudioInfo>.from(json['track']
+          .where((item) => item['@type'] == 'Audio')
           .map((e) => AudioInfo.fromJson(e, mkvInfo))),
-      textInfo: List<TextInfo>.from(json["track"]
-          .where((item) => item["@type"] == "Text")
+      textInfo: List<TextInfo>.from(json['track']
+          .where((item) => item['@type'] == 'Text')
           .map((e) => TextInfo.fromJson(e, mkvInfo))),
-      menuInfo: List<MenuInfo>.from(json["track"]
-          .where((item) => item["@type"] == "Menu")
+      menuInfo: List<MenuInfo>.from(json['track']
+          .where((item) => item['@type'] == 'Menu')
           .map((e) => MenuInfo.fromJson(e))),
     );
   }
@@ -57,10 +57,10 @@ class GeneralInfo {
 
   factory GeneralInfo.fromJson(Map<String, dynamic> json) {
     return GeneralInfo(
-      title: json["Title"],
-      fileExtension: json["FileExtension"],
-      format: json["Format"],
-      fileSize: int.parse(json["FileSize"]),
+      title: json['Title'],
+      fileExtension: json['FileExtension'],
+      format: json['Format'],
+      fileSize: int.parse(json['FileSize']),
     );
   }
 }
@@ -91,22 +91,22 @@ class VideoInfo extends TrackProperties {
   final String encoding;
 
   factory VideoInfo.fromJson(Map<String, dynamic> json, MkvInfo? mkvInfo) {
-    var mkvVideoInfo = mkvInfo?.videoInfo
+    final mkvVideoInfo = mkvInfo?.videoInfo
         .singleWhere((video) => video.id == int.parse(json['StreamOrder']));
     return VideoInfo(
-      id: int.parse(json["StreamOrder"]),
+      id: int.parse(json['StreamOrder']),
       uid: mkvVideoInfo?.uid,
-      format: json["Format"],
-      duration: double.parse(json["Duration"]),
-      width: int.parse(json["Width"]),
-      height: int.parse(json["Height"]),
-      frameRate: double.parse(json["FrameRate"]),
-      streamSize: int.parse(json["StreamSize"]),
-      encoding: json["Encoded_Library_Name"],
-      title: json["Title"],
+      format: json['Format'],
+      duration: double.parse(json['Duration']),
+      width: int.parse(json['Width']),
+      height: int.parse(json['Height']),
+      frameRate: double.parse(json['FrameRate']),
+      streamSize: int.parse(json['StreamSize']),
+      encoding: json['Encoded_Library_Name'],
+      title: json['Title'],
     )
       ..language = AppData.languageCodes
-          .identifyByCode(json["Language_String3"], json["Language"])
+          .identifyByCode(json['Language_String3'], json['Language'])
       ..update(
         isDefault: mkvVideoInfo?.defaultFlag ?? false,
         isOriginal: mkvVideoInfo?.originalFlag ?? false,
@@ -141,21 +141,21 @@ class AudioInfo extends TrackProperties {
   final int samplingRate;
 
   factory AudioInfo.fromJson(Map<String, dynamic> json, MkvInfo? mkvInfo) {
-    var mkvAudioInfo = mkvInfo?.audioInfo.singleWhere((audio) =>
+    final mkvAudioInfo = mkvInfo?.audioInfo.singleWhere((audio) =>
         audio.id == int.parse(json['StreamOrder'] ?? json['StreamKindID']));
 
     return AudioInfo(
       id: int.parse(json['StreamOrder'] ?? json['StreamKindID']),
       uid: mkvAudioInfo?.uid,
-      format: json["Format"],
-      duration: double.parse(json["Duration"]),
-      bitRate: int.parse(json["BitRate"]),
-      channels: int.parse(json["Channels"]),
-      samplingRate: int.parse(json["SamplingRate"]),
-      title: json["Title"],
+      format: json['Format'],
+      duration: double.parse(json['Duration']),
+      bitRate: int.parse(json['BitRate']),
+      channels: int.parse(json['Channels']),
+      samplingRate: int.parse(json['SamplingRate']),
+      title: json['Title'],
     )
       ..language = AppData.languageCodes
-          .identifyByCode(json["Language_String3"], json["Language"])
+          .identifyByCode(json['Language_String3'], json['Language'])
       ..update(
         isDefault: mkvAudioInfo?.defaultFlag ?? false,
         isOriginal: mkvAudioInfo?.originalFlag ?? false,
@@ -182,16 +182,16 @@ class TextInfo extends TrackProperties {
   final String format;
 
   factory TextInfo.fromJson(Map<String, dynamic> json, MkvInfo? mkvInfo) {
-    var mkvTextInfo = mkvInfo?.textInfo.singleWhere((text) =>
+    final mkvTextInfo = mkvInfo?.textInfo.singleWhere((text) =>
         text.id == int.parse(json['StreamOrder'] ?? json['StreamKindID']));
     return TextInfo(
       id: int.parse(json['StreamOrder'] ?? json['StreamKindID']),
       uid: mkvTextInfo?.uid,
-      format: json["Format"],
-      title: json["Title"],
+      format: json['Format'],
+      title: json['Title'],
     )
       ..language = AppData.languageCodes
-          .identifyByCode(json["Language_String3"], json["Language"])
+          .identifyByCode(json['Language_String3'], json['Language'])
       ..update(
         isDefault: mkvTextInfo?.defaultFlag ?? false,
         isOriginal: mkvTextInfo?.originalFlag ?? false,
@@ -216,10 +216,10 @@ class MenuInfo {
   List<ChapterInfo> chapters;
 
   factory MenuInfo.fromJson(Map<String, dynamic> json) {
-    Map<String, dynamic> rawChapters = json['extra'];
+    final rawChapters = json['extra'];
     return MenuInfo(
-      id: int.parse(json["StreamKindPos"]),
-      count: int.parse(json["Count"]),
+      id: int.parse(json['StreamKindPos']),
+      count: int.parse(json['Count']),
       chapters: List<ChapterInfo>.from(
           rawChapters.entries.map((e) => ChapterInfo.fromJson(e))),
     );
@@ -243,12 +243,12 @@ class ChapterInfo {
   }
 
   static String _parseStringTitle(String inputString) {
-    int firstColonIndex = inputString.indexOf(":");
+    final firstColonIndex = inputString.indexOf(':');
     return inputString.substring(firstColonIndex + 1);
   }
 
   static Duration _parseDurationString(String inputString) {
-    var durations = inputString.substring(1).split('_');
+    final durations = inputString.substring(1).split('_');
 
     return Duration(
       hours: int.parse(durations[0]),

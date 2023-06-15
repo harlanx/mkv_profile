@@ -7,12 +7,12 @@ import '../utilities/utilities.dart';
 
 class MetadataScanner {
   static final String _mediaInfoDebug =
-      "${AppData.exeDir.path}\\data\\flutter_assets\\assets\\mediainfo\\MediaInfo.exe";
+      '${AppData.exeDir.path}\\data\\flutter_assets\\assets\\mediainfo\\MediaInfo.exe';
 
   static bool active = false;
   static late MediaInfoWrapper _miw;
 
-  static load() {
+  static void load() {
     // You can't hot restart with a loaded dll using DynamicLibrary.open unless it is unloaded which is why
     // we implemented the unload for DynamicLibrary in extensions. You can still use CLI version when debugging.
     // We're using the library version in production because it seems faster than the executable counterpart.
@@ -20,14 +20,14 @@ class MetadataScanner {
   }
 
   // We need to unload of the dll since it can be changed in the settings on runtime.
-  static unload() {
+  static void unload() {
     _miw.library.unload();
   }
 
   static Future<MediaInfo> video(File file) async {
-    var mkvInfoJson =
+    final mkvInfoJson =
         await Process.run(AppData.appSettings.mkvMergePath, ['-J', file.path]);
-    var mkvInfo = MkvInfo.fromJson(mkvInfoJson.stdout);
+    final mkvInfo = MkvInfo.fromJson(mkvInfoJson.stdout);
 
     String mediaInfoJson;
     if (kDebugMode) {
@@ -50,7 +50,7 @@ class MetadataScanner {
     } else {
       mediaInfoJson = _miw.getJsonInfo(file.path);
     }
-    var result = MediaInfo.fromJson(mediaInfoJson, null);
+    final result = MediaInfo.fromJson(mediaInfoJson, null);
     return result.audioInfo.first;
   }
 
@@ -63,7 +63,7 @@ class MetadataScanner {
     } else {
       mediaInfoJson = _miw.getJsonInfo(file.path);
     }
-    var result = MediaInfo.fromJson(mediaInfoJson, null);
+    final result = MediaInfo.fromJson(mediaInfoJson, null);
     return result.textInfo.first;
   }
 }

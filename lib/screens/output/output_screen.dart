@@ -25,6 +25,10 @@ class OutputsScreenState extends State<OutputsScreen>
   late PlutoGridStateManager _manager;
   final List<PlutoColumn> _columns = [];
   final List<PlutoRow> _rows = [];
+  final _verticalCtrl = ScrollController(),
+      _horizontalCtrl = ScrollController();
+  final _infoPreview = ValueNotifier<String?>(null);
+
   final _splitViewCtrl = MultiSplitViewController(areas: [
     Area(size: 350, minimalSize: 200),
     Area(size: 150, minimalSize: 100),
@@ -198,8 +202,8 @@ class OutputsScreenState extends State<OutputsScreen>
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
         renderer: (rendererContext) {
-          int id = rendererContext.cell.value;
-          var output = outputs.items[id]!;
+          final int id = rendererContext.cell.value;
+          final output = outputs.items[id]!;
           return Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,8 +248,8 @@ class OutputsScreenState extends State<OutputsScreen>
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
         renderer: (rendererContext) {
-          int id = rendererContext.cell.value;
-          var output = outputs.items[id]!;
+          final int id = rendererContext.cell.value;
+          final output = outputs.items[id]!;
           return Text(output.profile);
         },
       ),
@@ -261,10 +265,10 @@ class OutputsScreenState extends State<OutputsScreen>
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
         renderer: (rendererContext) {
-          int id = rendererContext.cell.value;
-          var output = outputs.items[id]!;
+          final int id = rendererContext.cell.value;
+          final output = outputs.items[id]!;
           return Text(
-              DateFormat("mm-dd-yyyy hh:mm:ss a").format(output.dateTime));
+              DateFormat('mm-dd-yyyy hh:mm:ss a').format(output.dateTime));
         },
       ),
       PlutoColumn(
@@ -279,8 +283,8 @@ class OutputsScreenState extends State<OutputsScreen>
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
         renderer: (rendererContext) {
-          int id = rendererContext.cell.value;
-          var output = outputs.items[id]!;
+          final int id = rendererContext.cell.value;
+          final output = outputs.items[id]!;
           return Text(output.duration.formatDuration());
         },
       ),
@@ -296,8 +300,8 @@ class OutputsScreenState extends State<OutputsScreen>
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
         renderer: (rendererContext) {
-          int id = rendererContext.cell.value;
-          var output = outputs.items[id]!;
+          final int id = rendererContext.cell.value;
+          final output = outputs.items[id]!;
           return Text(output.info.taskStatus.name.capitalized);
         },
       ),

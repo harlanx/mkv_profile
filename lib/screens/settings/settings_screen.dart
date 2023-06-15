@@ -475,8 +475,7 @@ class MiscSection extends StatelessWidget {
                               ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () async {
-                              const url =
-                                  'https://mediaarea.net/en/MediaInfo/Download/Windows';
+                              const url = AppData.mediainfoURL;
                               if (await canLaunchUrl(Uri.parse(url))) {
                                 await launchUrl(Uri.parse(url));
                               }
@@ -511,7 +510,7 @@ class MiscSection extends StatelessWidget {
                         onPressed: MetadataScanner.active
                             ? null
                             : () async {
-                                var file = await openFile(
+                                final file = await openFile(
                                   initialDirectory:
                                       File(appSettings.mediaInfoPath)
                                           .parent
@@ -543,8 +542,7 @@ class MiscSection extends StatelessWidget {
                               ?.copyWith(color: Colors.blue, fontSize: 12),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () async {
-                              const url =
-                                  'https://mkvtoolnix.download/downloads.html#windows';
+                              const url = AppData.mkvmergeURL;
                               if (await canLaunchUrl(Uri.parse(url))) {
                                 await launchUrl(Uri.parse(url));
                               }
@@ -579,7 +577,7 @@ class MiscSection extends StatelessWidget {
                         onPressed: ShowMerger.active
                             ? null
                             : () async {
-                                var file = await openFile(
+                                final file = await openFile(
                                   initialDirectory:
                                       File(appSettings.mkvMergePath)
                                           .parent

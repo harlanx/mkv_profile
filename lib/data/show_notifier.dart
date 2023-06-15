@@ -15,7 +15,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
   ) : super(show: show, profile: profile);
 
   final Set<String> expandedTrees = {};
-  final AsyncMemoizer _memoizer = AsyncMemoizer();
+  final _memoizer = AsyncMemoizer();
 
   void refresh() => notifyListeners();
 
@@ -23,7 +23,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
     return await _memoizer.runOnce(() async {
       MetadataScanner.load();
       MetadataScanner.active = true;
-      List<Video> videos =
+      final videos =
           show is Movie ? [(show as Movie).video] : (show as Series).allVideos;
       for (var v in videos) {
         await v.loadInfo();
@@ -42,7 +42,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
   void _previewProfile() {
     show.title = TitleScanner.show(this);
     if (show is Movie) {
-      var movie = show as Movie;
+      final movie = show as Movie;
       movie.video.fileTitle = TitleScanner.video(movie.video, false, profile);
       movie.video.title = movie.video.fileTitle;
       _previewTracks(movie.video);
@@ -71,7 +71,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
     for (var track in tracks) {
       if (profile.languages.contains(track.language.iso6393)) {
         track.include = true;
-        var orderableFlags =
+        final orderableFlags =
             track.flags.values.where((e) => e.name != 'default').toList();
 
         if (track.language.iso6393 == profile.defaultLanguage) {
@@ -102,12 +102,12 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
   /// Original Language, Forced, Commentary,
   /// HearingImpaired, VisualImpaired, TextDescription
   void sortTracks() {
-    List<Video> videos = [];
+    final videos = [];
     if (show is Movie) {
-      var movie = show as Movie;
+      final movie = show as Movie;
       videos.add(movie.video);
     } else {
-      var series = show as Series;
+      final series = show as Series;
       videos.addAll(series.allVideos);
     }
 
@@ -122,13 +122,13 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
   /// This sort method will not consider other flags.
   /// If it is Default = true and TextDescription = true, it will be placed at the first order.
   int _sortMethodA(TrackProperties a, TrackProperties b) {
-    var flags = a.flags;
+    final flags = a.flags;
 
     if (a.include == b.include) {
       if (a.language.cleanName == b.language.cleanName) {
         for (int i = 0; i < flags.length; i++) {
-          var aValue = a.flagByIndex(i).value;
-          var bValue = b.flagByIndex(i).value;
+          final aValue = a.flagByIndex(i).value;
+          final bValue = b.flagByIndex(i).value;
           if (aValue != bValue) {
             return aValue ? -1 : 1;
           }
@@ -149,7 +149,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
   /// If it is Default = true and TextDescription = true, it will be placed at the last order.
   /// ignore: unused_element
   int _sortMethodB(TrackProperties a, TrackProperties b) {
-    var flags = a.flags;
+    final flags = a.flags;
     if (a.include == b.include) {
       if (a.language.cleanName == b.language.cleanName) {
         for (int i = flags.length; i > flags.length; i--) {
@@ -198,13 +198,13 @@ class ShowListNotifier extends ChangeNotifier {
     // to check before it scans for files since it won't be processed by
     // MetadataScanner anyways if the MediaInfo tool isn't working.
     if (await AppData.checkMediaInfo()) {
-      List<ScanError> failedPaths = [];
+      final List<ScanError> failedPaths = [];
       for (var path in paths) {
         if (path != null) {
           if (await PathScanner.isDirectory(path)) {
             try {
               if (!items.values.any((e) => e.show.directory.path == path)) {
-                var result = await PathScanner.scan(path);
+                final result = await PathScanner.scan(path);
                 if (result.failedGroups.isNotEmpty) {
                   failedPaths.add(ScanError(
                       'No subtitles found for: ${result.failedGroups.join(', ')}',

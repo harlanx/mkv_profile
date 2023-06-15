@@ -139,7 +139,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
   bool useFolderName;
 
   factory UserProfile.fromJson(String str) {
-    Map<String, dynamic> json = jsonDecode(str);
+    final Map<String, dynamic> json = jsonDecode(str);
     return UserProfile(
       id: json['id'],
       name: json['name'],
@@ -250,7 +250,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
 
   void reorderLanguages(int oldIndex, int newIndex) {
     if (newIndex > oldIndex) newIndex -= 1;
-    List<String> languagesCopy = List.from(languages);
+    final languagesCopy = List<String>.from(languages);
     final item = languagesCopy.removeAt(oldIndex);
     languages = languagesCopy..insert(newIndex, item);
     notifyListeners();
@@ -269,7 +269,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
 
   void reorderFlagOrder(int oldIndex, int newIndex) {
     if (newIndex > oldIndex) newIndex -= 1;
-    List<String> flagOrderCopy = List.from(defaultFlagOrder);
+    final flagOrderCopy = List<String>.from(defaultFlagOrder);
     final item = flagOrderCopy.removeAt(oldIndex);
     defaultFlagOrder = flagOrderCopy..insert(newIndex, item);
     notifyListeners();
@@ -358,7 +358,7 @@ class TextModifier {
       });
 
   factory TextModifier.fromJson(String source) {
-    var json = jsonDecode(source);
+    final Map<String, dynamic> json = jsonDecode(source);
     return TextModifier(
       id: json['id'],
       replaceable: List<String>.from((json['replaceable'])),

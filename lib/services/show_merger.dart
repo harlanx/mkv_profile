@@ -46,14 +46,14 @@ class ShowMerger {
   // ignore: unused_element
   static Future<void> _debugProcessTask(TaskListNotifier tln) async {
     // Create copy so we don't get concurrent modification error.
-    var selected = List<MapEntry<int, TaskNotifier>>.from(tln.items.entries
+    final selected = List<MapEntry<int, TaskNotifier>>.from(tln.items.entries
             .where((e) => tln.selected.contains(e.key))
             .toList())
         .iterator;
     while (selected.moveNext()) {
       if (!tln.active) continue;
 
-      var tn = selected.current.value;
+      final tn = selected.current.value;
       // Do fake process here
       for (var progress = 0.0; progress <= 100.0; progress += 2) {
         windowManager.setProgressBar(progress / 100);
@@ -97,19 +97,19 @@ class ShowMerger {
 
   // Processing using recursion.
   static Future<void> _processTasks(TaskListNotifier tln) async {
-    var selected = List<MapEntry<int, TaskNotifier>>.from(tln.items.entries
+    final selected = List<MapEntry<int, TaskNotifier>>.from(tln.items.entries
             .where((e) => tln.selected.contains(e.key))
             .toList())
         .iterator;
     while (selected.moveNext()) {
       if (!tln.active) continue;
 
-      var tn = selected.current.value;
+      final tn = selected.current.value;
       // Do mkvmerge processes here
       // Both method uses concurrency + parallelism
       // However methodA is the probably the most commonly used.
-      var result = await _mergeMethodA(tln, tn);
-      //var result = await _mergeMethodB(tasks, task);
+      final result = await _mergeMethodA(tln, tn);
+      //final result = await _mergeMethodB(tasks, task);
 
       if (result.taskStatus == TaskStatus.completed ||
           result.taskStatus == TaskStatus.error) {
@@ -151,7 +151,7 @@ class ShowMerger {
     TaskListNotifier tln,
     TaskNotifier tn,
   ) async {
-    late var result = OutputInfo(
+    late final result = OutputInfo(
       taskStatus: TaskStatus.canceled,
       outputPath: '',
       log: '',
@@ -165,21 +165,21 @@ class ShowMerger {
       return result;
     }
 
-    var folder = path.join(tn.show.directory.parent.path,
+    final folder = path.join(tn.show.directory.parent.path,
         tn.show.directory.parent.nameSafe(tn.show.title, '(d)', true));
     result.outputPath = folder;
 
     final queue = ListQueue<Completer<void>>();
     int runningProcesses = 0;
 
-    List<Video> videos = tn.show is Movie
+    final videos = tn.show is Movie
         ? [(tn.show as Movie).video]
         : (tn.show as Series).allVideos;
 
     final mainCompleter = Completer<OutputInfo>();
 
-    Map<String, double> videoPercents = {};
-    Map<String, TaskStatus> videoStatuses = {};
+    final Map<String, double> videoPercents = {};
+    final Map<String, TaskStatus> videoStatuses = {};
 
     for (final video in videos) {
       if (!tln.active) break;
@@ -245,7 +245,7 @@ class ShowMerger {
     TaskListNotifier tln,
     TaskNotifier tn,
   ) async {
-    var result = OutputInfo(
+    final result = OutputInfo(
       taskStatus: TaskStatus.canceled,
       outputPath: '',
       log: '',
@@ -258,10 +258,10 @@ class ShowMerger {
       return result;
     }
 
-    var folder = path.join(tn.show.directory.parent.path,
+    final folder = path.join(tn.show.directory.parent.path,
         tn.show.directory.parent.nameSafe(tn.show.title, '(d)', true));
     result.outputPath = folder;
-    List<Video> videos = [];
+    final List<Video> videos = [];
     if (tn.show is Movie) {
       videos.add((tn.show as Movie).video);
     } else {
@@ -273,8 +273,8 @@ class ShowMerger {
 
     final mainCompleter = Completer<OutputInfo>();
 
-    Map<String, double> videoPercents = {};
-    Map<String, TaskStatus> videoStatuses = {};
+    final Map<String, double> videoPercents = {};
+    final Map<String, TaskStatus> videoStatuses = {};
 
     Future<void> processBatch(List<Video> batch) async {
       debugPrint(
@@ -349,9 +349,9 @@ class ShowMerger {
         break;
       }
       result.log += '$verbose\n';
-      var verboseStatus = _identifyVerbose(verbose);
+      final verboseStatus = _identifyVerbose(verbose);
       if (verboseStatus == TaskStatus.processing) {
-        var verbosePercent = await _parseProgress(tn, verbose);
+        final verbosePercent = await _parseProgress(tn, verbose);
         if (verbosePercent != null) {
           debugPrint('${video.fileTitle}: {$verbosePercent}');
           videoPercents[video.mainFile.path] = verbosePercent;

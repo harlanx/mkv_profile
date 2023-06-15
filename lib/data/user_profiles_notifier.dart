@@ -45,7 +45,7 @@ class UserProfilesNotifier extends ChangeNotifier {
   void load() {
     _items.addEntries(defaultProfiles.map((e) => MapEntry(e.id, e)));
 
-    List<String>? profilesJson = SharedPrefs.getStringList('UserProfiles');
+    final profilesJson = SharedPrefs.getStringList('UserProfiles');
     if (profilesJson != null) {
       _items.addAll({
         for (var profile in profilesJson.map((e) => UserProfile.fromJson(e)))

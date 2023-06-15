@@ -11,7 +11,7 @@ class LanguageCodes {
 
   Future<void> load() async {
     // Data from mkvmerge using --list-languages then parsed and encoded into json.
-    String rawJson =
+    final rawJson =
         await rootBundle.loadString('assets/json/Language_Code_Min.json');
     final codes = Set<LanguageCode>.from(
         (jsonDecode(rawJson) as Iterable).map((e) => LanguageCode.fromMap(e)));
@@ -70,17 +70,18 @@ class LanguageCodes {
     LanguageCode? bestMatch;
     var highestScore = 0.0;
     for (var code in _items) {
-      var nameScore = await Similarity.jaroWinkler(
+      final nameScore = await Similarity.jaroWinkler(
           input, code.cleanName.replaceAll(RegExp(r'\s?\([^)]*\)'), '').trim());
-      var iso6393Score = await Similarity.jaroWinkler(input, code.iso6393);
-      var iso6392Score = code.iso6392 != null
+      final iso6393Score = await Similarity.jaroWinkler(input, code.iso6393);
+      final iso6392Score = code.iso6392 != null
           ? await Similarity.jaroWinkler(input, code.iso6392!)
           : 0.0;
-      var iso6391Score = code.iso6391 != null
+      final iso6391Score = code.iso6391 != null
           ? await Similarity.jaroWinkler(input, code.iso6391!)
           : 0.0;
 
-      var score = (nameScore + iso6393Score + iso6392Score + iso6391Score) / 4;
+      final score =
+          (nameScore + iso6393Score + iso6392Score + iso6391Score) / 4;
 
       if (score > highestScore) {
         bestMatch = code;
@@ -95,16 +96,16 @@ class LanguageCodes {
     LanguageCode? closestMatch;
     var minDistance = double.infinity;
     for (var code in _items) {
-      var nameDistance = await Similarity.levenshtein(
+      final nameDistance = await Similarity.levenshtein(
           input, code.cleanName.replaceAll(RegExp(r'\s?\([^)]*\)'), '').trim());
-      var iso6393Distance = await Similarity.levenshtein(input, code.iso6393);
-      var iso6392Distance = code.iso6392 != null
+      final iso6393Distance = await Similarity.levenshtein(input, code.iso6393);
+      final iso6392Distance = code.iso6392 != null
           ? await Similarity.levenshtein(input, code.iso6392!)
           : double.infinity;
-      var iso6391Distance = code.iso6391 != null
+      final iso6391Distance = code.iso6391 != null
           ? await Similarity.levenshtein(input, code.iso6391!)
           : double.infinity;
-      var distance = [
+      final distance = [
         nameDistance,
         iso6393Distance,
         iso6392Distance,
@@ -123,19 +124,20 @@ class LanguageCodes {
     var highestScore = 0.0;
 
     for (var code in _items) {
-      var nameScore = await Similarity.nGramCosine(
+      final nameScore = await Similarity.nGramCosine(
         input,
         code.cleanName.replaceAll(RegExp(r'\s?\([^)]*\)'), '').trim(),
       );
-      var iso6393Score = await Similarity.nGramCosine(input, code.iso6393);
-      var iso6392Score = code.iso6392 != null
+      final iso6393Score = await Similarity.nGramCosine(input, code.iso6393);
+      final iso6392Score = code.iso6392 != null
           ? await Similarity.nGramCosine(input, code.iso6392!)
           : 0.0;
-      var iso6391Score = code.iso6391 != null
+      final iso6391Score = code.iso6391 != null
           ? await Similarity.nGramCosine(input, code.iso6391!)
           : 0.0;
 
-      var score = (nameScore + iso6393Score + iso6392Score + iso6391Score) / 4;
+      final score =
+          (nameScore + iso6393Score + iso6392Score + iso6391Score) / 4;
 
       if (score > highestScore) {
         bestMatch = code;
@@ -188,7 +190,7 @@ class LanguageCode {
   }
 
   factory LanguageCode.fromJson(String str) {
-    Map<String, dynamic> json = jsonDecode(str);
+    final Map<String, dynamic> json = jsonDecode(str);
     return LanguageCode(
       name: json['name'],
       iso6393: json['iso639-3'],

@@ -64,7 +64,7 @@ class MediaInfoWrapper {
     _open(_handle!, filePath.toNativeUtf8());
   }
 
-  void quickOpen(String filePath, {String options = ""}) {
+  void quickOpen(String filePath, {String options = ''}) {
     _handle = _newQuick(filePath.toNativeUtf8(), options.toNativeUtf8());
   }
 

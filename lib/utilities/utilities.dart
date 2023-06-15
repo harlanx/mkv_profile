@@ -19,7 +19,7 @@ class Utilities {
     text = text.trim();
     if (text.isEmpty) return items;
 
-    var filtered = items.where((element) {
+    final filtered = items.where((element) {
       return element.label.toLowerCase().contains(text.toLowerCase());
     }).toList();
 

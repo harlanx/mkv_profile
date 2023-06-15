@@ -107,16 +107,16 @@ class Video extends TrackProperties {
 
   /// Generates an mkvmerge command for the the video file
   List<String> command(Show show, [String? folder]) {
-    var videoInfo = info.videoInfo.first;
-    String fileName = '$fileTitle.mkv';
+    final videoInfo = info.videoInfo.first;
+    final fileName = '$fileTitle.mkv';
     String seasonName = '';
     if (season != null) {
-      var seasonInfo =
+      final seasonInfo =
           (show as Series).seasons.singleWhere((s) => s.number == season);
       seasonName = seasonInfo.folderTitle;
     }
     folder ??= path.join(show.directory.parent.path, show.title);
-    String output = path.join(
+    final output = path.join(
       folder,
       seasonName,
       fileName,
@@ -249,27 +249,29 @@ class AddedTrack extends TrackProperties {
   }
 
   Future<bool> get _isHearingImpaired async {
-    LineSplitter ls = const LineSplitter();
-    var content = ls.convert(file.readAsStringSync());
-    var samples = content.take(500);
+    const ls = LineSplitter();
+    final content = ls.convert(file.readAsStringSync());
+    final samples = content.take(500);
     // Matches (), []. For  <i> </i>, we can use '\<i>(.*?)\<\/i>' however sometimes it exist in non sdh subtitles
-    var hearingIndicator = RegExp(r'\[(.*?)\]|\((.*?)\)');
-    var visualIndicator = RegExp(
+    final hearingIndicator = RegExp(r'\[(.*?)\]|\((.*?)\)');
+    final visualIndicator = RegExp(
         r'\[(.*?)Description\]|\((.*?)Description\)|\[(.*?)AD\]|\((.*?)AD\)');
-    var hearingResult =
+    final hearingResult =
         samples.where((text) => hearingIndicator.hasMatch(text));
-    var visualResult = samples.where((text) => visualIndicator.hasMatch(text));
+    final visualResult =
+        samples.where((text) => visualIndicator.hasMatch(text));
     return hearingResult.length > 3 && visualResult.isEmpty;
   }
 
   Future<bool> get _isTextDescription async {
-    LineSplitter ls = const LineSplitter();
-    var content = ls.convert(file.readAsStringSync());
-    var samples = content.take(500);
+    const ls = LineSplitter();
+    final content = ls.convert(file.readAsStringSync());
+    final samples = content.take(500);
     // Matches (), []. For  <i> </i>, we can use '\<i>(.*?)\<\/i>' however sometimes it exist in non sdh subtitles
-    var visualIndicator = RegExp(
+    final visualIndicator = RegExp(
         r'\[(.*?)Description\]|\((.*?)Description\)|\[(.*?)TD\]|\((.*?)TD\)|\[(.*?)AD\]|\((.*?)AD\)');
-    var visualResult = samples.where((text) => visualIndicator.hasMatch(text));
+    final visualResult =
+        samples.where((text) => visualIndicator.hasMatch(text));
     return visualResult.length > 3;
   }
 

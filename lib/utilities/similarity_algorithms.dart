@@ -41,8 +41,8 @@ class Similarity {
 
   /// For string similarity in finding difference between strings to find the closest match.
   static Future<int> levenshtein(String s1, String s2) async {
-    var m = s1.length, n = s2.length;
-    var d = List.generate(m + 1, (_) => List<int>.filled(n + 1, 0));
+    final m = s1.length, n = s2.length;
+    final d = List.generate(m + 1, (_) => List<int>.filled(n + 1, 0));
     for (var i = 1; i <= m; i++) {
       d[i][0] = i;
     }
@@ -63,8 +63,8 @@ class Similarity {
   }
 
   static int levenshteinSync(String s1, String s2) {
-    var m = s1.length, n = s2.length;
-    var d = List.generate(m + 1, (_) => List<int>.filled(n + 1, 0));
+    final m = s1.length, n = s2.length;
+    final d = List.generate(m + 1, (_) => List<int>.filled(n + 1, 0));
     for (var i = 1; i <= m; i++) {
       d[i][0] = i;
     }
