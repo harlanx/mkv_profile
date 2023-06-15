@@ -184,7 +184,6 @@ class ShowMerger {
     for (final video in videos) {
       if (!tln.active) break;
       videoPercents.addAll({video.mainFile.path: 0.0});
-      videoStatuses.addAll({video.mainFile.path: TaskStatus.processing});
 
       if (runningProcesses >= AppData.appSettings.maximumProcess) {
         final completer = Completer<void>();
@@ -282,9 +281,7 @@ class ShowMerger {
           'Processing Batch Items: [${batch.map((e) => e.fileTitle).join(', ')}]');
       videoPercents.clear();
       videoPercents.addAll({for (var v in batch) v.mainFile.path: 0.0});
-      videoStatuses.addAll(
-          {for (var v in batch) v.mainFile.path: TaskStatus.processing});
-      List<Future<void>> processingTasks = [];
+      final List<Future<void>> processingTasks = [];
       for (var v in batch) {
         if (!tln.active) break;
         processingTasks.add(
@@ -340,7 +337,8 @@ class ShowMerger {
     Map<String, TaskStatus> videoStatuses,
     Completer mainCompleter,
   ) async {
-    var process = await Process.start(
+    videoStatuses.addAll({video.mainFile.path: TaskStatus.processing});
+    final process = await Process.start(
         AppData.appSettings.mkvMergePath, video.command(tn.show, folder));
 
     // Verbose listener
@@ -365,17 +363,17 @@ class ShowMerger {
       if (verboseStatus == TaskStatus.error) {
         tn.increaseCompleted();
         videoPercents.remove(video.mainFile.path);
+        videoStatuses[video.mainFile.path] = TaskStatus.error;
         debugPrint('${video.fileTitle} Has Error');
       }
       if (verboseStatus == TaskStatus.completed) {
         // Increase completed count
         tn.increaseCompleted();
         videoPercents.remove(video.mainFile.path);
-
+        videoStatuses[video.mainFile.path] = TaskStatus.completed;
         debugPrint('${video.fileTitle} Completed');
         debugPrint('${tn.completed} out of ${tn.total} Completed');
       }
-      videoStatuses[video.mainFile.path] = verboseStatus;
     }
   }
 
