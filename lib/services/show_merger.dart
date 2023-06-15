@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:fluent_ui/fluent_ui.dart' show showDialog;
 
@@ -35,7 +36,7 @@ class ShowMerger {
         builder: (context) => const ToolNotExistDialog(
           toolName: 'mkvmerge',
           info:
-              'This app relies on mkvmerge to merge the files into a single mkv file. Please configure the missing tool in Settings > Misc > mkvmerge then browse for the correct .exe file.',
+              'This app relies on mkvmerge to merge files or modify. Please configure the missing tool in Settings > Misc > mkvmerge then browse for the correct .exe file.',
         ),
       );
     }
@@ -43,35 +44,35 @@ class ShowMerger {
 
   /// For debugging task progress.
   // ignore: unused_element
-  static Future<void> _debugProcessTask(TaskListNotifier tasks) async {
+  static Future<void> _debugProcessTask(TaskListNotifier tln) async {
     // Create copy so we don't get concurrent modification error.
-    var selected = List<MapEntry<int, TaskNotifier>>.from(tasks.items.entries
-            .where((e) => tasks.selected.contains(e.key))
+    var selected = List<MapEntry<int, TaskNotifier>>.from(tln.items.entries
+            .where((e) => tln.selected.contains(e.key))
             .toList())
         .iterator;
     while (selected.moveNext()) {
-      if (!tasks.active) continue;
+      if (!tln.active) continue;
 
-      var task = selected.current.value;
-      //// Do fake process here
+      var tn = selected.current.value;
+      // Do fake process here
       for (var progress = 0.0; progress <= 100.0; progress += 2) {
         windowManager.setProgressBar(progress / 100);
-        if (!tasks.active) break;
+        if (!tln.active) break;
         await Future.delayed(const Duration(milliseconds: 100), () {
-          task.updateProgress(progress);
+          tn.updateProgress(progress);
         });
       }
 
-      if (task.progress >= 100.0) {
-        //Output Logging
+      if (tn.progress >= 100.0) {
+        // Output logging
         AppData.outputs.add([
           OutputBasic(
-            title: task.show.title,
-            path: task.show.directory.path,
-            profile: task.profile.name,
+            title: tn.show.title,
+            path: tn.show.directory.path,
+            profile: tn.profile.name,
             info: OutputInfo(
               taskStatus: TaskStatus.completed,
-              outputPath: task.show.directory.path,
+              outputPath: tn.show.directory.path,
               log: 'Successfully merged files.',
             ),
             dateTime: DateTime.now(),
@@ -79,11 +80,11 @@ class ShowMerger {
           ),
         ]);
         // Update list
-        tasks.remove([selected.current.key]);
-        //Force notify table listeners (Because PlutoGrid has it's own state management)
+        tln.remove([selected.current.key]);
+        // Force notify table listeners (Because PlutoGrid has it's own state management)
         AppData.taskStateKey.currentState?.fetchData();
         AppData.outputStateKey.currentState?.fetchData();
-        await _debugProcessTask(tasks);
+        await _debugProcessTask(tln);
         return;
       } else {
         selected.current.value.updateProgress(0.0);
@@ -91,21 +92,24 @@ class ShowMerger {
       }
     }
     windowManager.setProgressBar(0.0);
-    tasks.updateStatus(false);
+    tln.updateStatus(false);
   }
 
   // Processing using recursion.
-  static Future<void> _processTasks(TaskListNotifier tasks) async {
-    var selected = List<MapEntry<int, TaskNotifier>>.from(tasks.items.entries
-            .where((e) => tasks.selected.contains(e.key))
+  static Future<void> _processTasks(TaskListNotifier tln) async {
+    var selected = List<MapEntry<int, TaskNotifier>>.from(tln.items.entries
+            .where((e) => tln.selected.contains(e.key))
             .toList())
         .iterator;
     while (selected.moveNext()) {
-      if (!tasks.active) continue;
+      if (!tln.active) continue;
 
-      var task = selected.current.value;
-      //// Do mkvmerge process here
-      var result = await _merge(task);
+      var tn = selected.current.value;
+      // Do mkvmerge processes here
+      // Both method uses concurrency + parallelism
+      // However methodA is the probably the most commonly used.
+      var result = await _mergeMethodA(tln, tn);
+      //var result = await _mergeMethodB(tasks, task);
 
       if (result.taskStatus == TaskStatus.completed ||
           result.taskStatus == TaskStatus.error) {
@@ -115,9 +119,9 @@ class ShowMerger {
         );
         AppData.outputs.add([
           OutputBasic(
-            title: task.show.title,
+            title: tn.show.title,
             path: result.outputPath,
-            profile: task.profile.name,
+            profile: tn.profile.name,
             info: resultModified,
             dateTime: DateTime.now(),
             duration: DurationExtension.parseMultiple(
@@ -126,22 +130,122 @@ class ShowMerger {
           ),
         ]);
         // Update list
-        tasks.remove([selected.current.key]);
+        tln.remove([selected.current.key]);
         // Force notify table listeners (Because PlutoGrid has it's own state management)
         AppData.taskStateKey.currentState?.fetchData();
         AppData.outputStateKey.currentState?.fetchData();
-        await _processTasks(tasks);
+        await _processTasks(tln);
         return;
-      } else if (result.taskStatus == TaskStatus.canceled) {
+      } else {
         selected.current.value.updateProgress(0.0);
         windowManager.setProgressBar(0.0);
       }
     }
     windowManager.setProgressBar(0.0);
-    tasks.updateStatus(false);
+    tln.updateStatus(false);
   }
 
-  static Future<OutputInfo> _merge(TaskNotifier tn) async {
+  /// Processes within max process limit
+  // ignore: unused_element
+  static Future<OutputInfo> _mergeMethodA(
+    TaskListNotifier tln,
+    TaskNotifier tn,
+  ) async {
+    late var result = OutputInfo(
+      taskStatus: TaskStatus.canceled,
+      outputPath: '',
+      log: '',
+    );
+
+    if (!(await tn.show.directory.exists())) {
+      result.taskStatus = TaskStatus.error;
+      result.outputPath = tn.show.directory.path;
+      result.log =
+          'Source directory no longer exists. Cannot process non-existent files.';
+      return result;
+    }
+
+    var folder = path.join(tn.show.directory.parent.path,
+        tn.show.directory.parent.nameSafe(tn.show.title, '(d)', true));
+    result.outputPath = folder;
+
+    final queue = ListQueue<Completer<void>>();
+    int runningProcesses = 0;
+
+    List<Video> videos = tn.show is Movie
+        ? [(tn.show as Movie).video]
+        : (tn.show as Series).allVideos;
+
+    final mainCompleter = Completer<OutputInfo>();
+
+    Map<String, double> videoPercents = {};
+    Map<String, TaskStatus> videoStatuses = {};
+
+    for (final video in videos) {
+      if (!tln.active) break;
+      videoPercents.addAll({video.mainFile.path: 0.0});
+      videoStatuses.addAll({video.mainFile.path: TaskStatus.processing});
+
+      if (runningProcesses >= AppData.appSettings.maximumProcess) {
+        final completer = Completer<void>();
+        queue.add(completer);
+        await completer.future;
+      }
+
+      debugPrint('Processing Item:${video.fileTitle}');
+      _processVideo(
+        video,
+        folder,
+        tln,
+        tn,
+        result,
+        videoPercents,
+        videoStatuses,
+        mainCompleter,
+      ).then((_) {
+        runningProcesses--;
+
+        if (queue.isNotEmpty) {
+          final completer = queue.removeFirst();
+          completer.complete();
+        }
+        if (tn.completed == tn.total) {
+          // Process completed, fulfill the completer with the info
+          if (videoStatuses.values
+              .every((status) => status == TaskStatus.completed)) {
+            result.taskStatus = TaskStatus.completed;
+          } else {
+            result.taskStatus = TaskStatus.error;
+          }
+
+          mainCompleter.complete(result);
+        }
+      });
+
+      runningProcesses++;
+    }
+
+    // Wait for all tasks to complete
+    while (runningProcesses > 0) {
+      if (!tln.active) break;
+      final completer = Completer<void>();
+      queue.add(completer);
+      await completer.future;
+    }
+    // This is for when it is canceled
+    if (!tln.active) {
+      mainCompleter.complete(result);
+    }
+
+    return mainCompleter.future;
+  }
+
+  /// Processes by splitting into batches based on max process limit
+  // ignore: unused_element
+  static Future<OutputInfo> _mergeMethodB(
+    TaskListNotifier tln,
+    TaskNotifier tn,
+  ) async {
     var result = OutputInfo(
       taskStatus: TaskStatus.canceled,
       outputPath: '',
@@ -155,7 +259,6 @@ class ShowMerger {
       return result;
     }
 
-    final String mkvmergeDir = AppData.appSettings.mkvMergePath;
     var folder = path.join(tn.show.directory.parent.path,
         tn.show.directory.parent.nameSafe(tn.show.title, '(d)', true));
     result.outputPath = folder;
@@ -165,68 +268,118 @@ class ShowMerger {
     } else {
       videos.addAll((tn.show as Series).allVideos);
     }
-    bool hasError = false;
+
     // Number of videos to process in parallel
     final videoBatches = videos.slices(AppData.appSettings.maximumProcess);
 
-    final completer = Completer<OutputInfo>();
+    final mainCompleter = Completer<OutputInfo>();
 
-    Map<String, double> batchPercents = {};
-    Future<void> processVideo(Video video, String folder) async {
-      var process =
-          await Process.start(mkvmergeDir, video.command(tn.show, folder));
-
-      // Verbose listener
-      await for (String verbose in process.stdout.transform(utf8.decoder)) {
-        result.log += '$verbose\n';
-        result.taskStatus = _identifyVerbose(verbose);
-        if (result.taskStatus == TaskStatus.processing) {
-          var verbosePercent = await _parseProgress(tn, verbose);
-          if (verbosePercent != null) {
-            debugPrint('${video.fileTitle}: {$verbosePercent}');
-            batchPercents[video.mainFile.path] = verbosePercent;
-            _localPercent = batchPercents.values.sum / batchPercents.length;
-            tn.updateProgress(double.parse(_localPercent.toStringAsFixed(1)));
-            await windowManager.setProgressBar(tn.progress / 100);
-          }
-        }
-        if (result.taskStatus == TaskStatus.error) {
-          hasError = true;
-        }
-        if (result.taskStatus == TaskStatus.completed) {
-          // Increase completed count
-          tn.increaseCompleted();
-          debugPrint('${video.fileTitle} Completed');
-          debugPrint('${tn.completed} out of ${tn.total} Completed');
-          if (tn.completed == tn.total) {
-            // Process completed, fulfill the completer with the info
-            completer.complete(result);
-          }
-        }
-      }
-    }
+    Map<String, double> videoPercents = {};
+    Map<String, TaskStatus> videoStatuses = {};
 
     Future<void> processBatch(List<Video> batch) async {
       debugPrint(
           'Processing Batch Items: [${batch.map((e) => e.fileTitle).join(', ')}]');
-      batchPercents.clear();
-      batchPercents = {for (var v in batch) v.mainFile.path: 0.0};
+      videoPercents.clear();
+      videoPercents.addAll({for (var v in batch) v.mainFile.path: 0.0});
+      videoStatuses.addAll(
+          {for (var v in batch) v.mainFile.path: TaskStatus.processing});
       List<Future<void>> processingTasks = [];
       for (var v in batch) {
-        if (hasError == true) break;
-        processingTasks.add(processVideo(v, folder));
+        if (!tln.active) break;
+        processingTasks.add(
+          _processVideo(
+            v,
+            folder,
+            tln,
+            tn,
+            result,
+            videoPercents,
+            videoStatuses,
+            mainCompleter,
+          ),
+        );
       }
 
-      await Future.wait(processingTasks);
+      await Future.wait(processingTasks).then((value) {
+        if (tn.completed == tn.total) {
+          // Process completed, fulfill the completer with the info
+          if (videoStatuses.values
+              .every((status) => status == TaskStatus.completed)) {
+            result.taskStatus = TaskStatus.completed;
+          } else {
+            result.taskStatus = TaskStatus.error;
+          }
+          mainCompleter.complete(result);
+        }
+      });
     }
 
+    // Wait for all tasks to complete
     for (var batch in videoBatches) {
-      if (hasError == true) break;
+      if (!tln.active) break;
       await processBatch(batch);
     }
 
-    return completer.future;
+    // This is for when it is canceled
+    if (!tln.active) {
+      mainCompleter.complete(result);
+    }
+
+    return mainCompleter.future;
   }
+
+  // MKVMerge process
+  static Future<void> _processVideo(
+    Video video,
+    String folder,
+    TaskListNotifier tln,
+    TaskNotifier tn,
+    OutputInfo result,
+    Map<String, double> videoPercents,
+    Map<String, TaskStatus> videoStatuses,
+    Completer mainCompleter,
+  ) async {
+    var process = await Process.start(
+        AppData.appSettings.mkvMergePath, video.command(tn.show, folder));
+
+    // Verbose listener
+    await for (String verbose in process.stdout.transform(utf8.decoder)) {
+      if (!tln.active) {
+        process.kill();
+        result.taskStatus = TaskStatus.canceled;
+        break;
+      }
+      result.log += '$verbose\n';
+      var verboseStatus = _identifyVerbose(verbose);
+      if (verboseStatus == TaskStatus.processing) {
+        var verbosePercent = await _parseProgress(tn, verbose);
+        if (verbosePercent != null) {
+          debugPrint('${video.fileTitle}: {$verbosePercent}');
+          videoPercents[video.mainFile.path] = verbosePercent;
+          _localPercent = videoPercents.values.sum / videoPercents.length;
+          tn.updateProgress(double.parse(_localPercent.toStringAsFixed(1)));
+          await windowManager.setProgressBar(tn.progress / 100);
+        }
+      }
+      if (verboseStatus == TaskStatus.error) {
+        tn.increaseCompleted();
+        videoPercents.remove(video.mainFile.path);
+        debugPrint('${video.fileTitle} Has Error');
+      }
+      if (verboseStatus == TaskStatus.completed) {
+        // Increase completed count
+        tn.increaseCompleted();
+        videoPercents.remove(video.mainFile.path);
+
+        debugPrint('${video.fileTitle} Completed');
+        debugPrint('${tn.completed} out of ${tn.total} Completed');
+      }
+      videoStatuses[video.mainFile.path] = verboseStatus;
+    }
+  }
+
+  // Miscs
 
   static Future<double?> _parseProgress(TaskNotifier tn, String verbose) async {
     double? percent;
