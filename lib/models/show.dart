@@ -67,40 +67,60 @@ class Video extends TrackProperties {
   final List<AddedTrack> addedAudios = [];
   final List<EmbeddedTrack> embeddedSubtitles = [];
   final List<AddedTrack> addedSubtitles = [];
-
-  List<File> chapterFiles = [];
-  List<File> fontFiles = [];
-  List<File> imageFiles = [];
+  final List<EmbeddedTrack> embeddedChapters = [];
+  final List<AddedTrack> addedChapters = [];
+  final List<EmbeddedTrack> embeddedAttachments = [];
+  final List<AddedTrack> addedAttachments = [];
   bool removeChapters;
   bool removeAttachments;
 
   Future<void> loadInfo() async {
     info = await MetadataScanner.video(mainFile);
 
-    for (var embAud in info.audioInfo) {
+    for (var audio in info.audioInfo) {
       embeddedAudios.add(
         EmbeddedTrack(
-          id: embAud.id,
-          uid: embAud.uid!,
-          info: embAud,
-          title: embAud.title,
+          id: audio.id,
+          uid: audio.uid!,
+          info: audio,
+          title: audio.title,
           include: true,
         )
-          ..language = embAud.language
-          ..flags = embAud.flags,
+          ..language = audio.language
+          ..flags = audio.flags,
       );
     }
-    for (var embSub in info.textInfo) {
+    for (var subtitle in info.textInfo) {
       embeddedSubtitles.add(
         EmbeddedTrack(
-          id: embSub.id,
-          uid: embSub.uid!,
-          info: embSub,
-          title: embSub.title,
+          id: subtitle.id,
+          uid: subtitle.uid!,
+          info: subtitle,
+          title: subtitle.title,
           include: true,
         )
-          ..language = embSub.language
-          ..flags = embSub.flags,
+          ..language = subtitle.language
+          ..flags = subtitle.flags,
+      );
+    }
+    for (var chapter in info.menuInfo) {
+      embeddedChapters.add(
+        EmbeddedTrack(
+          id: chapter.id,
+          uid: chapter.uid,
+          info: chapter,
+        ),
+      );
+    }
+
+    for (var attachment in info.attachmentInfo) {
+      embeddedAttachments.add(
+        EmbeddedTrack(
+          id: attachment.id,
+          uid: attachment.uid,
+          title: attachment.name,
+          info: attachment,
+        ),
       );
     }
   }
@@ -134,7 +154,7 @@ class Video extends TrackProperties {
       ],
       '--language',
       '${videoInfo.id}:${language.iso6392 ?? language.iso6393}',
-      for (var flag in flags.values) ...[...flag.command(videoInfo.id)],
+      for (var flag in flags.values) ...flag.command(videoInfo.id),
 
       if ((extraOptions ?? '').isNotEmpty) ...[
         extraOptions!.replaceAll('%id%', videoInfo.id.toString()),
@@ -146,7 +166,7 @@ class Video extends TrackProperties {
         '!${List<String>.from(embeddedAudios.where((ea) => !ea.include).map((e) => e.id.toString())).join(',')}',
       ],
       // Embedded Audios
-      for (var embedAudio in embeddedAudios) ...[...embedAudio.command],
+      for (var embedAudio in embeddedAudios) ...embedAudio.command,
 
       // Remove non-included Embedded Subtitles
       if (embeddedSubtitles.any((es) => !es.include)) ...[
@@ -154,35 +174,25 @@ class Video extends TrackProperties {
         '!${List<String>.from(embeddedSubtitles.where((es) => !es.include).map((e) => e.id.toString())).join(',')}',
       ],
       // Embedded Subtitles
-      for (var embedSub in embeddedSubtitles) ...[...embedSub.command],
+      for (var embedSub in embeddedSubtitles) ...embedSub.command,
 
       // Input File
       mainFile.path,
       // Added Audios
-      for (var addAudio in addedAudios) ...[...addAudio.command],
+      for (var addAudio in addedAudios) ...addAudio.command,
       // Added Subtitles
-      for (var addSub in addedSubtitles) ...[...addSub.command],
+      for (var addSub in addedSubtitles) ...addSub.command,
+
       // Remove embedded chapters in the input file.
       // Usually exist on mkv
-      if (removeChapters) ...[
-        '--no-chapters',
-      ],
+      if (removeChapters) '--no-chapters',
       // Chapter Files
-      for (var chapter in chapterFiles) ...[
-        ...['--chapter', chapter.path],
-      ],
+      for (var chapter in addedChapters) ...chapter.command,
+
       // Remove fonts and images/poster
-      if (removeAttachments) ...[
-        '--no-attachments',
-      ],
-      // Font Files
-      for (var font in fontFiles) ...[
-        ...['--attach-file', font.path],
-      ],
-      // Image Files
-      for (var image in imageFiles) ...[
-        ...['--attach-file', image.path],
-      ],
+      if (removeAttachments) '--no-attachments',
+      // Attachment Files
+      for (var attachment in addedAttachments) ...attachment.command,
     ];
   }
 }
@@ -190,7 +200,7 @@ class Video extends TrackProperties {
 class EmbeddedTrack extends TrackProperties {
   EmbeddedTrack({
     required this.id,
-    required this.uid,
+    this.uid = '',
     required this.info,
     String? title,
     bool include = true,
@@ -222,7 +232,7 @@ class AddedTrack extends TrackProperties {
   AddedTrack({
     required this.file,
     String? title,
-    bool include = false,
+    bool include = true,
   }) : super(title: title, include: include);
 
   final File file;
@@ -275,21 +285,39 @@ class AddedTrack extends TrackProperties {
     return visualResult.length > 3;
   }
 
+  bool get isTrack {
+    return AppData.audioFormats.contains(file.extension) ||
+        AppData.subtitleFormats.contains(file.extension);
+  }
+
   /// Generates an mkvmerge command for the the added track
   List<String> get command {
     return [
       if (include) ...[
-        if ((title ?? '').isNotEmpty) ...[
-          '--track-name',
-          '0:"$title"',
+        if (isTrack) ...[
+          if ((title ?? '').isNotEmpty) ...[
+            '--track-name',
+            '0:"$title"',
+          ],
+          '--language',
+          '0:${language.iso6392 ?? language.iso6393}',
+          for (var flag in flags.values) ...[...flag.command(0)],
+          if ((extraOptions ?? '').isNotEmpty) ...[
+            extraOptions!.replaceAll('%id%', '0'),
+          ],
+          file.path,
+        ] else ...[
+          if (AppData.chapterFormats.contains(file.extension)) ...[
+            '--chapters',
+            file.path
+          ] else ...[
+            '--attach-file',
+            if ((extraOptions ?? '').isNotEmpty) ...[
+              extraOptions!.replaceAll('%id%', '0'),
+            ],
+            file.path
+          ],
         ],
-        '--language',
-        '0:${language.iso6392 ?? language.iso6393}',
-        for (var flag in flags.values) ...[...flag.command(0)],
-        if ((extraOptions ?? '').isNotEmpty) ...[
-          extraOptions!.replaceAll('%id%', '0'),
-        ],
-        file.path,
       ],
     ];
   }

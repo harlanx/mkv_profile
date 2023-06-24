@@ -11,6 +11,7 @@ class MediaInfo {
     required this.audioInfo,
     required this.textInfo,
     required this.menuInfo,
+    required this.attachmentInfo,
   });
 
   final String ref;
@@ -19,6 +20,7 @@ class MediaInfo {
   final List<AudioInfo> audioInfo;
   final List<TextInfo> textInfo;
   final List<MenuInfo> menuInfo;
+  final List<AttachmentInfo> attachmentInfo;
 
   factory MediaInfo.fromJson(String str, MkvInfo? mkvInfo) {
     final Map<String, dynamic> json = jsonDecode(str)['media'];
@@ -38,6 +40,10 @@ class MediaInfo {
       menuInfo: List<MenuInfo>.from(json['track']
           .where((item) => item['@type'] == 'Menu')
           .map((e) => MenuInfo.fromJson(e))),
+      attachmentInfo: mkvInfo != null
+          ? List<AttachmentInfo>.from(
+              mkvInfo.attachmentInfo.map((e) => AttachmentInfo.fromMkvInfo(e)))
+          : [],
     );
   }
 }
@@ -102,7 +108,7 @@ class VideoInfo extends TrackProperties {
       height: int.parse(json['Height']),
       frameRate: double.parse(json['FrameRate']),
       streamSize: int.parse(json['StreamSize']),
-      encoding: json['Encoded_Library_Name'],
+      encoding: json['Encoded_Library_Name'] ?? json['Format_Commercial'],
       title: json['Title'],
     )
       ..language = AppData.languageCodes
@@ -207,18 +213,21 @@ class TextInfo extends TrackProperties {
 class MenuInfo {
   MenuInfo({
     required this.id,
+    required this.uid,
     required this.count,
     required this.chapters,
   });
 
   final int id;
+  final String uid;
   final int count;
   List<ChapterInfo> chapters;
 
   factory MenuInfo.fromJson(Map<String, dynamic> json) {
     final rawChapters = json['extra'];
     return MenuInfo(
-      id: int.parse(json['StreamKindPos']),
+      id: int.parse(json['StreamKindID']),
+      uid: json.hashCode.toString(),
       count: int.parse(json['Count']),
       chapters: List<ChapterInfo>.from(
           rawChapters.entries.map((e) => ChapterInfo.fromJson(e))),
@@ -237,15 +246,15 @@ class ChapterInfo {
 
   factory ChapterInfo.fromJson(MapEntry<String, dynamic> jsonEntry) {
     return ChapterInfo(
-      title: _parseStringTitle(jsonEntry.value),
+      title: jsonEntry.value,
       startsStamp: _parseDurationString(jsonEntry.key),
     );
   }
 
-  static String _parseStringTitle(String inputString) {
-    final firstColonIndex = inputString.indexOf(':');
-    return inputString.substring(firstColonIndex + 1);
-  }
+  // static String _parseStringTitle(String inputString) {
+  //   final firstColonIndex = inputString.indexOf(':');
+  //   return inputString.substring(firstColonIndex + 1);
+  // }
 
   static Duration _parseDurationString(String inputString) {
     final durations = inputString.substring(1).split('_');
@@ -255,6 +264,32 @@ class ChapterInfo {
       minutes: int.parse(durations[1]),
       seconds: int.parse(durations[2]),
       milliseconds: int.parse(durations[3]),
+    );
+  }
+}
+
+class AttachmentInfo {
+  AttachmentInfo({
+    required this.id,
+    required this.uid,
+    required this.name,
+    required this.type,
+    required this.size,
+  });
+
+  final int id;
+  final String uid;
+  final String name;
+  final String type;
+  final int size;
+
+  factory AttachmentInfo.fromMkvInfo(MkvAttachmentInfo attachmentInfo) {
+    return AttachmentInfo(
+      id: attachmentInfo.id,
+      uid: attachmentInfo.uid,
+      name: attachmentInfo.name,
+      type: attachmentInfo.type,
+      size: attachmentInfo.size,
     );
   }
 }

@@ -589,3 +589,260 @@ class _TrackDialogState extends State<TrackDialog> {
     );
   }
 }
+
+class ExtraDialog extends StatelessWidget {
+  ExtraDialog({
+    super.key,
+    required this.trackType,
+    required this.track,
+  });
+  final String trackType;
+  final TrackProperties track;
+  late final bool embedded = track is EmbeddedTrack;
+  late final bool isChapter = trackType == 'Chapter';
+  late final include = ValueNotifier(track.include);
+  late final extraCtrl = TextEditingController(text: track.extraOptions);
+  late final _mainCtrl = ScrollController(),
+      _vertical = ScrollController(),
+      _horizontal = ScrollController();
+
+  List<Widget> children(BuildContext context) {
+    if (isChapter) {
+      if (embedded) {
+        final info = ((track as EmbeddedTrack).info as MenuInfo);
+        return [
+          Table(
+            columnWidths: const {
+              0: IntrinsicColumnWidth(),
+              1: FixedColumnWidth(100),
+              2: IntrinsicColumnWidth(),
+            },
+            children: [
+              TableRow(
+                children: [
+                  TableCell(
+                      child: Text(
+                    'Timestamp',
+                    style: FluentTheme.of(context).typography.bodyStrong,
+                  )),
+                  const TableCell(child: SizedBox.shrink()),
+                  TableCell(
+                      child: Text(
+                    'Title',
+                    style: FluentTheme.of(context).typography.bodyStrong,
+                  )),
+                ],
+              ),
+              for (var chapter in info.chapters) ...[
+                TableRow(
+                  children: [
+                    TableCell(
+                        child: Text(chapter.startsStamp.format(
+                      includeDay: false,
+                      daySymbol: '',
+                      hourSymbol: '',
+                      minuteSymbol: '',
+                      secondSymbol: '',
+                      millisecondSymbol: '',
+                      delimiter: ':',
+                      dayPad: 2,
+                      hourPad: 2,
+                      minutePad: 2,
+                      secondPad: 2,
+                      millisecondPad: 3,
+                      ignoreZero: false,
+                    ))),
+                    const TableCell(child: SizedBox(height: 0)),
+                    TableCell(child: Text(chapter.title)),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ];
+      }
+      final fileInfo = (track as AddedTrack).file.readAsStringSync();
+      return [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4),
+          child: Text(
+            fileInfo,
+          ),
+        ),
+      ];
+    }
+    if (embedded) {
+      final info = ((track as EmbeddedTrack).info as AttachmentInfo);
+      return [
+        Text('Name: ${info.name}'),
+        Text('Type: ${info.type}'),
+        Text('Size: ${info.size.formatByteSize()}'),
+      ];
+    }
+    final fileInfo = (track as AddedTrack).file;
+    return [
+      Text('Name: ${fileInfo.name}'),
+      Text('Type: ${fileInfo.extension}'),
+      Text('Size: ${fileInfo.lengthSync().formatByteSize()}'),
+    ];
+  }
+
+  @override
+  mt.Widget build(BuildContext context) {
+    return ContentDialog(
+      constraints: const BoxConstraints(maxWidth: 600),
+      title: Text(trackType),
+      content: Scrollbar(
+        controller: _mainCtrl,
+        child: ListView(
+          controller: _mainCtrl,
+          shrinkWrap: true,
+          children: [
+            Text.rich(
+              TextSpan(
+                text: 'Source (${embedded ? 'Embedded' : 'File'}):\n',
+                children: [
+                  TextSpan(
+                    text: embedded
+                        ? (track as EmbeddedTrack).uid
+                        : (track as AddedTrack).file.name.noBreakHyphen,
+                    style:
+                        FluentTheme.of(context).typography.bodyStrong?.copyWith(
+                              color: embedded ? null : Colors.blue,
+                            ),
+                    recognizer: embedded
+                        ? null
+                        : (TapGestureRecognizer()
+                          ..onTap = () async {
+                            await (track as AddedTrack).file.revealInExplorer();
+                          }),
+                  ),
+                ],
+              ),
+              style: FluentTheme.of(context).typography.bodyStrong,
+            ),
+            Expander(
+              header: const Text('Content preview'),
+              headerHeight: 32,
+              content: Container(
+                decoration: isChapter && !embedded
+                    ? BoxDecoration(
+                        color: FluentTheme.of(context).micaBackgroundColor,
+                        borderRadius: BorderRadius.circular(5),
+                      )
+                    : null,
+                constraints: const BoxConstraints(maxHeight: 500),
+                child: Scrollbar(
+                  thumbVisibility: true,
+                  controller: _horizontal,
+                  notificationPredicate: (notif) => notif.depth == 1,
+                  child: SingleChildScrollView(
+                    controller: _vertical,
+                    scrollDirection: Axis.vertical,
+                    child: SingleChildScrollView(
+                      controller: _horizontal,
+                      scrollDirection: Axis.horizontal,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: children(context),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            if (!embedded) ...[
+              const SizedBox(height: 10),
+              Text.rich(
+                TextSpan(
+                  text: 'Extra Options',
+                  children: [
+                    WidgetSpan(
+                      child: Tooltip(
+                        message: 'MKVMerge documentation',
+                        child: RichText(
+                          text: TextSpan(
+                            text: ' [?]',
+                            style: FluentTheme.of(context)
+                                .typography
+                                .bodyStrong
+                                ?.copyWith(
+                                  color: embedded ? null : Colors.blue,
+                                ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () async {
+                                const url =
+                                    r'https://mkvtoolnix.download/doc/mkvmerge.html';
+                                if (await canLaunchUrl(Uri.parse(url))) {
+                                  await launchUrl(Uri.parse(url));
+                                }
+                              },
+                          ),
+                        ),
+                      ),
+                    ),
+                    const TextSpan(text: ':'),
+                  ],
+                ),
+                style: FluentTheme.of(context).typography.bodyStrong,
+              ),
+              TextBox(controller: extraCtrl),
+              const SizedBox(height: 10),
+              mt.Material(
+                color: Colors.transparent,
+                child: Wrap(
+                  direction: Axis.horizontal,
+                  runSpacing: 6,
+                  spacing: 6,
+                  children: [
+                    ValueListenableBuilder<bool>(
+                      valueListenable: include,
+                      builder: (context, value, child) {
+                        return Tooltip(
+                          message:
+                              'Enable to include this item in the merging process.',
+                          child: mt.ChoiceChip(
+                            avatar: const Icon(FluentIcons.link),
+                            label: const Text('Include'),
+                            selected: value,
+                            selectedColor: FluentTheme.of(context).accentColor,
+                            onSelected: (val) {
+                              include.value = val;
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        if (embedded) ...[
+          Button(
+            child: const Text('Okay'),
+            onPressed: () => Navigator.pop(context, false),
+          ),
+        ] else ...[
+          Button(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(context, false),
+          ),
+          FilledButton(
+            child: const Text('Save'),
+            onPressed: () {
+              track.update(
+                include: include.value,
+              );
+              Navigator.pop(context, true);
+            },
+          ),
+        ],
+      ],
+    );
+  }
+}

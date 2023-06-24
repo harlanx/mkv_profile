@@ -6,28 +6,33 @@ class MkvInfo {
     required this.videoInfo,
     required this.audioInfo,
     required this.textInfo,
+    required this.attachmentInfo,
   });
 
   final String fileName;
-  final List<MkvExtraInfo> videoInfo;
-  final List<MkvExtraInfo> audioInfo;
-  final List<MkvExtraInfo> textInfo;
+  final List<MkvTrackInfo> videoInfo;
+  final List<MkvTrackInfo> audioInfo;
+  final List<MkvTrackInfo> textInfo;
+  final List<MkvAttachmentInfo> attachmentInfo;
 
   factory MkvInfo.fromJson(String str) {
     final cleanSource = preprocessJsonString(str, 16);
     final Map<String, dynamic> json = jsonDecode(cleanSource);
     final List tracks = json['tracks'];
+    final List attachments = json['attachments'];
     return MkvInfo(
       fileName: json['file_name'],
-      videoInfo: List<MkvExtraInfo>.from(tracks
+      videoInfo: List.from(tracks
           .where((item) => item['type'] == 'video')
-          .map((e) => MkvExtraInfo.fromJson(e))),
-      audioInfo: List<MkvExtraInfo>.from(tracks
+          .map((e) => MkvTrackInfo.fromJson(e))),
+      audioInfo: List.from(tracks
           .where((item) => item['type'] == 'audio')
-          .map((e) => MkvExtraInfo.fromJson(e))),
-      textInfo: List<MkvExtraInfo>.from(tracks
+          .map((e) => MkvTrackInfo.fromJson(e))),
+      textInfo: List.from(tracks
           .where((item) => item['type'] == 'subtitles')
-          .map((e) => MkvExtraInfo.fromJson(e))),
+          .map((e) => MkvTrackInfo.fromJson(e))),
+      attachmentInfo:
+          List.from(attachments.map((e) => MkvAttachmentInfo.fromJson(e))),
     );
   }
 
@@ -46,8 +51,8 @@ class MkvInfo {
   }
 }
 
-class MkvExtraInfo {
-  MkvExtraInfo({
+class MkvTrackInfo {
+  MkvTrackInfo({
     required this.id,
     required this.uid,
     required this.defaultFlag,
@@ -69,11 +74,11 @@ class MkvExtraInfo {
   final bool visualImpairedFlag;
   final bool textDescriptionFlag;
 
-  factory MkvExtraInfo.fromJson(Map<String, dynamic> json) {
+  factory MkvTrackInfo.fromJson(Map<String, dynamic> json) {
     final props = json['properties'];
     String? uid = props['uid'];
     uid ??= json.hashCode.toString();
-    return MkvExtraInfo(
+    return MkvTrackInfo(
       id: json['id'],
       uid: uid,
       defaultFlag: props['default_track'] ?? false,
@@ -83,6 +88,33 @@ class MkvExtraInfo {
       hearingImpairedFlag: props['flag_hearing_impaired'] ?? false,
       visualImpairedFlag: props['flag_visual_impaired'] ?? false,
       textDescriptionFlag: props['flag_text_descriptions'] ?? false,
+    );
+  }
+}
+
+class MkvAttachmentInfo {
+  MkvAttachmentInfo({
+    required this.id,
+    required this.uid,
+    required this.name,
+    required this.type,
+    required this.size,
+  });
+
+  final int id;
+  final String uid;
+  final String name;
+  final String type;
+  final int size;
+
+  factory MkvAttachmentInfo.fromJson(Map<String, dynamic> json) {
+    final props = json['properties'];
+    return MkvAttachmentInfo(
+      id: json['id'],
+      uid: props['uid'],
+      name: json['file_name'],
+      type: json['content_type'],
+      size: json['size'],
     );
   }
 }

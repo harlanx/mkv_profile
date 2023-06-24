@@ -9,16 +9,16 @@ class FileGrouper {
       final videoFile = pathData.videos.first;
       return GroupingResult(
         Movie(
-          directory: pathData.mainDir,
-          video: Video(
-            mainFile: videoFile,
-          )
-            ..addedSubtitles.addAll(await _fetchSubtitles(pathData.otherFiles))
-            ..addedAudios.addAll(await _fetchAudios(pathData.otherFiles))
-            ..chapterFiles.addAll(await _fetchChapters(pathData.otherFiles))
-            ..fontFiles.addAll(await _fetchFonts(pathData.otherFiles))
-            ..imageFiles.addAll(await _fetchImages(pathData.otherFiles)),
-        ),
+            directory: pathData.mainDir,
+            video: Video(
+              mainFile: videoFile,
+            )
+              ..addedSubtitles
+                  .addAll(await _fetchSubtitles(pathData.otherFiles))
+              ..addedAudios.addAll(await _fetchAudios(pathData.otherFiles))
+              ..addedChapters.addAll(await _fetchChapters(pathData.otherFiles))
+              ..addedAttachments
+                  .addAll(await _fetchAttachments(pathData.otherFiles))),
       );
     }
 
@@ -41,23 +41,53 @@ class FileGrouper {
     }
 
     final List<Season> seasons = [];
-    for (var s in seasonsStr) {
-      final seasonInt = int.parse(s.replaceAll(RegExp(r'[^0-9]'), ''));
+
+    // Assign Season 01 if no seasons found but multiple videos found.
+    if (seasonsStr.isEmpty && pathData.videos.isNotEmpty) {
       final List<Video> videos = [];
       for (var v in pathData.videos) {
-        if (v.title.contains(s)) {
-          final Set<File> relatedFiles = {};
-          // Get files with same name as the video
-          relatedFiles.addAll(pathData.otherFiles
-              .where((element) => element.title == v.title)
-              .toSet());
-          // Get files with the same folder name as the video
-          relatedFiles.addAll(pathData.otherFiles
-              .where((element) => element.parent.name == v.title)
-              .toSet());
+        final Set<File> relatedFiles = {};
+        // Get files with same name as the video
+        relatedFiles.addAll(pathData.otherFiles
+            .where((element) => element.title == v.title)
+            .toSet());
+        // Get files with the same folder name as the video
+        relatedFiles.addAll(pathData.otherFiles
+            .where((element) => element.parent.name == v.title)
+            .toSet());
 
-          videos.add(
-            Video(
+        videos.add(Video(
+          mainFile: v,
+          season: 1,
+          episode: await _fetchEpisode(v.title),
+        )
+          ..addedSubtitles.addAll(await _fetchSubtitles(relatedFiles.toList()))
+          ..addedAudios.addAll(await _fetchAudios(relatedFiles.toList()))
+          ..addedChapters.addAll(await _fetchChapters(relatedFiles.toList()))
+          ..addedAttachments
+              .addAll(await _fetchAttachments(relatedFiles.toList())));
+      }
+      // Sort by file name
+      videos.sort((a, b) => compareNatural(a.mainFile.name, b.mainFile.name));
+      seasons.add(Season(number: 1, videos: videos));
+      successGroup.add('Season 01');
+    } else {
+      for (var s in seasonsStr) {
+        final seasonInt = int.parse(s.replaceAll(RegExp(r'[^0-9]'), ''));
+        final List<Video> videos = [];
+        for (var v in pathData.videos) {
+          if (v.title.contains(s)) {
+            final Set<File> relatedFiles = {};
+            // Get files with same name as the video
+            relatedFiles.addAll(pathData.otherFiles
+                .where((element) => element.title == v.title)
+                .toSet());
+            // Get files with the same folder name as the video
+            relatedFiles.addAll(pathData.otherFiles
+                .where((element) => element.parent.name == v.title)
+                .toSet());
+
+            videos.add(Video(
               mainFile: v,
               season: seasonInt,
               episode: await _fetchEpisode(v.title),
@@ -65,23 +95,22 @@ class FileGrouper {
               ..addedSubtitles
                   .addAll(await _fetchSubtitles(relatedFiles.toList()))
               ..addedAudios.addAll(await _fetchAudios(relatedFiles.toList()))
-              ..chapterFiles.addAll(await _fetchChapters(relatedFiles.toList()))
-              ..fontFiles.addAll(await _fetchFonts(relatedFiles.toList()))
-              ..imageFiles.addAll(await _fetchImages(relatedFiles.toList())),
-          );
+              ..addedChapters
+                  .addAll(await _fetchChapters(relatedFiles.toList()))
+              ..addedAttachments
+                  .addAll(await _fetchAttachments(relatedFiles.toList())));
+          }
         }
-      }
-      // If no subtitle file found for the video, remove it from the list
-      // Remove this line if planning on managing mkv files.
-      //videos.removeWhere((element) => element.addedSubtitles.isEmpty);
 
-      if (videos.isNotEmpty) {
-        // Sort by file name
-        videos.sort((a, b) => compareNatural(a.mainFile.name, b.mainFile.name));
-        seasons.add(Season(number: seasonInt, videos: videos));
-        successGroup.add('Season $seasonInt');
-      } else {
-        failGroup.add('Season $seasonInt');
+        if (videos.isNotEmpty) {
+          // Sort by file name
+          videos
+              .sort((a, b) => compareNatural(a.mainFile.name, b.mainFile.name));
+          seasons.add(Season(number: seasonInt, videos: videos));
+          successGroup.add('Season $seasonInt');
+        } else {
+          failGroup.add('Season $seasonInt');
+        }
       }
     }
 
@@ -144,24 +173,21 @@ class FileGrouper {
         .toList();
   }
 
-  static Future<List<File>> _fetchChapters(List<File> relatedFiles) async {
+  static Future<List<AddedTrack>> _fetchChapters(
+      List<File> relatedFiles) async {
     return relatedFiles
         .where((element) => AppData.chapterFormats.contains(element.extension))
-        .map((e) => e)
+        .map((e) => AddedTrack(file: e))
         .toList();
   }
 
-  static Future<List<File>> _fetchFonts(List<File> relatedFiles) async {
+  static Future<List<AddedTrack>> _fetchAttachments(
+      List<File> relatedFiles) async {
     return relatedFiles
-        .where((element) => AppData.fontFormats.contains(element.extension))
-        .map((e) => e)
-        .toList();
-  }
-
-  static Future<List<File>> _fetchImages(List<File> relatedFiles) async {
-    return relatedFiles
-        .where((element) => AppData.imageFormats.contains(element.extension))
-        .map((e) => e)
+        .where((element) =>
+            AppData.fontFormats.contains(element.extension) ||
+            AppData.imageFormats.contains(element.extension))
+        .map((e) => AddedTrack(file: e))
         .toList();
   }
 }

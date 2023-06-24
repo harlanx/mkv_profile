@@ -306,7 +306,6 @@ class InfoPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = FluentTheme.of(context);
     return ValueListenableBuilder(
       valueListenable: selectedID,
       builder: (context, id, _) {
@@ -354,7 +353,7 @@ class InfoPanel extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.fade,
                     ),
-                    children: _treeViewNodes(theme, context, sn),
+                    children: _treeViewNodes(context, sn),
                   ),
                 ],
               );
@@ -391,6 +390,12 @@ class InfoPanel extends StatelessWidget {
     );
     updated ??= false;
     if (updated) {
+      for (var chapter in v.embeddedChapters) {
+        chapter.include = !v.removeChapters;
+      }
+      for (var attachment in v.embeddedAttachments) {
+        attachment.include = !v.removeAttachments;
+      }
       sn.refresh();
     }
   }
@@ -399,11 +404,11 @@ class InfoPanel extends StatelessWidget {
     BuildContext ctx,
     String type,
     ShowNotifier sn,
-    TrackProperties sub,
+    TrackProperties track,
   ) async {
     bool? updated = await showDialog<bool>(
       context: ctx,
-      builder: (context) => TrackDialog(trackType: type, track: sub),
+      builder: (context) => TrackDialog(trackType: type, track: track),
     );
     updated ??= false;
     if (updated) {
@@ -412,8 +417,23 @@ class InfoPanel extends StatelessWidget {
     }
   }
 
-  List<TreeViewItem> _treeViewNodes(
-      FluentThemeData theme, BuildContext context, ShowNotifier sn) {
+  Future<void> _extraDialog(
+    BuildContext ctx,
+    String type,
+    ShowNotifier sn,
+    TrackProperties extra,
+  ) async {
+    bool? updated = await showDialog<bool>(
+      context: ctx,
+      builder: (context) => ExtraDialog(trackType: type, track: extra),
+    );
+    updated ??= false;
+    if (updated) {
+      sn.refresh();
+    }
+  }
+
+  List<TreeViewItem> _treeViewNodes(BuildContext context, ShowNotifier sn) {
     if (sn.show is Movie) {
       final movie = sn.show as Movie;
       return [_videoTree(context, movie.video, sn)];
@@ -446,16 +466,38 @@ class InfoPanel extends StatelessWidget {
     }
   }
 
+  // For Video Track
   TreeViewItem _videoTree(BuildContext context, Video video, ShowNotifier sn) {
-    final expandedVideo =
+    final expandVid =
         sn.expandedTrees.any((value) => value == video.mainFile.path);
-    final expandedAudio = sn.expandedTrees
+    final expandAud = sn.expandedTrees
         .any((value) => value == '${video.mainFile.path}Audios');
-    final expandedSubs = sn.expandedTrees
+    final expandSub = sn.expandedTrees
         .any((value) => value == '${video.mainFile.path}Subtitles');
+    final expandChap = sn.expandedTrees
+        .any((value) => value == '${video.mainFile.path}Chapters');
+    final expandAttach = sn.expandedTrees
+        .any((value) => value == '${video.mainFile.path}Attachments');
+
+    final audios = [
+      ...video.embeddedAudios,
+      ...video.addedAudios,
+    ];
+    final subtitles = [
+      ...video.embeddedSubtitles,
+      ...video.addedSubtitles,
+    ];
+    final chapters = [
+      ...video.embeddedChapters,
+      ...video.addedChapters,
+    ];
+    final attachments = [
+      ...video.embeddedAttachments,
+      ...video.addedAttachments
+    ];
     return TreeViewItem(
       value: video.mainFile.path,
-      expanded: expandedVideo,
+      expanded: expandVid,
       leading: const Icon(FluentIcons.my_movies_t_v),
       onInvoked: (item, reason) async {
         if (reason == TreeViewItemInvokeReason.pressed) {
@@ -471,56 +513,73 @@ class InfoPanel extends StatelessWidget {
         overflow: TextOverflow.fade,
       ),
       children: [
-        TreeViewItem(
-          value: '${video.mainFile.path}Audios',
-          expanded: expandedAudio,
-          leading: const Icon(FluentIcons.volume3),
-          content: const Text('Audios'),
-          children: [
-            ...List.from(
-              video.embeddedAudios.map<TreeViewItem>(
-                (sub) => _trackTree(context, 'Audio', sub, sn),
+        if (audios.isNotEmpty) ...[
+          TreeViewItem(
+            value: '${video.mainFile.path}Audios',
+            expanded: expandAud,
+            leading: const Icon(FluentIcons.volume3),
+            content: const Text('Audios'),
+            children: List<TreeViewItem>.from(
+              audios.map(
+                (e) => _trackTree(context, 'Audio', e, sn),
               ),
             ),
-            ...List.from(
-              video.addedAudios.map<TreeViewItem>(
-                (sub) => _trackTree(context, 'Audio', sub, sn),
+          ),
+        ],
+        if (subtitles.isNotEmpty) ...[
+          TreeViewItem(
+            value: '${video.mainFile.path}Subtitles',
+            expanded: expandSub,
+            leading: const Icon(FluentIcons.cc),
+            content: const Text('Subtitles'),
+            children: List<TreeViewItem>.from(
+              subtitles.map(
+                (e) => _trackTree(context, 'Subtitle', e, sn),
               ),
             ),
-          ],
-        ),
-        TreeViewItem(
-          value: '${video.mainFile.path}Subtitles',
-          expanded: expandedSubs,
-          leading: const Icon(FluentIcons.cc),
-          content: const Text('Subtitles'),
-          children: [
-            ...List.from(
-              video.embeddedSubtitles.map<TreeViewItem>(
-                (sub) => _trackTree(context, 'Subtitle', sub, sn),
+          ),
+        ],
+        if (chapters.isNotEmpty) ...[
+          TreeViewItem(
+            value: '${video.mainFile.path}Chapters',
+            expanded: expandChap,
+            leading: const Icon(FluentIcons.double_bookmark),
+            content: const Text('Chapters'),
+            children: List<TreeViewItem>.from(
+              chapters.map(
+                (e) => _extraTree(context, 'Chapter', e, sn),
               ),
             ),
-            ...List.from(
-              video.addedSubtitles.map<TreeViewItem>(
-                (sub) => _trackTree(context, 'Subtitle', sub, sn),
+          ),
+        ],
+        if (attachments.isNotEmpty) ...[
+          TreeViewItem(
+            value: '${video.mainFile.path}Attachments',
+            expanded: expandAttach,
+            leading: const Icon(FluentIcons.attach),
+            content: const Text('Attachments'),
+            children: List<TreeViewItem>.from(
+              attachments.map(
+                (e) => _extraTree(context, 'Attachment', e, sn),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ],
     );
   }
 
+  // For Audios and Subtitles
   TreeViewItem _trackTree(
     BuildContext context,
     String type,
-    TrackProperties sub,
+    TrackProperties track,
     ShowNotifier sn,
   ) {
-    final bool embedded = sub is EmbeddedTrack;
+    final bool embedded = track is EmbeddedTrack;
     final theme = FluentTheme.of(context);
     return TreeViewItem(
-      value: embedded ? sub.uid : (sub as AddedTrack).file.path,
+      value: embedded ? track.uid : (track as AddedTrack).file.path,
       collapsable: false,
       backgroundColor: !embedded
           ? ButtonState.resolveWith(
@@ -539,11 +598,11 @@ class InfoPanel extends StatelessWidget {
           : null,
       leading: Icon(
         FluentIcons.link,
-        color: sub.include ? FluentTheme.of(context).accentColor : null,
+        color: track.include ? FluentTheme.of(context).accentColor : null,
       ),
       onInvoked: (item, reason) async {
         if (reason == TreeViewItemInvokeReason.pressed) {
-          return await _trackDialog(context, type, sn, sub);
+          return await _trackDialog(context, type, sn, track);
         }
       },
       content: Row(
@@ -556,7 +615,7 @@ class InfoPanel extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              sub.language.name,
+              track.language.name,
               style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -566,7 +625,74 @@ class InfoPanel extends StatelessWidget {
           const SizedBox(width: 6),
           Flexible(
             child: Text(
-              embedded ? sub.uid : (sub as AddedTrack).file.name,
+              embedded ? track.uid : (track as AddedTrack).file.name,
+              softWrap: false,
+              overflow: TextOverflow.fade,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // For Chapters and Attachments
+  TreeViewItem _extraTree(
+    BuildContext context,
+    String type,
+    TrackProperties extra,
+    ShowNotifier sn,
+  ) {
+    final bool embedded = extra is EmbeddedTrack;
+    final theme = FluentTheme.of(context);
+
+    String displayName = '';
+    if (type == 'Chapter') {
+      if (embedded) {
+        displayName =
+            '${extra.uid} (Entries: ${(extra.info as MenuInfo).chapters.length})';
+      } else {
+        displayName = (extra as AddedTrack).file.name;
+      }
+    } else if (type == 'Attachment') {
+      if (embedded) {
+        displayName = '${extra.uid} (${(extra.info as AttachmentInfo).name})';
+      } else {
+        displayName = (extra as AddedTrack).file.name;
+      }
+    }
+    return TreeViewItem(
+      value: embedded ? extra.uid : (extra as AddedTrack).file.path,
+      collapsable: false,
+      backgroundColor: !embedded
+          ? ButtonState.resolveWith(
+              (states) {
+                return ButtonThemeData.uncheckedInputColor(
+                  theme,
+                  (states.isPressing || states.isNone)
+                      ? {ButtonStates.hovering}
+                      : states.isHovering
+                          ? {ButtonStates.pressing}
+                          : states,
+                  transparentWhenNone: true,
+                );
+              },
+            )
+          : null,
+      leading: Icon(
+        FluentIcons.link,
+        color: extra.include ? FluentTheme.of(context).accentColor : null,
+      ),
+      onInvoked: (item, reason) async {
+        if (reason == TreeViewItemInvokeReason.pressed) {
+          return await _extraDialog(context, type, sn, extra);
+        }
+      },
+      content: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: Text(
+              displayName,
               softWrap: false,
               overflow: TextOverflow.fade,
             ),
