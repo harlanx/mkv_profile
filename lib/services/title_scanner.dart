@@ -59,8 +59,7 @@ class TitleScanner {
     final Map<String, String> formats = {};
     // Setting variable values
     formats['%duration%'] =
-        Duration(milliseconds: (videoInfo.duration * 1000).toInt())
-            .formatDuration();
+        Duration(milliseconds: (videoInfo.duration * 1000).toInt()).format();
     formats['%encoding%'] = videoInfo.encoding;
     formats['%frame_rate%'] = videoInfo.frameRate.toString();
     formats['%height%'] = videoInfo.height.toString();
@@ -87,8 +86,7 @@ class TitleScanner {
     final Map<String, String> formats = {};
     formats['%language%'] = video.language.cleanName;
     formats['%duration%'] =
-        Duration(milliseconds: (videoInfo.duration * 1000).toInt())
-            .formatDuration();
+        Duration(milliseconds: (videoInfo.duration * 1000).toInt()).format();
     formats['%encoding%'] = videoInfo.encoding;
     formats['%episode%'] = video.episode?.toString().padLeft(2, '0') ?? '';
     formats['%frame_rate%'] = videoInfo.frameRate.toString();

@@ -285,7 +285,7 @@ class OutputsScreenState extends State<OutputsScreen>
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           final output = outputs.items[id]!;
-          return Text(output.duration.formatDuration());
+          return Text(output.duration.format(includeMillisecond: false));
         },
       ),
       PlutoColumn(

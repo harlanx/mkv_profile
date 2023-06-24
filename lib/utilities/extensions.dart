@@ -2,7 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:fluent_ui/fluent_ui.dart' show Color, HSLColor;
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:path/path.dart' as p;
 import 'package:win32/win32.dart';
 
@@ -207,26 +207,52 @@ extension IntExtension on int {
 }
 
 extension DurationExtension on Duration {
-  String formatDuration({String delimiter = ''}) {
-    var seconds = inSeconds;
-    final days = seconds ~/ Duration.secondsPerDay;
-    seconds -= days * Duration.secondsPerDay;
-    final hours = seconds ~/ Duration.secondsPerHour;
-    seconds -= hours * Duration.secondsPerHour;
-    final minutes = seconds ~/ Duration.secondsPerMinute;
-    seconds -= minutes * Duration.secondsPerMinute;
+  String format({
+    bool includeDay = true,
+    bool includeHour = true,
+    bool includeMinute = true,
+    bool includeSecond = true,
+    bool includeMillisecond = true,
+    String daySymbol = 'd',
+    String hourSymbol = 'h',
+    String minuteSymbol = 'm',
+    String secondSymbol = 's',
+    String millisecondSymbol = 'ms',
+    String delimiter = '',
+    int dayPad = 0,
+    int hourPad = 0,
+    int minutePad = 0,
+    int secondPad = 0,
+    int millisecondPad = 0,
+    bool ignoreZero = true,
+  }) {
+    var milliseconds = inMilliseconds;
+    final days = milliseconds ~/ Duration.millisecondsPerDay;
+    milliseconds -= days * Duration.millisecondsPerDay;
+    final hours = milliseconds ~/ Duration.millisecondsPerHour;
+    milliseconds -= hours * Duration.millisecondsPerHour;
+    final minutes = milliseconds ~/ Duration.millisecondsPerMinute;
+    milliseconds -= minutes * Duration.millisecondsPerMinute;
+    final seconds = milliseconds ~/ Duration.millisecondsPerSecond;
+    milliseconds -= seconds * Duration.millisecondsPerSecond;
 
     final List<String> tokens = [];
-    if (days != 0) {
-      tokens.add('${days}d');
+    if (includeDay && (days != 0 || !ignoreZero)) {
+      tokens.add('${days.toString().padLeft(dayPad, '0')}$daySymbol');
     }
-    if (tokens.isNotEmpty || hours != 0) {
-      tokens.add('${hours}h');
+    if (includeHour && ((tokens.isNotEmpty || hours != 0) || !ignoreZero)) {
+      tokens.add('${hours.toString().padLeft(hourPad, '0')}$hourSymbol');
     }
-    if (tokens.isNotEmpty || minutes != 0) {
-      tokens.add('${minutes}m');
+    if (includeMinute && ((tokens.isNotEmpty || minutes != 0) || !ignoreZero)) {
+      tokens.add('${minutes.toString().padLeft(minutePad, '0')}$minuteSymbol');
     }
-    tokens.add('${seconds}s');
+    if (includeSecond && ((tokens.isNotEmpty || seconds != 0) || !ignoreZero)) {
+      tokens.add('${seconds.toString().padLeft(secondPad, '0')}$secondSymbol');
+    }
+    if (includeMillisecond) {
+      tokens.add(
+          '${milliseconds.toString().padLeft(millisecondPad, '0')}$millisecondSymbol');
+    }
 
     return tokens.join(delimiter);
   }
