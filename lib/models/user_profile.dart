@@ -86,8 +86,12 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         r'Part\.\d|Part\s\d', //'Part.1', 'Part.2', 'Part 1','Part 2',
         r'DD\d+.\d+|DDP\d+.\d+', // 'DDP2.0', 'DDP5.1', Dolby Digital (Plus)
         r'TrueHD.\d+.\d+', // 'TrueHD.7.1', 'TrueHD.5.1', Atmos
-        r'\[(.*?)\]', // [Anything with square brackets]
+        r'\[(.*?)\]|\((.*?)\)', // [Anything with square brackets] (and Parentheses)
         r'\d+(?:\.\d+)?MB|\d+(?:\.\d+)?GB', // 200MB, 150.20MB, 2GB, 2.5GB
+        r'\bM{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})\b', // Roman numerals
+        'HEVC',
+        'WEB',
+        'NF',
         'Web-Dl',
         'WEBRip',
         'BluRay',
@@ -109,6 +113,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         'ION265',
         'ION10',
         'GalaxyRG',
+        'XEBEC'
       ],
       replacement: '',
     ),

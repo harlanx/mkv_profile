@@ -11,10 +11,17 @@ extension FileSystemEntityExtension on FileSystemEntity {
   /// Folder names are returned as is.
   String get name => path.split(Platform.pathSeparator).last;
 
-  /// Reveals the file or directory in highlighted mode on Windows File Explorer .
+  /// Reveals the file in highlighted mode or a directory with its content on Windows File Explorer.
   Future<void> revealInExplorer() async {
     if (await exists()) {
-      await Process.run('explorer.exe', ['/select,$path']);
+      final List<String> commands;
+      if (this is Directory) {
+        commands = [path];
+      } else {
+        /// For File
+        commands = ['/select,', path];
+      }
+      await Process.run('explorer', commands);
     }
   }
 }

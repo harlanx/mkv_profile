@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart' as mt;
 
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/app_data.dart';
 import '../../models/models.dart';
@@ -19,7 +20,7 @@ class FolderTitleDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      constraints: const BoxConstraints(maxWidth: 500),
+      constraints: const BoxConstraints(maxWidth: 600),
       title: const Text('Folder'),
       content: ListView(
         shrinkWrap: true,
@@ -148,7 +149,7 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      constraints: const BoxConstraints(maxWidth: 500),
+      constraints: const BoxConstraints(maxWidth: 600),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -175,97 +176,126 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
           ),
         ],
       ),
-      content: mt.Material(
-        color: Colors.transparent,
-        child: ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          children: [
-            SelectableText.rich(
-              TextSpan(
-                text: 'Source:\n',
-                children: [
-                  TextSpan(
-                    text: widget.v.mainFile.name.noBreakHyphen,
-                    style: FluentTheme.of(context)
-                        .typography
-                        .bodyStrong
-                        ?.copyWith(color: Colors.blue),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () async {
-                        await widget.v.mainFile.revealInExplorer();
-                      },
-                  ),
-                ],
-              ),
-              style: FluentTheme.of(context).typography.bodyStrong,
-            ),
-            InfoLabel(
-              label: 'Output File Title:',
-              labelStyle: FluentTheme.of(context).typography.bodyStrong,
-              child: Form(
-                key: _formKey,
-                child: TextFormBox(
-                  controller: fileTitleCtrl,
-                  style: FluentTheme.of(context).typography.body,
-                  maxLines: 1,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.singleLineFormatter,
-                  ],
-                  validator: (value) {
-                    if (value != null) {
-                      if (value.isEmpty) {
-                        return 'File name cannot be empty';
-                      }
-                      if (!value.isValidFileName) {
-                        return 'File name contains invalid characters';
-                      }
-                    }
-                    return null;
-                  },
+      content: ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        children: [
+          SelectableText.rich(
+            TextSpan(
+              text: 'Source:\n',
+              children: [
+                TextSpan(
+                  text: widget.v.mainFile.name.noBreakHyphen,
+                  style: FluentTheme.of(context)
+                      .typography
+                      .bodyStrong
+                      ?.copyWith(color: Colors.blue),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () async {
+                      await widget.v.mainFile.revealInExplorer();
+                    },
                 ),
+              ],
+            ),
+            style: FluentTheme.of(context).typography.bodyStrong,
+          ),
+          InfoLabel(
+            label: 'Output File Title:',
+            labelStyle: FluentTheme.of(context).typography.bodyStrong,
+            child: Form(
+              key: _formKey,
+              child: TextFormBox(
+                controller: fileTitleCtrl,
+                style: FluentTheme.of(context).typography.body,
+                maxLines: 1,
+                inputFormatters: [
+                  FilteringTextInputFormatter.singleLineFormatter,
+                ],
+                validator: (value) {
+                  if (value != null) {
+                    if (value.isEmpty) {
+                      return 'File name cannot be empty';
+                    }
+                    if (!value.isValidFileName) {
+                      return 'File name contains invalid characters';
+                    }
+                  }
+                  return null;
+                },
               ),
             ),
-            InfoLabel(
-              label: 'Track Title:',
-              labelStyle: FluentTheme.of(context).typography.bodyStrong,
-              child: TextBox(controller: trackTitleCtrl),
-            ),
-            InfoLabel(
-              label: 'Language:',
-              labelStyle: FluentTheme.of(context).typography.bodyStrong,
-              child: AutoSuggestBox<LanguageCode>(
-                controller: languageCtrl,
-                focusNode: languageNode,
-                sorter: (text, items) => Utilities.searchSorter(text, items),
-                onSelected: (selected) {
-                  if (selected.value != null) {
-                    language = selected.value!;
-                  }
-                },
-                items: List.from(
-                  AppData.languageCodes.items.map(
-                    (code) => AutoSuggestBoxItem<LanguageCode>(
-                      value: code,
-                      label: code.cleanName,
-                      child: Text(
-                        code.cleanName,
-                        softWrap: false,
-                        overflow: TextOverflow.fade,
-                      ),
+          ),
+          InfoLabel(
+            label: 'Track Title:',
+            labelStyle: FluentTheme.of(context).typography.bodyStrong,
+            child: TextBox(controller: trackTitleCtrl),
+          ),
+          InfoLabel(
+            label: 'Language:',
+            labelStyle: FluentTheme.of(context).typography.bodyStrong,
+            child: AutoSuggestBox<LanguageCode>(
+              controller: languageCtrl,
+              focusNode: languageNode,
+              sorter: (text, items) => Utilities.searchSorter(text, items),
+              onSelected: (selected) {
+                if (selected.value != null) {
+                  language = selected.value!;
+                }
+              },
+              items: List.from(
+                AppData.languageCodes.items.map(
+                  (code) => AutoSuggestBoxItem<LanguageCode>(
+                    value: code,
+                    label: code.cleanName,
+                    child: Text(
+                      code.cleanName,
+                      softWrap: false,
+                      overflow: TextOverflow.fade,
                     ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 10),
-            InfoLabel(
-              label: 'Extra Options: Use variable %id% for track id',
-              labelStyle: FluentTheme.of(context).typography.bodyStrong,
-              child: TextBox(controller: extraCtrl),
+          ),
+          const SizedBox(height: 10),
+          Text.rich(
+            TextSpan(
+              text: 'Extra Options',
+              children: [
+                WidgetSpan(
+                  child: Tooltip(
+                    message: 'MKVMerge documentation',
+                    child: RichText(
+                      text: TextSpan(
+                        text: ' [?]',
+                        style: FluentTheme.of(context)
+                            .typography
+                            .bodyStrong
+                            ?.copyWith(
+                              color: Colors.blue,
+                            ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () async {
+                            const url =
+                                r'https://mkvtoolnix.download/doc/mkvmerge.html';
+                            if (await canLaunchUrl(Uri.parse(url))) {
+                              await launchUrl(Uri.parse(url));
+                            }
+                          },
+                      ),
+                    ),
+                  ),
+                ),
+                const TextSpan(text: ': Use variable %id% for track id'),
+              ],
             ),
-            const SizedBox(height: 10),
-            Wrap(
+            style: FluentTheme.of(context).typography.bodyStrong,
+          ),
+          TextBox(controller: extraCtrl),
+          const SizedBox(height: 10),
+          mt.Material(
+            color: Colors.transparent,
+            child: Wrap(
               direction: Axis.horizontal,
               runSpacing: 6,
               spacing: 6,
@@ -353,8 +383,8 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       actions: [
         Button(
@@ -424,149 +454,161 @@ class _TrackDialogState extends State<TrackDialog> {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      constraints: const BoxConstraints(maxWidth: 500),
+      constraints: const BoxConstraints(maxWidth: 600),
       title: Text(widget.trackType),
-      content: mt.Material(
-        color: Colors.transparent,
-        child: FluentTheme(
-          data: FluentTheme.of(context).copyWith(
-            tooltipTheme: TooltipTheme.of(context).merge(
-              const TooltipThemeData(
-                padding: EdgeInsets.all(8),
-                showDuration: Duration.zero,
-                waitDuration: Duration.zero,
-              ),
-            ),
-          ),
-          child: ListView(
-            shrinkWrap: true,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            children: [
-              Text.rich(
+      content: ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        children: [
+          Text.rich(
+            TextSpan(
+              text: 'Source (${embedded ? 'Embedded' : 'File'}):\n',
+              children: [
                 TextSpan(
-                  text: 'Source (${embedded ? 'Embedded' : 'File'}):\n',
-                  children: [
-                    TextSpan(
-                      text: embedded
-                          ? (widget.track as EmbeddedTrack).uid
-                          : (widget.track as AddedTrack)
-                              .file
-                              .name
-                              .noBreakHyphen,
-                      style: FluentTheme.of(context)
-                          .typography
-                          .bodyStrong
-                          ?.copyWith(
+                  text: embedded
+                      ? (widget.track as EmbeddedTrack).uid
+                      : (widget.track as AddedTrack).file.name.noBreakHyphen,
+                  style:
+                      FluentTheme.of(context).typography.bodyStrong?.copyWith(
                             color: embedded ? null : Colors.blue,
                           ),
-                      recognizer: embedded
-                          ? null
-                          : (TapGestureRecognizer()
-                            ..onTap = () async {
-                              await (widget.track as AddedTrack)
-                                  .file
-                                  .revealInExplorer();
-                            }),
-                    ),
-                  ],
+                  recognizer: embedded
+                      ? null
+                      : (TapGestureRecognizer()
+                        ..onTap = () async {
+                          await (widget.track as AddedTrack)
+                              .file
+                              .revealInExplorer();
+                        }),
                 ),
-                style: FluentTheme.of(context).typography.bodyStrong,
-              ),
-              InfoLabel(
-                label: 'Track Title:',
-                labelStyle: FluentTheme.of(context).typography.bodyStrong,
-                child: TextBox(controller: titleCtrl),
-              ),
-              InfoLabel(
-                label: 'Language:',
-                labelStyle: FluentTheme.of(context).typography.bodyStrong,
-                child: AutoSuggestBox<LanguageCode>(
-                  controller: languageCtrl,
-                  focusNode: languageNode,
-                  sorter: (text, items) => Utilities.searchSorter(text, items),
-                  onSelected: (selected) {
-                    if (selected.value != null) {
-                      language = selected.value!;
-                    }
-                  },
-                  items: List.from(
-                    AppData.languageCodes.items.map(
-                      (code) => AutoSuggestBoxItem<LanguageCode>(
-                        value: code,
-                        label: code.fullCleanName,
-                        child: Text(
-                          code.fullCleanName,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                        ),
-                      ),
+              ],
+            ),
+            style: FluentTheme.of(context).typography.bodyStrong,
+          ),
+          InfoLabel(
+            label: 'Track Title:',
+            labelStyle: FluentTheme.of(context).typography.bodyStrong,
+            child: TextBox(controller: titleCtrl),
+          ),
+          InfoLabel(
+            label: 'Language:',
+            labelStyle: FluentTheme.of(context).typography.bodyStrong,
+            child: AutoSuggestBox<LanguageCode>(
+              controller: languageCtrl,
+              focusNode: languageNode,
+              sorter: (text, items) => Utilities.searchSorter(text, items),
+              onSelected: (selected) {
+                if (selected.value != null) {
+                  language = selected.value!;
+                }
+              },
+              items: List.from(
+                AppData.languageCodes.items.map(
+                  (code) => AutoSuggestBoxItem<LanguageCode>(
+                    value: code,
+                    label: code.fullCleanName,
+                    child: Text(
+                      code.fullCleanName,
+                      softWrap: false,
+                      overflow: TextOverflow.fade,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
-              InfoLabel(
-                label: 'Extra Options: Use variable %id% for track id',
-                labelStyle: FluentTheme.of(context).typography.bodyStrong,
-                child: TextBox(controller: extraCtrl),
-              ),
-              const SizedBox(height: 10),
-              Wrap(
-                direction: Axis.horizontal,
-                runSpacing: 6,
-                spacing: 6,
-                children: [
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text.rich(
+            TextSpan(
+              text: 'Extra Options',
+              children: [
+                WidgetSpan(
+                  child: Tooltip(
+                    message: 'MKVMerge documentation',
+                    child: RichText(
+                      text: TextSpan(
+                        text: ' [?]',
+                        style: FluentTheme.of(context)
+                            .typography
+                            .bodyStrong
+                            ?.copyWith(
+                              color: Colors.blue,
+                            ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () async {
+                            const url =
+                                r'https://mkvtoolnix.download/doc/mkvmerge.html';
+                            if (await canLaunchUrl(Uri.parse(url))) {
+                              await launchUrl(Uri.parse(url));
+                            }
+                          },
+                      ),
+                    ),
+                  ),
+                ),
+                const TextSpan(text: ': Use variable %id% for track id'),
+              ],
+            ),
+            style: FluentTheme.of(context).typography.bodyStrong,
+          ),
+          TextBox(controller: extraCtrl),
+          const SizedBox(height: 10),
+          mt.Material(
+            color: Colors.transparent,
+            child: Wrap(
+              direction: Axis.horizontal,
+              runSpacing: 6,
+              spacing: 6,
+              children: [
+                ValueListenableBuilder<bool>(
+                  valueListenable: include,
+                  builder: (context, value, child) {
+                    return Tooltip(
+                      message:
+                          'Enable to include this item in the merging process.',
+                      child: mt.ChoiceChip(
+                        avatar: const Icon(FluentIcons.link),
+                        label: const Text('Include'),
+                        selected: value,
+                        selectedColor: FluentTheme.of(context).accentColor,
+                        onSelected: (val) {
+                          include.value = val;
+                        },
+                      ),
+                    );
+                  },
+                ),
+                for (var flagEntry in flagNotifiers.entries) ...[
                   ValueListenableBuilder<bool>(
-                    valueListenable: include,
+                    valueListenable: flagEntry.value,
                     builder: (context, value, child) {
                       return Tooltip(
-                        message:
-                            'Enable to include this item in the merging process.',
+                        message: flagEntry.key.descripton,
                         child: mt.ChoiceChip(
-                          avatar: const Icon(FluentIcons.link),
-                          label: const Text('Include'),
+                          avatar: Icon(
+                            IconData(
+                              flagEntry.key.iconData['id'],
+                              fontFamily: flagEntry.key.iconData['fontFamily'],
+                              fontPackage:
+                                  flagEntry.key.iconData['fontPackage'],
+                            ),
+                          ),
+                          label: Text(flagEntry.key.name),
                           selected: value,
                           selectedColor: FluentTheme.of(context).accentColor,
                           onSelected: (val) {
-                            include.value = val;
+                            flagEntry.value.value = val;
+                            flagEntry.key.value = val;
                           },
                         ),
                       );
                     },
                   ),
-                  for (var flagEntry in flagNotifiers.entries) ...[
-                    ValueListenableBuilder<bool>(
-                      valueListenable: flagEntry.value,
-                      builder: (context, value, child) {
-                        return Tooltip(
-                          message: flagEntry.key.descripton,
-                          child: mt.ChoiceChip(
-                            avatar: Icon(
-                              IconData(
-                                flagEntry.key.iconData['id'],
-                                fontFamily:
-                                    flagEntry.key.iconData['fontFamily'],
-                                fontPackage:
-                                    flagEntry.key.iconData['fontPackage'],
-                              ),
-                            ),
-                            label: Text(flagEntry.key.name),
-                            selected: value,
-                            selectedColor: FluentTheme.of(context).accentColor,
-                            onSelected: (val) {
-                              flagEntry.value.value = val;
-                              flagEntry.key.value = val;
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  ],
                 ],
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
       actions: [
         Button(

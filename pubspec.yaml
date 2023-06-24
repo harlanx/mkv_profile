@@ -5,7 +5,7 @@ description: Automatically manage and merge to mkv your downloaded series or mov
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.3.1+7
+version: 0.3.2+8
 
 environment:
   sdk: ">=2.19.0 <3.0.0"

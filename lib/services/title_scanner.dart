@@ -17,21 +17,20 @@ class TitleScanner {
   }
 
   /// Title scanner by replacing the matched strings using the list [UserProfile.modifiers]
-  static String _modifiedTitle(String rawTitle, List<TextModifier> modifiers) {
+  static String _modifiedTitle(String source, List<TextModifier> modifiers) {
     for (var i in modifiers) {
       for (var j in i.replaceable) {
-        rawTitle = rawTitle.replaceAll(
+        source = source.replaceAll(
             RegExp(j.regexSafe, caseSensitive: i.caseSensitive), i.replacement);
       }
     }
 
     // Replace whitespaces to single whitespace and trim end for any whitespace.
-    return rawTitle.singleSpace.trim();
+    return source.singleSpace.trim();
   }
 
-  static String _year(String rawTitle) {
-    final year =
-        RegExp(r'\b\d{4}\b', caseSensitive: false).stringMatch(rawTitle);
+  static String _year(String source) {
+    final year = RegExp(r'\b\d{4}\b', caseSensitive: false).stringMatch(source);
     if (year != null) {
       if (int.parse(year) > 1440) {
         return year;

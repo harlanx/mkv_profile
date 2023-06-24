@@ -4,11 +4,13 @@ import 'package:flutter/material.dart' as mt;
 import 'package:fluent_ui/fluent_ui.dart';
 
 import 'package:async/async.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:win32/win32.dart';
 
 import '../../data/app_data.dart';
 import '../../services/app_services.dart';
@@ -97,34 +99,37 @@ class PreferencesSection extends StatelessWidget {
                   const Icon(FluentIcons.processing),
                   const SizedBox(width: 6),
                   Text.rich(
-                    TextSpan(text: 'Maximum active processes ', children: [
-                      WidgetSpan(
-                        child: Tooltip(
-                          message:
-                              'Reccomended value: 1. MKVMerge is not CPU intensive.\nIts bound to bandwidth of storage/networking devices and RAM. Running in parallel is not beneficial at all.',
-                          child: RichText(
-                            text: TextSpan(
-                              text: '[?]',
-                              style: FluentTheme.of(context)
-                                  .typography
-                                  .bodyStrong
-                                  ?.copyWith(
-                                    color: Colors.blue,
-                                    fontSize: 12,
-                                  ),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () async {
-                                  const url =
-                                      'https://www.reddit.com/r/mkvtoolnix/comments/pee0h0/comment/hawy8bv/?utm_source=reddit&utm_medium=web2x&context=3';
-                                  if (await canLaunchUrl(Uri.parse(url))) {
-                                    await launchUrl(Uri.parse(url));
-                                  }
-                                },
+                    TextSpan(
+                      text: 'Maximum active processes ',
+                      children: [
+                        WidgetSpan(
+                          child: Tooltip(
+                            message:
+                                'Reccomended value: 1. MKVMerge is not CPU intensive.\nIts bound to bandwidth of storage/networking devices and RAM. Running in parallel is not beneficial at all.',
+                            child: RichText(
+                              text: TextSpan(
+                                text: '[?]',
+                                style: FluentTheme.of(context)
+                                    .typography
+                                    .bodyStrong
+                                    ?.copyWith(
+                                      color: Colors.blue,
+                                      fontSize: 12,
+                                    ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () async {
+                                    const url =
+                                        'https://www.reddit.com/r/mkvtoolnix/comments/pee0h0/comment/hawy8bv/?utm_source=reddit&utm_medium=web2x&context=3';
+                                    if (await canLaunchUrl(Uri.parse(url))) {
+                                      await launchUrl(Uri.parse(url));
+                                    }
+                                  },
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ]),
+                      ],
+                    ),
                     style: FluentTheme.of(context).typography.body,
                   ),
                   const Spacer(),
@@ -150,29 +155,91 @@ class PreferencesSection extends StatelessWidget {
             Expander(
               leading: const Icon(FluentIcons.boards),
               header: const Text('Profiles'),
-              trailing: FilledButton(
-                child: const Text('Create'),
-                onPressed: () async {
-                  await showDialog<int>(
-                    context: context,
-                    builder: (context) =>
-                        CreateProfileDialog(templates: profiles.items),
-                  ).then((value) {
-                    if (value != null) {
-                      Navigator.push(
-                        context,
-                        FluentPageRoute(
-                          builder: (context) {
-                            return ProfilePage(
-                              sourceProfile: profiles.items[value]!,
-                              isNew: true,
-                            );
-                          },
-                        ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Button(
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(FluentIcons.chevron_up_end6),
+                        SizedBox(width: 8),
+                        Text('Import'),
+                      ],
+                    ),
+                    onPressed: () async {
+                      final XFile? file = await openFile(
+                        acceptedTypeGroups: [
+                          const XTypeGroup(
+                            extensions: ['json'],
+                          ),
+                        ],
                       );
-                    }
-                  });
-                },
+                      if (file != null) {
+                        profiles.import(file.path);
+                      }
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  Button(
+                    onPressed: () async {
+                      final FileSaveLocation? output = await getSaveLocation(
+                        suggestedName:
+                            'MKVProfile_${DateFormat('MMddy_HmsSSS').format(DateTime.now())}',
+                        initialDirectory: FOLDERID_Downloads,
+                        acceptedTypeGroups: [
+                          const XTypeGroup(
+                            extensions: ['json'],
+                          ),
+                        ],
+                        confirmButtonText: 'Save',
+                      );
+                      if (output != null) {
+                        final outputPath = '${output.path}.json';
+                        profiles.export(outputPath);
+                      }
+                    },
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(FluentIcons.chevron_down_end6),
+                        SizedBox(width: 8),
+                        Text('Export'),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton(
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(FluentIcons.circle_addition_solid),
+                        SizedBox(width: 8),
+                        Text('Create'),
+                      ],
+                    ),
+                    onPressed: () async {
+                      final int? profileID = await showDialog<int?>(
+                        context: context,
+                        builder: (context) =>
+                            CreateProfileDialog(templates: profiles.items),
+                      );
+                      if (context.mounted && profileID != null) {
+                        Navigator.push(
+                          context,
+                          FluentPageRoute(
+                            builder: (context) {
+                              return ProfilePage(
+                                sourceProfile: profiles.items[profileID]!,
+                                isNew: true,
+                              );
+                            },
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ],
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -519,7 +586,7 @@ class MiscSection extends StatelessWidget {
                                     const XTypeGroup(
                                       label: 'MediaInfo',
                                       extensions: ['dll'],
-                                    )
+                                    ),
                                   ],
                                 );
                                 if (file != null) {

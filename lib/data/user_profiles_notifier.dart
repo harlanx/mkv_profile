@@ -17,7 +17,7 @@ class UserProfilesNotifier extends ChangeNotifier {
       name: 'Default (Movie)',
       showTitleFormat: '%title% (%year%)',
       videoTitleFormat: '%title% (%year%)',
-      subtitleTitleFormat: '%hearing_impaired% %forced%',
+      subtitleTitleFormat: '%language% %hearing_impaired% %forced%',
       defaultFlagOrder: [
         'default',
         'hearing_impaired',
@@ -31,7 +31,7 @@ class UserProfilesNotifier extends ChangeNotifier {
       name: 'Default (Series)',
       showTitleFormat: '%title%',
       videoTitleFormat: '%title% - S%season%E%episode%',
-      subtitleTitleFormat: '%hearing_impaired% %forced%',
+      subtitleTitleFormat: '%language% %hearing_impaired% %forced%',
       defaultFlagOrder: [
         'default',
         'hearing_impaired',
@@ -60,6 +60,28 @@ class UserProfilesNotifier extends ChangeNotifier {
       'UserProfiles',
       _items.values.map((e) => jsonEncode(e)).toList(),
     );
+  }
+
+  Future<void> import(String path) async {
+    final file = File(path);
+    if (await file.exists()) {
+      final jsonEntries = jsonDecode(await file.readAsString());
+      for (var json in jsonEntries) {
+        final profile = UserProfile.fromJson(json);
+        _items.addAll({profile.id: profile});
+      }
+    }
+    notifyListeners();
+  }
+
+  Future<void> export(String path) async {
+    // Exclude default profiles.
+    final toBeSaved = <UserProfile>[
+      for (var item in _items.entries)
+        if (item.key >= 3) ...[item.value]
+    ];
+    final jsonString = jsonEncode(toBeSaved);
+    await File(path).writeAsString(jsonString);
   }
 
   void refresh() => notifyListeners();
