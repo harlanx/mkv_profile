@@ -78,9 +78,7 @@ class AppSettingsNotifier extends ChangeNotifier {
       ..mkvMergePath = json['mkvMergePath'];
   }
 
-  String toJson() {
-    return jsonEncode(
-      <String, dynamic>{
+  Map<String, dynamic> toJson() => {
         'recursiveLimit': recursiveLimit,
         'maximumProcess': maximumProcess,
         'themeMode': themeMode.name,
@@ -93,9 +91,7 @@ class AppSettingsNotifier extends ChangeNotifier {
         'infoPanelWidth': infoPanelWidth,
         'mediaInfoPath': mediaInfoPath,
         'mkvMergePath': mkvMergePath,
-      },
-    );
-  }
+      };
 
   void load() {
     final appSettingsJson = SharedPrefs.getString('AppSettings');
@@ -118,7 +114,7 @@ class AppSettingsNotifier extends ChangeNotifier {
   }
 
   Future<void> save() async {
-    await SharedPrefs.setString('AppSettings', toJson());
+    await SharedPrefs.setString('AppSettings', jsonEncode(this));
   }
 
   void setRecursiveLimit(int limit) {

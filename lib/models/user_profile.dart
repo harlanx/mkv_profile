@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import 'package:equatable/equatable.dart';
@@ -138,8 +137,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
   List<TextModifier> modifiers;
   bool useFolderName;
 
-  factory UserProfile.fromJson(String str) {
-    final Map<String, dynamic> json = jsonDecode(str);
+  factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
       id: json['id'],
       name: json['name'],
@@ -156,9 +154,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
     );
   }
 
-  String toJson() {
-    return jsonEncode(
-      <String, dynamic>{
+  Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
         'showTitleFormat': showTitleFormat,
@@ -168,11 +164,9 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         'defaultLanguage': defaultLanguage,
         'languages': languages,
         'defaultFlagOrder': defaultFlagOrder,
-        'modifiers': List<String>.from(modifiers.map((e) => e.toJson())),
+        'modifiers': modifiers,
         'useFolderName': useFolderName,
-      },
-    );
-  }
+      };
 
   UserProfile copyWith({
     String? name,
@@ -351,14 +345,13 @@ class TextModifier {
     this.caseSensitive = caseSensitive ?? this.caseSensitive;
   }
 
-  String toJson() => jsonEncode(<String, dynamic>{
+  Map<String, dynamic> toJson() => {
         'id': id,
         'replaceable': replaceable,
         'replacement': replacement,
-      });
+      };
 
-  factory TextModifier.fromJson(String source) {
-    final Map<String, dynamic> json = jsonDecode(source);
+  factory TextModifier.fromJson(Map<String, dynamic> json) {
     return TextModifier(
       id: json['id'],
       replaceable: List<String>.from((json['replaceable'])),

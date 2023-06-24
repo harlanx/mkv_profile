@@ -18,7 +18,7 @@ class OutputNotifier extends ChangeNotifier {
   }
 
   Future<void> save() async {
-    final tobeSaved = _items.values.map((e) => e.toJson()).toList();
+    final tobeSaved = _items.values.map((e) => jsonEncode(e)).toList();
     await SharedPrefs.setStringList('OutputNotifier', tobeSaved);
   }
 

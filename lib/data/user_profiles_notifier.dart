@@ -48,7 +48,8 @@ class UserProfilesNotifier extends ChangeNotifier {
     final profilesJson = SharedPrefs.getStringList('UserProfiles');
     if (profilesJson != null) {
       _items.addAll({
-        for (var profile in profilesJson.map((e) => UserProfile.fromJson(e)))
+        for (var profile
+            in profilesJson.map((e) => UserProfile.fromJson(jsonDecode(e))))
           profile.id: profile
       });
     }
@@ -57,7 +58,7 @@ class UserProfilesNotifier extends ChangeNotifier {
   Future<void> save() async {
     await SharedPrefs.setStringList(
       'UserProfiles',
-      _items.values.map((e) => e.toJson()).toList(),
+      _items.values.map((e) => jsonEncode(e)).toList(),
     );
   }
 

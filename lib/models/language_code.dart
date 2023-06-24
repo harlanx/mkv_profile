@@ -207,16 +207,4 @@ class LanguageCode {
       iso6391: json['iso639-1'],
     );
   }
-
-  String toJson() {
-    return jsonEncode(
-      <String, dynamic>{
-        'name': name,
-        'cleanName': cleanName,
-        'iso6393': iso6393,
-        'iso6392': iso6392,
-        'iso6391': iso6392,
-      },
-    );
-  }
 }

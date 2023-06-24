@@ -30,15 +30,11 @@ class OutputInfo {
     );
   }
 
-  String toJson() {
-    return jsonEncode(
-      <String, dynamic>{
-        'taskStatus': taskStatus.toJson(),
+  Map<String, dynamic> toJson() => {
+        'taskStatus': taskStatus,
         'outputPath': outputPath,
         'info': log,
-      },
-    );
-  }
+      };
 
   OutputInfo copyWith({
     TaskStatus? taskStatus,
@@ -82,16 +78,12 @@ class OutputBasic {
     );
   }
 
-  String toJson() {
-    return jsonEncode(
-      <String, dynamic>{
+  Map<String, dynamic> toJson() => {
         'title': title,
         'path': path,
         'profile': profile,
-        'info': info.toJson(),
+        'info': info,
         'dateTime': dateTime.millisecondsSinceEpoch,
         'duration': duration.inSeconds,
-      },
-    );
-  }
+      };
 }
