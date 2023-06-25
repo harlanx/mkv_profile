@@ -29,40 +29,44 @@ class MetadataScanner {
         await Process.run(AppData.appSettings.mkvMergePath, ['-J', file.path]);
     final mkvInfo = MkvInfo.fromJson(mkvInfoJson.stdout);
 
-    String mediaInfoJson;
-    if (kDebugMode) {
-      mediaInfoJson = (await Process.run(_mediaInfoDebug,
-              ['--Language=raw', '--Complete', file.path, '--output=JSON']))
-          .stdout;
-    } else {
-      mediaInfoJson = _miw.getJsonInfo(file.path);
+    String? mediaInfoJson;
+    if (kReleaseMode) {
+      mediaInfoJson ??= _miw.getJsonInfo(file.path);
     }
+
+    // Fallback if library's inform doesn't work sometimes
+    mediaInfoJson ??= ((await Process.run(_mediaInfoDebug,
+            ['--Language=raw', '--Complete', '--output=JSON', file.path]))
+        .stdout as String);
+    //Clipboard.setData(ClipboardData(text: mediaInfoJson));
 
     return MediaInfo.fromJson(mediaInfoJson, mkvInfo);
   }
 
   static Future<AudioInfo> audio(File file) async {
-    String mediaInfoJson;
-    if (kDebugMode) {
-      mediaInfoJson = (await Process.run(_mediaInfoDebug,
-              ['--Language=raw', '--Complete', file.path, '--output=JSON']))
-          .stdout;
-    } else {
-      mediaInfoJson = _miw.getJsonInfo(file.path);
+    String? mediaInfoJson;
+    if (kReleaseMode) {
+      mediaInfoJson ??= _miw.getJsonInfo(file.path);
     }
+
+    mediaInfoJson ??= ((await Process.run(_mediaInfoDebug,
+            ['--Language=raw', '--Complete', '--output=JSON', file.path]))
+        .stdout as String);
+
     final result = MediaInfo.fromJson(mediaInfoJson, null);
     return result.audioInfo.first;
   }
 
   static Future<TextInfo> subtitle(File file) async {
-    String mediaInfoJson;
-    if (kDebugMode) {
-      mediaInfoJson = (await Process.run(_mediaInfoDebug,
-              [file.path, '--Language=raw', '--Complete', '--output=JSON']))
-          .stdout;
-    } else {
-      mediaInfoJson = _miw.getJsonInfo(file.path);
+    String? mediaInfoJson;
+    if (kReleaseMode) {
+      mediaInfoJson ??= _miw.getJsonInfo(file.path);
     }
+
+    mediaInfoJson ??= ((await Process.run(_mediaInfoDebug,
+            ['--Language=raw', '--Complete', '--output=JSON', file.path]))
+        .stdout as String);
+
     final result = MediaInfo.fromJson(mediaInfoJson, null);
     return result.textInfo.first;
   }
