@@ -97,6 +97,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         'BluRay',
         'AMZN',
         'BDRip',
+        'Rip',
         'Dolby',
         'Atmos',
         'DTS',

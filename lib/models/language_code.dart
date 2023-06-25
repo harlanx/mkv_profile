@@ -54,16 +54,34 @@ class LanguageCodes {
   /// 2 = Levenshtein Distance;
   /// 3 = nGram Cosine Similarity
   Future<LanguageCode> identifyByText(String text, {int algo = 1}) async {
+    LanguageCode? result;
+    // Match using exact strings
+    final bounds = RegExp('[${RegExp.escape('[](){}.+-=#')}]');
+    final texts = text.split(bounds);
+    for (var t in texts) {
+      for (var l in _items) {
+        if (t == l.cleanName) {
+          result ??= l;
+          break;
+        }
+      }
+    }
     // Only retains letters
     text = text.replaceAll(RegExp(r'[^A-Za-z]+'), '');
+    // Match using text matching algorithms
     switch (algo) {
       case 1:
-        return await _levenshteinMatch(text) ?? defaultCode;
+        result ??= await _levenshteinMatch(text) ?? defaultCode;
+        break;
       case 2:
-        return await _jaroWinklerMatch(text) ?? defaultCode;
-      default:
-        return await _bigramCosineMatch(text) ?? defaultCode;
+        result ??= await _jaroWinklerMatch(text) ?? defaultCode;
+        break;
+      case 3:
+        result ??= await _bigramCosineMatch(text) ?? defaultCode;
+        break;
     }
+    result ??= defaultCode;
+    return result;
   }
 
   Future<LanguageCode?> _jaroWinklerMatch(String input) async {
