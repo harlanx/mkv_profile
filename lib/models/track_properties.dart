@@ -5,9 +5,11 @@ abstract class TrackProperties {
   TrackProperties({
     this.title,
     this.include = true,
-  }) : language = AppData.languageCodes.defaultCode;
+  })  : language = AppData.languageCodes.defaultCode,
+        sourceTitle = title;
 
   String? title;
+  String? sourceTitle;
   late LanguageCode language;
   bool include;
   String? extraOptions;

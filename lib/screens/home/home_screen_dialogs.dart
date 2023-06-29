@@ -466,7 +466,10 @@ class _TrackDialogState extends State<TrackDialog> {
               children: [
                 TextSpan(
                   text: embedded
-                      ? (widget.track as EmbeddedTrack).uid
+                      ? [
+                          (widget.track as EmbeddedTrack).uid,
+                          (widget.track as EmbeddedTrack).sourceTitle
+                        ].join('\n')
                       : (widget.track as AddedTrack).file.name.noBreakHyphen,
                   style:
                       FluentTheme.of(context).typography.bodyStrong?.copyWith(

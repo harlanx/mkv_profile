@@ -75,12 +75,12 @@ class MediaInfoWrapper {
         .toDartString();
   }
 
-  String get inform {
+  String? get inform {
     final infoPtr = _inform(_handle!, 0);
-    return infoPtr.toDartString();
+    return infoPtr != nullptr ? infoPtr.toDartString() : null;
   }
 
-  String getJsonInfo(String filePath) {
+  String? getJsonInfo(String filePath) {
     // Language raw have to be set first before opening file
     // See discussion at
     // https://sourceforge.net/p/mediainfo/discussion/297610/thread/07967637/

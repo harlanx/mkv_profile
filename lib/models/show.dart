@@ -146,20 +146,16 @@ class Video extends TrackProperties {
       '--output',
       output,
       // Video
-      if ((title ?? '').isNotEmpty) ...[
-        '--title',
-        '"$title"',
-        '--track-name',
-        '${videoInfo.id}:"$title"',
-      ],
+      '--title',
+      title ?? '',
+      '--track-name',
+      '${videoInfo.id}:${title ?? ''}',
       '--language',
       '${videoInfo.id}:${language.iso6392 ?? language.iso6393}',
       for (var flag in flags.values) ...flag.command(videoInfo.id),
-
-      if ((extraOptions ?? '').isNotEmpty) ...[
-        extraOptions!.replaceAll('%id%', videoInfo.id.toString()),
-      ],
-
+      // Extra Options
+      if ((extraOptions ?? '').isNotEmpty)
+        ...extraOptions!.replaceAll('%id%', videoInfo.id.toString()).split(' '),
       // Remove non-included Embedded Audios
       if (embeddedAudios.any((ea) => !ea.include)) ...[
         '--audio-tracks',
@@ -213,16 +209,13 @@ class EmbeddedTrack extends TrackProperties {
   List<String> get command {
     return [
       if (include) ...[
-        if ((title ?? '').isNotEmpty) ...[
-          '--track-name',
-          '$id:"$title"',
-        ],
+        '--track-name',
+        '$id:${title ?? ''}',
         '--language',
         '$id:${language.iso6392 ?? language.iso6393}',
         for (var flag in flags.values) ...[...flag.command(id)],
-        if ((extraOptions ?? '').isNotEmpty) ...[
-          extraOptions!.replaceAll('%id%', id.toString()),
-        ],
+        if ((extraOptions ?? '').isNotEmpty)
+          ...extraOptions!.replaceAll('%id%', id.toString()).split(' '),
       ],
     ];
   }
@@ -295,29 +288,21 @@ class AddedTrack extends TrackProperties {
     return [
       if (include) ...[
         if (isTrack) ...[
-          if ((title ?? '').isNotEmpty) ...[
-            '--track-name',
-            '0:"$title"',
-          ],
+          '--track-name',
+          '0:${title ?? ''}',
           '--language',
           '0:${language.iso6392 ?? language.iso6393}',
           for (var flag in flags.values) ...[...flag.command(0)],
-          if ((extraOptions ?? '').isNotEmpty) ...[
-            extraOptions!.replaceAll('%id%', '0'),
-          ],
-          file.path,
         ] else ...[
           if (AppData.chapterFormats.contains(file.extension)) ...[
             '--chapters',
-            file.path
           ] else ...[
             '--attach-file',
-            if ((extraOptions ?? '').isNotEmpty) ...[
-              extraOptions!.replaceAll('%id%', '0'),
-            ],
-            file.path
           ],
         ],
+        if ((extraOptions ?? '').isNotEmpty)
+          ...extraOptions!.replaceAll('%id%', '0').split(' '),
+        file.path
       ],
     ];
   }
