@@ -88,6 +88,7 @@ class TitleScanner {
         Duration(milliseconds: (videoInfo.duration * 1000).toInt()).format();
     formats['%encoding%'] = videoInfo.encoding;
     formats['%episode%'] = video.episode?.toString().padLeft(2, '0') ?? '';
+    formats['%format%'] = videoInfo.format;
     formats['%frame_rate%'] = videoInfo.frameRate.toString();
     formats['%height%'] = videoInfo.height.toString();
     formats['%season%'] = video.season?.toString().padLeft(2, '0') ?? '';
@@ -109,30 +110,19 @@ class TitleScanner {
 
     String titleFormat = profile.audioTitleFormat;
     final Map<String, String> formats = {};
+    final bool isEmbedded = audioTrack is EmbeddedTrack;
 
     // Reflection is kinda bad in flutter so just use the good ol if-else
     // condition and type casting to access property.
-    if (audioTrack is EmbeddedTrack) {
-      final audioInfo = audioTrack.info as AudioInfo;
-      formats['%language%'] = audioTrack.language.cleanName;
-      formats['%format%'] = audioInfo.format;
-      formats['%bit_rate%'] = audioInfo.bitRate.formatBitSpeed();
-      formats['%channels%'] = audioInfo.channels.toString();
-      formats['%sampling_rate%'] = audioInfo.samplingRate.formatFrequency();
-      for (var audioFlag in audioTrack.flags.entries) {
-        formats['%${audioFlag.key}%'] = audioFlag.value.titleVar;
-      }
-    } else {
-      audioTrack as AddedTrack;
-      final audioInfo = audioTrack.info as AudioInfo;
-      formats['%language%'] = audioTrack.language.cleanName;
-      formats['%format%'] = audioInfo.format;
-      formats['%bitRate%'] = audioInfo.bitRate.formatBitSpeed();
-      formats['%channels%'] = audioInfo.channels.toString();
-      formats['%sampling_rate%'] = audioInfo.samplingRate.formatFrequency();
-      for (var audioFlag in audioTrack.flags.entries) {
-        formats['%${audioFlag.key}%'] = audioFlag.value.titleVar;
-      }
+    final AudioInfo audioInfo =
+        isEmbedded ? audioTrack.info : (audioTrack as AddedTrack).info;
+    formats['%language%'] = audioTrack.language.cleanName;
+    formats['%format%'] = audioInfo.format;
+    formats['%bit_rate%'] = audioInfo.bitRate.formatBitSpeed();
+    formats['%channels%'] = audioInfo.channels.toString();
+    formats['%sampling_rate%'] = audioInfo.samplingRate.formatFrequency();
+    for (var audioFlag in audioTrack.flags.entries) {
+      formats['%${audioFlag.key}%'] = audioFlag.value.titleVar;
     }
 
     formats.forEach((key, value) {

@@ -1,11 +1,11 @@
 name: mkv_profile
-description: Automatically manage and merge to mkv your downloaded series or movie files to the common conventions used by media players and media servers. The GUI is intentionally made simple and is designed for least user interactions by implementing per profile configuration to manage files and generate a command to be used on mkvmerge process.
+description: Automatically manage and mux series or movie files to the common conventions used by media players and media servers. The GUI is intentionally made simple and is designed for least user interactions by implementing per profile configuration to manage files and generate a command to be used on mkvmerge process.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.4.1+11
+version: 0.5.0+12
 
 environment:
   sdk: ">=2.19.0 <3.0.0"
@@ -41,13 +41,9 @@ dependencies:
 dev_dependencies:
   flutter_lints: ^2.0.1
   flutter_launcher_icons: ^0.13.1
-
-flutter_launcher_icons:
-  windows:
-    generate: true
-    image_path: "assets/icons/mkv_profile.png"
-    icon_size: 256
-
+  msix: ^3.14.2
+  flutter_test:
+    sdk: flutter
 
 flutter:
   uses-material-design: true
@@ -58,3 +54,41 @@ flutter:
     - assets/mkvmerge/
     - assets/mediainfo/
 
+flutter_launcher_icons:
+  windows:
+    generate: true
+    image_path: "assets/icons/mkv_profile.png"
+    icon_size: 256
+
+msix_config:
+  display_name: MKV Profile
+  # Refer to https://www.ibm.com/docs/en/ibm-mq/7.5?topic=certificates-distinguished-names
+  # Arrangement/Order must be the same as the DN on the CRT file under Details Tab > Subject
+  publisher: E=silan.harry@gmail.com, CN=harlanx, L=SanJose, S=NuevaEcija, C=PH
+  publisher_display_name: harlanx
+  identity_name: com.harlanx.mkvprofile
+  logo_path: ./assets/icons/mkv_profile.ico
+  start_menu_icon_path: ./assets/icons/mkv_profile.ico
+  tile_icon_path: ./assets/icons/mkv_profile.ico
+  icons_background_color: transparent
+  # Specify the supported languages if the app supports Internationalization.
+  languages: en-us
+  # Unfortunately I had to use Self-Signed Certificate since I'm not publishing this app on Microsoft Store
+  # and trusted signed certificates comes with a huge cost...
+  # I'll just add an instruction how to install the certificate on the client/user's machine in order for
+  # the app to be installed using an msix installer or tell them to just use the good old extracted archive file
+  # where they can run the app portably.
+  # Link below is the instruction for installing certificate.
+  # https://diyusthad.com/2022/10/solved-untrusted-certificate-when-installing-msix-build-using-flutter.html
+  # If anyone had doubts on the certificate, this is how it was created.
+  # https://sahajrana.medium.com/how-to-generate-a-pfx-certificate-for-flutter-windows-msix-lib-a860cdcebb8
+  # Can be manually typed it in but my case it has set up in secrets in repo and specified on github actions
+  certificate_path:
+  certificate_password:
+  sign_msix: true
+  install_certificate: false
+  # For the specifications of the capabilities of the app
+  # Refer to https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations
+  capabilities: "videosLibrary,documentsLibrary,codeGeneration"
+  # Don't publish to Microsoft Store
+  store: false

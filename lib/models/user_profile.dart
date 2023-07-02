@@ -33,6 +33,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
     '%duration%',
     '%encoding%',
     '%episode%',
+    '%format%',
     '%frame_rate%',
     '%height%',
     '%season%',

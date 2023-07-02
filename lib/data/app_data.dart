@@ -21,11 +21,12 @@ export 'user_profiles_notifier.dart';
 export 'output_notifier.dart';
 
 class AppData {
-  static const appTitle = 'MKVProfile';
+  static const appTitle = 'MKV Profile';
   static const appDescription =
-      '''Automatically manage and merge to mkv your downloaded series or movie files to the common conventions used by media players and media servers. The GUI is intentionally made simple and is designed for least user interactions by implementing per profile configuration to manage files and generate a command to be used on mkvmerge process.''';
+      '''Automatically manage and mux series or movie files to the common conventions used by media players and media servers.
+      The GUI is intentionally made simple and is designed for least user interactions by implementing per profile configuration to manage files and generate a command to be used on mkvmerge process.''';
 
-  static const projectURL = r'https://github.com/harlanx';
+  static const projectURL = r'https://github.com/harlanx/mkv_profile';
   static const mediainfoURL =
       r'https://mediaarea.net/en/MediaInfo/Download/Windows';
   static const mkvmergeURL =
