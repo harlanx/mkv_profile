@@ -1,0 +1,40 @@
+name: Run analysis and tests
+on:
+    pull_request:
+        branches:
+            - main
+    push:
+        branches:
+            - main
+
+jobs:
+    flutter_test:
+        name: Validate Code
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: subosito/flutter-action@v2
+            - name: Check Flutter version
+              run: flutter --version
+            - name: Install packages
+              run: flutter pub get
+            - name: Linter
+              run: flutter analyze
+            - name: Test
+              run: flutter test
+
+
+    build_windows:
+        name: Validate Build for Windows
+        runs-on: windows-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: subosito/flutter-action@v2
+            - name: Enable windows build
+              run: flutter config --enable-windows-desktop
+            - name: Clean packages and existing builds
+              run: flutter clean
+            - name: Install packages
+              run: flutter pub get
+            - name: Build for windows
+              run: flutter build windows
