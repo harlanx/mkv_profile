@@ -294,7 +294,7 @@ class PreferencesSection extends StatelessWidget {
                                               context
                                                   .read<TaskListNotifier>()
                                                   .modifiedProfile(p);
-                                              profiles.delete(p.id);
+                                              profiles.remove(p.id);
                                             }
                                           },
                                         );

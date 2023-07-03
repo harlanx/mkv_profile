@@ -57,8 +57,7 @@ class AppSettingsNotifier extends ChangeNotifier {
   String mediaInfoPath;
   String mkvMergePath;
 
-  AppSettingsNotifier fromJson(String source) {
-    final Map<String, dynamic> json = jsonDecode(source);
+  AppSettingsNotifier fromJson(Map<String, dynamic> json) {
     return AppSettingsNotifier(
       recursiveLimit: json['recursiveLimit'],
       maximumProcess: json['maximumProcess'],
@@ -97,7 +96,7 @@ class AppSettingsNotifier extends ChangeNotifier {
     final appSettingsJson = SharedPrefs.getString('AppSettings');
 
     if (appSettingsJson != null) {
-      final data = fromJson(appSettingsJson);
+      final data = fromJson(jsonDecode(appSettingsJson));
       recursiveLimit = data.recursiveLimit;
       maximumProcess = data.maximumProcess;
       themeMode = data.themeMode;

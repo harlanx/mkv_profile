@@ -1,13 +1,8 @@
-import 'dart:convert';
-
 enum TaskStatus {
   processing,
   completed,
   canceled,
   error;
-
-  String toJson() => name;
-  factory TaskStatus.fromJson(String json) => values.byName(json);
 }
 
 class OutputInfo {
@@ -21,17 +16,16 @@ class OutputInfo {
   String outputPath;
   String log;
 
-  factory OutputInfo.fromJson(String str) {
-    final Map<String, dynamic> json = jsonDecode(str);
+  factory OutputInfo.fromJson(Map<String, dynamic> json) {
     return OutputInfo(
-      taskStatus: TaskStatus.fromJson(json['taskStatus']),
+      taskStatus: TaskStatus.values.byName(json['taskStatus']),
       outputPath: json['outputPath'],
       log: json['info'],
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'taskStatus': taskStatus,
+        'taskStatus': taskStatus.name,
         'outputPath': outputPath,
         'info': log,
       };
@@ -66,8 +60,7 @@ class OutputBasic {
   final DateTime dateTime;
   final Duration duration;
 
-  factory OutputBasic.fromJson(String str) {
-    final Map<String, dynamic> json = jsonDecode(str);
+  factory OutputBasic.fromJson(Map<String, dynamic> json) {
     return OutputBasic(
       title: json['title'],
       path: json['path'],

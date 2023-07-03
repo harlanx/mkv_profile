@@ -91,7 +91,7 @@ class UserProfilesNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void delete(int id) {
+  void remove(int id) {
     _items.remove(id);
     notifyListeners();
   }

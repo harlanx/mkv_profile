@@ -114,7 +114,7 @@ class AppData {
   }
 
   static Future<void> save() async {
-    if (!kDebugMode) {
+    if (kReleaseMode) {
       await appSettings.save();
       await profiles.save();
       await outputs.save();

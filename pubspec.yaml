@@ -5,7 +5,7 @@ description: Automatically manage and mux series or movie files to the common co
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.5.0+12
+version: 0.5.1+13
 
 environment:
   sdk: ">=2.19.0 <3.0.0"
@@ -82,7 +82,7 @@ msix_config:
   # https://diyusthad.com/2022/10/solved-untrusted-certificate-when-installing-msix-build-using-flutter.html
   # If anyone had doubts on the certificate, this is how it was created.
   # https://sahajrana.medium.com/how-to-generate-a-pfx-certificate-for-flutter-windows-msix-lib-a860cdcebb8
-  # Can be manually typed it in but my case it has set up in secrets in repo and specified on github actions
+  # Can be manually typed it in but my case it has been set up in repo secrets and specified only on github actions
   certificate_path:
   certificate_password:
   sign_msix: true
