@@ -1,6 +1,9 @@
-name: Build and Release Windows
+name: Build and release windows
 on: 
     workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
     build_and_release_windows:
@@ -12,25 +15,27 @@ jobs:
               run: |
                 mkdir keys
             - name: Setup secret keys
+              shell: bash
               run: |
                 echo ${{ secrets.CERTIFICATE }} | base64 --decode > keys/CERTIFICATE.pfx
             - name: Get app version from pubspec.yaml
               run: |
                 choco install yq
-                $version=(yq -r '.version | split("+")[0]' pubspec.yaml)
-                echo "APP_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
-
+                $full_version=(yq -r .version pubspec.yaml)
+                $display_version = $full_version -split '\+' | Select-Object -First 1
+                echo "APP_VERSION=$display_version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            - name: Check fetched app version
+              run: |
+                echo "${{ env.APP_VERSION }}"
             - uses: subosito/flutter-action@v2
             - name: Enable windows build
               run: flutter config --enable-windows-desktop
             - name: Build windows release artifacts
               run: flutter build windows --release
             - name: Archive and compress release artifacts
-              uses: thedoctor0/zip-release@master
-              with:
-                type: 'zip'
-                filename: mkv_profile-${{env.APP_VERSION}}-windows.zip
-                directory: build/windows/runner/Release
+              run: |
+                $outputPath = "build\windows\runner\Release\mkv_profile-${{env.APP_VERSION}}-windows.zip"
+                Compress-Archive -Path "build\windows\runner\Release\*" -DestinationPath $outputPath
             - name: Create msix installer
               run: |
                 flutter pub run msix:create `
@@ -38,7 +43,7 @@ jobs:
                 --certificate-path=${{ github.workspace }}/keys/CERTIFICATE.pfx `
                 --output-path=build/windows/runner/Release
             - name: Rename generated default file name of msix installer
-              run: ren build/windows/runner/Release/mkv_profile.msix mkv_profile-"${{env.APP_VERSION}}"-windows.msix
+              run: ren build/windows/runner/Release/mkv_profile.msix mkv_profile-${{env.APP_VERSION}}-windows.msix
             - name: Upload to Github release
               uses: softprops/action-gh-release@v1
               env:
@@ -46,5 +51,5 @@ jobs:
               with:
                 tag_name: v${{env.APP_VERSION}}
                 files: |
-                  build/windows/runner/Release/mkv_profile-"${{env.APP_VERSION}}"-windows.zip
-                  build/windows/runner/Release/mkv_profile-"${{env.APP_VERSION}}"-windows.msix
+                  build/windows/runner/Release/mkv_profile-${{env.APP_VERSION}}-windows.zip
+                  build/windows/runner/Release/mkv_profile-${{env.APP_VERSION}}-windows.msix
