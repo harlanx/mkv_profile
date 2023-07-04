@@ -1,15 +1,43 @@
 # MKV Profile
 
 <p align="center">
-<img src="assets/icons/mkv_profile.png" width="300">
+<img src="assets/icons/mkv_profile.png" width="300"/>
 </p>
 
 Automatically manage and mux series or movie files to the common conventions used by media players and media servers.
 The GUI is intentionally made simple and is designed for least user interactions by implementing per profile configuration to manage files and generate a command to be used on mkvmerge process.
 
+## Preview
+<p align="center">
+<img src="docs/images/Installer.png" height="150"/>
+<img src="docs/images/Home.png" height="150"/>
+<img src="docs/images/Tasks.png" height="150"/>
+<img src="docs/images/Outputs.png" height="150"/>
+<img src="docs/images/Settings.png" height="150"/>
+</p>
 
 ## Download
- Head to [Releases](https://github.com/harlanx/mkv_profile/releases) section to download latest version
+Head to [Releases](https://github.com/harlanx/mkv_profile/releases) section for the latest version
+
+## Installation
+- **Portable (ZIP)**
+1. Head to the downloaded zip file
+1. Extract contents
+1. Run mkv_profile.exe to launch app
+
+- **Installer (MSIX)**
+    - Note: Requires Certificate Installation
+1. Head to the downloaded msix file
+1. Right click and select properties
+1. From the properties dialog, select Digital Signatures tab
+1. Select the Signature from the list and press Details
+1. Press View Certificate
+    1. To view Certificate details, select Details tab
+    1. To install certificate, head to General tab and press Install Certificate
+1. After the certificate is installed, you can run the msix installer
+1. Check **Launch when ready** in the installer or Run the shortcut created after the installation to launch app
+
+
 ## Available Profile Configurations
 - Show (Movie / Series) Title Formats
     |Data|Variable|
@@ -112,3 +140,37 @@ This app assumes folders with single video file as movie, for folders that conta
 This app relies on the third party tools [MediaInfo](https://mediaarea.net/en/MediaInfo) and [MKVMerge](https://mkvtoolnix.download/doc/mkvmerge.html) thus required for this app to work. You can download them in their websites:
 - [MediaInfo](https://mediaarea.net/en/MediaInfo/Download/Windows)
 - [MKVMerge](https://mkvtoolnix.download/downloads.html#windows)
+
+# Frequently Asked Questions
+
+## Why do I have to install the certificate before installing?
+This project uses self signed certificate because trusted signed certificates from services comes with a cost which isn't reasonable for a FOSS project.
+If you have doubts about the certificate, [Read more here](https://github.com/harlanx/mkv_profile/blob/93f22cf071d54826499b63e9d6869b6ac00384a4/pubspec.yaml#L76C1-L76C108)
+
+## Third party tools path is default but it's not working?
+The saved path was probably from an old installation, to reset or clear old app data:
+- Reminder: Export the profiles you've created before procedding.
+- Open File Explorer
+- Head to C:\Users\\`<Username>`\AppData\Roaming **or** C:\Users\\`<Username>`\AppData\Local\Packages
+- Find the folder that contains the word `harlanx` and delete it
+- Reopen the app
+- The path will be set to the default path of the third party binaries that comes with the app
+
+## Specified custom path of the third party tools but it doesn't work?
+This app have a test that makes sure if third party tools work before doing any actions.
+If you opt out to use the version of third party tools that comes with this app, or you have downloaded a newer version but it doesn't work. Make sure that:
+- The directory and the file you've specified still exists
+- Make sure to use the correct version of the file
+    - **MediaInfo File Required**
+        - Windows
+        - 64 bit
+        - DLL file extension
+        - You can [Download](https://mediaarea.net/en/MediaInfo/Download/Windows) it here and choose the option without installer (7z or zip)
+    - **MKVMerge File Required**
+        - Windows
+        - 64 bit
+        - EXE file extension
+        - You can [Download](https://mkvtoolnix.download/downloads.html#windows) it here and choose portable if you only need to get the mkvmerge file or installer (it's a set of tools) if you need those other tools that comes with it.
+
+## How can I contribute to the project?
+Any contributions such as reporting bugs will be a great help in making better experience. Any person interested in collaborating with this project are gladly welcome.

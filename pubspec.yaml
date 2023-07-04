@@ -66,7 +66,7 @@ msix_config:
   # Arrangement/Order must be the same as the DN on the CRT file under Details Tab > Subject
   publisher: E=silan.harry@gmail.com, CN=harlanx, L=SanJose, S=NuevaEcija, C=PH
   publisher_display_name: harlanx
-  identity_name: com.harlanx.mkvprofile
+  identity_name: harlanx.mkvprofile
   logo_path: ./assets/icons/mkv_profile.ico
   start_menu_icon_path: ./assets/icons/mkv_profile.ico
   tile_icon_path: ./assets/icons/mkv_profile.ico
