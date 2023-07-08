@@ -1,6 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 
 import '../../../models/models.dart';
+import '../../../utilities/utilities.dart';
 
 class NameDialog extends StatelessWidget {
   NameDialog({
@@ -15,13 +16,13 @@ class NameDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: const Text('Profile Name'),
+      title: Text(AppLocalizations.of(context).profileName),
       content: TextFormBox(
         key: nameForm,
         controller: controller,
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'Name cannot be empty';
+            return AppLocalizations.of(context).nameCannotBeEmpty;
           }
           return null;
         },
@@ -33,11 +34,11 @@ class NameDialog extends StatelessWidget {
       ),
       actions: [
         Button(
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context).cancel),
           onPressed: () => Navigator.pop(context),
         ),
         FilledButton(
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context).save),
           onPressed: () {
             if (nameForm.currentState!.validate()) {
               Navigator.pop(context, controller.text);
@@ -85,19 +86,19 @@ class TextModifierDialog extends StatelessWidget {
       content: ListView(
         shrinkWrap: true,
         children: [
-          const Text('Replacement. Regex is allowed. (Single entry)'),
+          Text(AppLocalizations.of(context).replacementHint),
           TextBox(
             controller: replacementCtrl,
             maxLines: 1,
           ),
           const SizedBox(height: 10),
-          const Text('Replaceables. Regex is allowed. (Entry per line).'),
+          Text(AppLocalizations.of(context).replaceablesHint),
           ValueListenableBuilder(
               valueListenable: caseSensitive,
               builder: (context, value, _) {
                 return Checkbox(
-                  content: const Text(
-                      'Enable case sensitivity for the specified strings.'),
+                  content:
+                      Text(AppLocalizations.of(context).caseSensitivityHint),
                   checked: value,
                   onChanged: (val) {
                     if (val != null) {
@@ -114,11 +115,11 @@ class TextModifierDialog extends StatelessWidget {
       ),
       actions: [
         Button(
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context).cancel),
           onPressed: () => Navigator.pop(context),
         ),
         FilledButton(
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context).save),
           onPressed: () {
             if (isNew) {
               profile.addModifier(

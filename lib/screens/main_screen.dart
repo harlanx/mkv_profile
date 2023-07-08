@@ -27,13 +27,13 @@ class MainScreen extends StatelessWidget {
               PaneItem(
                 key: const Key('/home'),
                 icon: const Icon(FluentIcons.home),
-                title: const Text('Home'),
+                title: Text(AppLocalizations.of(context).home),
                 body: HomeScreen(),
               ),
               PaneItem(
                 key: const Key('/tasks'),
                 icon: const Icon(FluentIcons.build_queue),
-                title: const Text('Tasks'),
+                title: Text(AppLocalizations.of(context).tasks),
                 infoBadge: Selector<TaskListNotifier, Map<int, TaskNotifier>>(
                   selector: (context, tasks) => tasks.items,
                   shouldRebuild: (previous, next) => true,
@@ -55,7 +55,7 @@ class MainScreen extends StatelessWidget {
               PaneItem(
                 key: const Key('/outputs'),
                 icon: const Icon(FluentIcons.task_list),
-                title: const Text('Outputs'),
+                title: Text(AppLocalizations.of(context).outputs),
                 body: OutputsScreen(
                   key: AppData.outputStateKey,
                 ),
@@ -66,7 +66,7 @@ class MainScreen extends StatelessWidget {
               PaneItem(
                 key: const Key('/settings'),
                 icon: const Icon(FluentIcons.settings),
-                title: const Text('Settings'),
+                title: Text(AppLocalizations.of(context).settings),
                 body: const SettingsScreen(),
               ),
               if (foundation.kDebugMode) ...[

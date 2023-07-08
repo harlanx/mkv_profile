@@ -1,0 +1,207 @@
+{
+  "movie": "Movie",
+  "series": "Series",
+  "home": "Home",
+  "tasks": "Tasks",
+  "outputs": "Outputs",
+  "settings": "Settings",
+  "folder": "Folder",
+  "file": "File",
+  "embedded": "Embedded",
+  "name": "Name",
+  "type": "Type",
+  "size": "Size",
+  "timeStamp": "Timestamp",
+  "contentPreview": "Content preview",
+  "show": "Show",
+  "video": "Video",
+  "audio": "Audio",
+  "audios": "Audios",
+  "subtitle": "Subtitle",
+  "subtitles": "Subtitles",
+  "chapter": "Chapter",
+  "chapters": "Chapters",
+  "entries": "Entries",
+  "attachment": "Attachment",
+  "attachments": "Attachments",
+  "source": "Source",
+  "folderTitle": "Folder title",
+  "itemNameCantBeEmpty": "{itemType} name cannot be empty",
+  "@itemNameCantBeEmpty": {
+    "description": "Empty error hint by type",
+    "placeholders": {
+      "itemType": {
+        "type": "String",
+        "example": "File"
+      }
+    }
+  },
+  "itemNameContainInvalid": "{itemType} name contains invalid characters",
+  "@itemNameContainInvalid": {
+    "description": "Invalid character error hint by type",
+    "placeholders": {
+      "itemType": {
+        "type": "String",
+        "example": "File"
+      }
+    }
+  },
+  "outputFileTitle": "Output file title",
+  "trackTitle": "Track title",
+  "language": "Language",
+  "extraOptions": "Extra options",
+  "extraOptionsHint": "Use variable %id% for track id",
+  "copyCommandHint": "Copy the generated mkvmerge command for this file",
+  "copiedHint": "Copied to clipboard!",
+  "include_description": "Enable to include this item in the muxing process.",
+  "flag_descriptions": "{flag, select, default {Enable to set the default flag on this item.\nUsually a flag on tracks that is automatically chosen by the media player unless the user overrides it.} original_language {Enable to set the original language flag on this item.\nUsually a flag on Audio and Subtitle tracks that are the same with the content origin's language.} forced {Enable to set the forced flag on this item.\nThis flag can be used on Subtitle tracks that only has translations for the non-native language spoken in content's scenes.\nUsually a flag for Subtitle tracks that forces itself to be played on any media player that supports it.} commentary {Enable to set the commentary flag on this item.\nUsually a flag on Audio and Subtitle tracks that has the commentary of individuals/groups who worked on that content.} hearing_impaired {Enable to set the hearing impaired (SDH) flag on this item.\nUsually a flag on Subtitle tracks that has descriptions to auditory information from the content.} visual_impaired {Enable to set the visual impaired (AD) flag on this item.\nUsually a flag on Audio tracks that narrates the content's scenes.} text_description {Enable to set the text description (TD) flag on this item.\nUsually a flag on Subtitle tracks for the Audio tracks that narrates the content's scenes.} other {}}",
+  "@flag_descriptions": {
+    "placeholders": {
+      "flag": {}
+    }
+  },
+  "remove_chapters_description": "Enable to remove all of the embedded chapters.\nChapters is usually found in mkv files and can be hand generated on a chapter editor or muxed using a chapter file.",
+  "remove_attachments_description": "Enable to remove all of the embedded attachments.\nAttachments is usually found in mkv files with custom image poster thumbnail and rarely on ass/ssa subtitles with non-embedded font on itself.",
+  "documentation": "documentation",
+  "profile": "Profile",
+  "profiles": "Profiles",
+  "dropFoldersHere": "Drop folders here",
+  "selectFromList": "Select from list",
+  "addFolder": "Add folder",
+  "removeAll": "Remove all",
+  "addToQueue": "Add to queue",
+  "startTasks": "Start tasks",
+  "remove": "Remove",
+  "progess": "Progress",
+  "info": "Info",
+  "date": "Date",
+  "duration": "Duration",
+  "status": "Status",
+  "taskStatus": "{status, select, completed {Completed} error {Error} other {}}",
+  "preferences": "Preferences",
+  "directoryScanLimit": "Directory scan limit",
+  "maxActiveProcess": "Maximum active processes",
+  "maxActiveProcessHint": "Recommended value is 1. MKVMerge is not CPU intensive.\nIts bound to bandwidth of storage/networking devices and RAM. Running in parallel is not beneficial at all.",
+  "import": "Import",
+  "export": "Export",
+  "create": "Create",
+  "createNewProfile": "Create new profile",
+  "template": "Template",
+  "okay": "Okay",
+  "cancel": "Cancel",
+  "continueStr": "Continue",
+  "save": "Save",
+  "discard": "Discard",
+  "note": "Note",
+  "availableVariables": "Availble {templateType} title variables",
+  "@availableVariables": {
+    "description": "Available variables by type",
+    "placeholders": {
+      "templateType": {
+        "type": "String",
+        "example": "Video"
+      }
+    }
+  },
+  "titleTemplate": "{templateType} title template",
+  "@titleTemplate": {
+    "description": "Title template by type",
+    "placeholders": {
+      "templateType": {
+        "type": "String",
+        "example": "Video"
+      }
+    }
+  },
+  "showTitleNote": "This will apply to the show's folder title",
+  "videoTitleNote": "This will apply to the video file title and video track title",
+  "audioTitleNote": "This will apply to the audio track title",
+  "subtitleTitleNote": "This will apply to the subtitle track title",
+  "selectLanguageToInclude": "Select languages to include and choose to set as default",
+  "languages": "Languages",
+  "selectedLanguages": "Selected languages",
+  "selectTrackFlagsAndReorder": "Select track flags and reorder which will set the Default flag based on order fallbacks",
+  "flags": "Flags",
+  "selectedFlags": "Selected flags",
+  "replaceTexts": "Replace texts with custom replacement",
+  "add": "Add",
+  "removeString": "Remove text",
+  "replaceWithWhiteSpace": "Replace with white space",
+  "useFolderNameAsSource": "Use folder name as source title (Recommended).\\nOtherwise it will use the first video file's name as a source title of the show",
+  "personalization": "Personalization",
+  "theme": "Theme",
+  "accent": "Accent",
+  "mode": "Mode",
+  "changeLanguage": "Change language",
+  "misc": "Miscellaneous",
+  "tools": "Tools",
+  "download": "Download",
+  "about": "About",
+  "appName": "App name",
+  "appDescription": "Automatically manage and mux series or movie files to the common conventions used by media players and media servers. The GUI is intentionally made simple and is designed for least user interactions by implementing per profile configuration to manage files and generate a command to be used on muxing process.",
+  "version": "Version",
+  "build": "Build",
+  "windowEffect": "Window Effect",
+  "toolFound": "{toolName} is found and is ready for use",
+  "@toolFound": {
+    "description": "Tool found by toolName",
+    "placeholders": {
+      "toolName": {
+        "example": "MediaInfo",
+        "type": "String"
+      }
+    }
+  },
+  "toolNotFound": "{toolName} is not found or the specified file is incorrect, the app will not work with wrong tools.",
+  "@toolNotFound": {
+    "description": "Tool found by toolName",
+    "placeholders": {
+      "toolName": {
+        "example": "MediaInfo",
+        "type": "String"
+      }
+    }
+  },
+  "toolCannotChange": "Cannot change {toolName} while being used",
+  "@toolCannotChange": {
+    "description": "Tool found by toolName",
+    "placeholders": {
+      "toolName": {
+        "example": "MediaInfo",
+        "type": "String"
+      }
+    }
+  },
+  "toolBrowse": "Browse the file for {toolName}.",
+  "@toolBrowse": {
+    "description": "Tool found by toolName",
+    "placeholders": {
+      "toolName": {
+        "example": "MediaInfo",
+        "type": "String"
+      }
+    }
+  },
+  "profileName": "Profile name",
+  "nameCannotBeEmpty": "Name cannot be empty",
+  "textModifier": "Text modifier",
+  "replacementHint": "Replacement. Regex is allowed. (Single entry)",
+  "replaceablesHint": "Replaceables. Regex is allowed. (Entry per line).",
+  "caseSensitivityHint": "Enable case sensitivity for the specified texts.",
+  "nonIso6392Hint": "Indicates Non ISO 639-2 Language Codes. Players that do not\\nsupport ISO 639-3 Language Codes will display different language name such as 'und' (Undetermined)",
+  "unsavedChanges": "Unsaved changes",
+  "unsavedChangesHint": "You have made some changes without saving. Do you want to save or discard them?",
+  "requirements": "Requirements",
+  "missingTools": "Missing tools",
+  "scanResult": "Scan result",
+  "toolLocation": "{toolName} location",
+  "@toolLocation": {
+    "description": "Tool found by toolName",
+    "placeholders": {
+      "toolName": {
+        "example": "MediaInfo",
+        "type": "String"
+      }
+    }
+  }
+}

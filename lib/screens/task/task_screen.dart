@@ -63,7 +63,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
                 primaryItems: [
                   CommandBarButton(
                       icon: const Icon(FluentIcons.combine),
-                      label: const Text('Start Tasks'),
+                      label: Text(AppLocalizations.of(context).startTasks),
                       onPressed: _enableButtons
                           ? () {
                               ShowMerger.start(tasks);
@@ -71,7 +71,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
                           : null),
                   CommandBarButton(
                     icon: const Icon(FluentIcons.delete),
-                    label: const Text('Remove'),
+                    label: Text(AppLocalizations.of(context).remove),
                     onPressed: _enableButtons
                         ? () {
                             tasks.remove(_selectedIds);
@@ -82,7 +82,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
                   if (tasks.active)
                     CommandBarButton(
                       icon: const Icon(FluentIcons.cancel),
-                      label: const Text('Cancel'),
+                      label: Text(AppLocalizations.of(context).cancel),
                       onPressed: () async {
                         await ShowMerger.process?.operation.cancel();
                       },
@@ -137,7 +137,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
     // Column Headers
     _manager.insertColumns(0, [
       PlutoColumn(
-        title: 'Show',
+        title: AppLocalizations.of(context).show,
         field: 'show',
         type: PlutoColumnType.number(),
         readOnly: true,
@@ -160,7 +160,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         },
       ),
       PlutoColumn(
-        title: 'Profile',
+        title: AppLocalizations.of(context).profile,
         field: 'profile',
         type: PlutoColumnType.number(),
         readOnly: true,
@@ -177,7 +177,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         },
       ),
       PlutoColumn(
-        title: 'Progress',
+        title: AppLocalizations.of(context).progess,
         field: 'progress',
         width: 100,
         type: PlutoColumnType.number(),

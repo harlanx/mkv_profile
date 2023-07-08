@@ -30,12 +30,12 @@ class HomeScreenMenuBar extends StatelessWidget {
                   primaryItems: [
                     CommandBarButton(
                       icon: const Icon(FluentIcons.fabric_new_folder),
-                      label: const Text('Add folder'),
+                      label: Text(AppLocalizations.of(context).addFolder),
                       onPressed: () async => await _openFolder(context),
                     ),
                     CommandBarButton(
                       icon: const Icon(FluentIcons.delete),
-                      label: const Text('Remove All'),
+                      label: Text(AppLocalizations.of(context).removeAll),
                       onPressed: shows.items.isEmpty
                           ? null
                           : () {
@@ -45,7 +45,7 @@ class HomeScreenMenuBar extends StatelessWidget {
                     ),
                     CommandBarButton(
                       icon: const Icon(FluentIcons.build_queue_new),
-                      label: const Text('Add to queue'),
+                      label: Text(AppLocalizations.of(context).addToQueue),
                       onPressed: selectedID.value != null
                           ? () => tasks.add(shows.items[selectedID.value]!)
                           : null,
@@ -63,12 +63,13 @@ class HomeScreenMenuBar extends StatelessWidget {
                           overflowBehavior: CommandBarOverflowBehavior.noWrap,
                           primaryItems: [
                             CommandBarCombobox<UserProfile>(
-                              label: const Row(
+                              label: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(FluentIcons.boards),
-                                  SizedBox(width: 6),
-                                  Text('Profiles:'),
+                                  const Icon(FluentIcons.boards),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                      '${AppLocalizations.of(context).profiles}:'),
                                 ],
                               ),
                               value: show.profile,

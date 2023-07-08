@@ -10,6 +10,8 @@ export 'extensions.dart';
 export 'shared_prefs.dart';
 export 'similarity_algorithms.dart';
 export 'custom_widgets/custom_widgets.dart';
+export 'package:flutter_gen/gen_l10n/app_localizations.dart';
+export 'custom_fluent_localizations/custom_fluent_localizations.dart';
 
 class Utilities {
   static List<AutoSuggestBoxItem<LanguageCode>> searchSorter(

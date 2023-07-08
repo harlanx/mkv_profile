@@ -8,6 +8,7 @@ import 'package:flutter_acrylic/flutter_acrylic.dart';
 
 import '../data/app_data.dart';
 import '../screens/main_screen.dart';
+import '../utilities/utilities.dart';
 
 void main() async {
   // flutter bindings
@@ -128,6 +129,26 @@ class _MyAppState extends State<MyApp>
           themeMode: appSettings.themeMode,
           theme: appSettings.lightTheme,
           darkTheme: appSettings.darkTheme,
+          localizationsDelegates: [
+            // Defined localizations that isn't available from fluent_ui package yet.
+            // Use i18n manager for locally managing translations
+            // though unmaintained, it's still working as expected
+            // https://github.com/gilmarsquinelato/i18n-manager
+            CustomFluentLocalizationDelegate(),
+            // fluent_ui localization delegate
+            FluentLocalizations.delegate,
+            // Generated localization delegates
+            ...AppLocalizations.localizationsDelegates,
+          ],
+          supportedLocales: const [...AppLocalizations.supportedLocales],
+          locale: appSettings.locale,
+          localeResolutionCallback: (locale, supportedLocales) {
+            if (AppLocalizations.supportedLocales.contains(locale)) {
+              return locale;
+            }
+            // Locale fallback
+            return const Locale('en');
+          },
           initialRoute: '/',
           home: const MainScreen(),
         );

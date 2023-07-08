@@ -27,7 +27,7 @@ class SettingsScreen extends StatelessWidget {
     return ScaffoldPage.scrollable(
       key: const PageStorageKey('Settings'),
       padding: const EdgeInsets.symmetric(horizontal: 25),
-      header: const PageHeader(title: Text('Settings')),
+      header: PageHeader(title: Text(AppLocalizations.of(context).settings)),
       children: const [
         PreferencesSection(),
         PersonalizationSection(),
@@ -45,7 +45,7 @@ class PreferencesSection extends StatelessWidget {
     final appSettings = context.watch<AppSettingsNotifier>();
     final profiles = context.watch<UserProfilesNotifier>();
     return InfoLabel(
-      label: 'Preferences',
+      label: AppLocalizations.of(context).preferences,
       labelStyle: const TextStyle(
         fontWeight: FontWeight.w600,
         fontSize: 20,
@@ -66,7 +66,7 @@ class PreferencesSection extends StatelessWidget {
                   const Icon(FluentIcons.fabric_folder_search),
                   const SizedBox(width: 6),
                   Text(
-                    'Directory scan limit',
+                    AppLocalizations.of(context).directoryScanLimit,
                     style: FluentTheme.of(context).typography.body,
                   ),
                   const Spacer(),
@@ -100,12 +100,12 @@ class PreferencesSection extends StatelessWidget {
                   const SizedBox(width: 6),
                   Text.rich(
                     TextSpan(
-                      text: 'Maximum active processes ',
+                      text: '${AppLocalizations.of(context).maxActiveProcess} ',
                       children: [
                         WidgetSpan(
                           child: Tooltip(
-                            message:
-                                'Reccomended value: 1. MKVMerge is not CPU intensive.\nIts bound to bandwidth of storage/networking devices and RAM. Running in parallel is not beneficial at all.',
+                            message: AppLocalizations.of(context)
+                                .maxActiveProcessHint,
                             child: RichText(
                               text: TextSpan(
                                 text: '[?]',
@@ -154,17 +154,17 @@ class PreferencesSection extends StatelessWidget {
             ),
             Expander(
               leading: const Icon(FluentIcons.boards),
-              header: const Text('Profiles'),
+              header: Text(AppLocalizations.of(context).profiles),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Button(
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(FluentIcons.chevron_up_end6),
-                        SizedBox(width: 8),
-                        Text('Import'),
+                        const Icon(FluentIcons.chevron_up_end6),
+                        const SizedBox(width: 8),
+                        Text(AppLocalizations.of(context).import),
                       ],
                     ),
                     onPressed: () async {
@@ -192,30 +192,30 @@ class PreferencesSection extends StatelessWidget {
                             extensions: ['json'],
                           ),
                         ],
-                        confirmButtonText: 'Save',
+                        confirmButtonText: AppLocalizations.of(context).save,
                       );
                       if (output != null) {
                         final outputPath = '${output.path}.json';
                         profiles.export(outputPath);
                       }
                     },
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(FluentIcons.chevron_down_end6),
-                        SizedBox(width: 8),
-                        Text('Export'),
+                        const Icon(FluentIcons.chevron_down_end6),
+                        const SizedBox(width: 8),
+                        Text(AppLocalizations.of(context).export),
                       ],
                     ),
                   ),
                   const SizedBox(width: 8),
                   FilledButton(
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(FluentIcons.circle_addition_solid),
-                        SizedBox(width: 8),
-                        Text('Create'),
+                        const Icon(FluentIcons.circle_addition_solid),
+                        const SizedBox(width: 8),
+                        Text(AppLocalizations.of(context).create),
                       ],
                     ),
                     onPressed: () async {
@@ -283,7 +283,9 @@ class PreferencesSection extends StatelessWidget {
                                             context: context,
                                             builder: (context) {
                                               return DeleteDialog(
-                                                  'profile', p.name);
+                                                  AppLocalizations.of(context)
+                                                      .profile,
+                                                  p.name);
                                             }).then(
                                           (value) {
                                             if (value ?? false) {
@@ -324,7 +326,7 @@ class PersonalizationSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final appSettings = context.watch<AppSettingsNotifier>();
     return InfoLabel(
-      label: 'Personalization',
+      label: AppLocalizations.of(context).personalization,
       labelStyle: const TextStyle(
         fontWeight: FontWeight.w600,
         fontSize: 20,
@@ -335,9 +337,61 @@ class PersonalizationSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            Card(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Icon(FluentIcons.globe),
+                  const SizedBox(width: 6),
+                  Text(
+                    AppLocalizations.of(context).language,
+                    style: FluentTheme.of(context).typography.body,
+                  ),
+                  const Spacer(),
+                  ComboBox<String>(
+                    value: appSettings.locale.languageCode,
+                    items: [
+                      for (var locale in AppLocalizations.supportedLocales)
+                        ComboBoxItem(
+                          value: locale.languageCode,
+                          child: RichText(
+                            text: TextSpan(
+                              text: locale.flagEmoji,
+                              style: FluentTheme.of(context)
+                                  .typography
+                                  .body
+                                  ?.copyWith(
+                                      fontFamily: 'NotoColorEmojiWindows'),
+                              children: [
+                                TextSpan(
+                                  text: ' ${locale.name}',
+                                  style: FluentTheme.of(context)
+                                      .typography
+                                      .bodyStrong,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        appSettings.setLocale(
+                          AppLocalizations.supportedLocales
+                              .singleWhere((sl) => sl.languageCode == value),
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
             Expander(
               leading: const Icon(FluentIcons.circle_half_full),
-              header: const Text('Theme'),
+              header: Text(AppLocalizations.of(context).theme),
               trailing: Text(
                 appSettings.themeMode.name.titleCased,
               ),
@@ -372,7 +426,7 @@ class PersonalizationSection extends StatelessWidget {
             ),
             Expander(
               leading: const Icon(FluentIcons.format_painter),
-              header: const Text('Window Effect'),
+              header: Text(AppLocalizations.of(context).windowEffect),
               trailing: Text(appSettings.windowEffect.name.titleCased),
               content: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -397,7 +451,7 @@ class PersonalizationSection extends StatelessWidget {
             ),
             Expander(
               leading: const Icon(FluentIcons.color),
-              header: const Text('Accent'),
+              header: Text(AppLocalizations.of(context).accent),
               trailing: Card(
                 backgroundColor: FluentTheme.of(context).accentColor,
                 child: const SizedBox(
@@ -413,7 +467,7 @@ class PersonalizationSection extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Mode: ',
+                        '${AppLocalizations.of(context).mode}: ',
                         style: FluentTheme.of(context).typography.bodyStrong,
                       ),
                       ComboBox<AccentMode>(
@@ -509,7 +563,7 @@ class MiscSection extends StatelessWidget {
     final appSettings = context.watch<AppSettingsNotifier>();
 
     return InfoLabel(
-      label: 'Misc',
+      label: AppLocalizations.of(context).misc,
       labelStyle: const TextStyle(
         fontWeight: FontWeight.w600,
         fontSize: 20,
@@ -522,17 +576,18 @@ class MiscSection extends StatelessWidget {
           children: [
             Expander(
               leading: const Icon(FluentIcons.packages),
-              header: const Text('Tools'),
+              header: Text(AppLocalizations.of(context).tools),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text.rich(
                     TextSpan(
-                      text: 'MediaInfo Location: ',
+                      text:
+                          '${AppLocalizations.of(context).toolLocation('MediaInfo')}: ',
                       children: [
                         TextSpan(
-                          text: '[download]',
+                          text: '[${AppLocalizations.of(context).download}]',
                           style: FluentTheme.of(context)
                               .typography
                               .bodyStrong
@@ -559,8 +614,10 @@ class MiscSection extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 8.0),
                       child: Tooltip(
                         message: AppData.mediaInfoLoaded
-                            ? 'MediaInfo is found and is ready for use.'
-                            : 'MediaInfo is not found or the specified file is incorrect, the app will not work with wrong tools.',
+                            ? AppLocalizations.of(context)
+                                .toolFound('MediaInfo')
+                            : AppLocalizations.of(context)
+                                .toolNotFound('MediaInfo'),
                         child: Icon(
                           AppData.mediaInfoLoaded
                               ? FluentIcons.check_mark
@@ -570,8 +627,10 @@ class MiscSection extends StatelessWidget {
                     ),
                     suffix: Tooltip(
                       message: MetadataScanner.active
-                          ? 'Cannot change while being used'
-                          : 'Browse the file for MediaInfo.',
+                          ? AppLocalizations.of(context)
+                              .toolCannotChange('MediaInfo')
+                          : AppLocalizations.of(context)
+                              .toolBrowse('MediaInfo'),
                       child: IconButton(
                         icon: const Icon(FluentIcons.open_folder_horizontal),
                         onPressed: MetadataScanner.active
@@ -599,10 +658,11 @@ class MiscSection extends StatelessWidget {
                   ),
                   Text.rich(
                     TextSpan(
-                      text: 'MKVMerge Location: ',
+                      text:
+                          '${AppLocalizations.of(context).toolLocation('MKVMerge')}: ',
                       children: [
                         TextSpan(
-                          text: '[download]',
+                          text: '[${AppLocalizations.of(context).download}]',
                           style: FluentTheme.of(context)
                               .typography
                               .bodyStrong
@@ -626,8 +686,9 @@ class MiscSection extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 8.0),
                       child: Tooltip(
                         message: AppData.mkvMergeLoaded
-                            ? 'MKVMerge is found and is ready for use.'
-                            : 'MKVMerge is not found or the specified file is incorrect, the app will not work with wrong tools.',
+                            ? AppLocalizations.of(context).toolFound('MKVMerge')
+                            : AppLocalizations.of(context)
+                                .toolNotFound('MKVMerge'),
                         child: Icon(
                           AppData.mkvMergeLoaded
                               ? FluentIcons.check_mark
@@ -637,8 +698,9 @@ class MiscSection extends StatelessWidget {
                     ),
                     suffix: Tooltip(
                       message: ShowMerger.active
-                          ? 'Cannot change while being used'
-                          : 'Browse the file for mkvmerge.',
+                          ? AppLocalizations.of(context)
+                              .toolCannotChange('MKVMerge')
+                          : AppLocalizations.of(context).toolBrowse('MKVMerge'),
                       child: IconButton(
                         icon: const Icon(FluentIcons.open_folder_horizontal),
                         onPressed: ShowMerger.active
@@ -699,7 +761,7 @@ class _AboutTileState extends State<AboutTile> {
   Widget build(BuildContext context) {
     return Expander(
       leading: const Icon(FluentIcons.info),
-      header: const Text('About'),
+      header: Text(AppLocalizations.of(context).about),
       content: FutureBuilder(
           future: future,
           builder: (context, snapshot) {
@@ -710,7 +772,7 @@ class _AboutTileState extends State<AboutTile> {
                 children: [
                   Text.rich(
                     TextSpan(
-                      text: 'App Name: ',
+                      text: '${AppLocalizations.of(context).appName}: ',
                       children: [
                         TextSpan(
                           text: packageInfo.appName,
@@ -722,7 +784,7 @@ class _AboutTileState extends State<AboutTile> {
                   ),
                   Text.rich(
                     TextSpan(
-                      text: 'Version: ',
+                      text: '${AppLocalizations.of(context).version}: ',
                       children: [
                         TextSpan(
                           text: packageInfo.version.toString(),
@@ -734,7 +796,7 @@ class _AboutTileState extends State<AboutTile> {
                   ),
                   Text.rich(
                     TextSpan(
-                      text: 'Build: ',
+                      text: '${AppLocalizations.of(context).build}: ',
                       children: [
                         TextSpan(
                           text: packageInfo.buildNumber.toString(),
@@ -773,7 +835,7 @@ class _AboutTileState extends State<AboutTile> {
                     child: Divider(),
                   ),
                   Text(
-                    AppData.appDescription,
+                    AppLocalizations.of(context).appDescription,
                     style: FluentTheme.of(context).typography.body,
                   ),
                 ],

@@ -4,6 +4,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/models.dart';
+import '../utilities.dart';
 
 class ToolNotExistDialog extends StatelessWidget {
   const ToolNotExistDialog({
@@ -18,13 +19,13 @@ class ToolNotExistDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: const Text('Requirements'),
+      title: Text(AppLocalizations.of(context).requirements),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Missing Tool: $toolName',
+            '${AppLocalizations.of(context).missingTools}: $toolName',
             style: FluentTheme.of(context).typography.bodyLarge,
           ),
           const SizedBox(height: 6),
@@ -36,7 +37,7 @@ class ToolNotExistDialog extends StatelessWidget {
       ),
       actions: [
         FilledButton(
-          child: const Text('OK'),
+          child: Text(AppLocalizations.of(context).okay),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -57,7 +58,7 @@ class ParserResultDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: const Text('Scan Result'),
+      title: Text(AppLocalizations.of(context).scanResult),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +66,7 @@ class ParserResultDialog extends StatelessWidget {
           for (var failedPath in failedPaths)
             Text.rich(
               TextSpan(
-                text: 'Folder: ',
+                text: '${AppLocalizations.of(context).folder}: ',
                 children: [
                   TextSpan(
                     text: '${failedPath.path}\n',
@@ -75,7 +76,8 @@ class ParserResultDialog extends StatelessWidget {
                         ),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        launchUrl(Uri.parse('file:${failedPath.path}'));
+                        launchUrl(Uri.parse(
+                            '${AppLocalizations.of(context).file}:${failedPath.path}'));
                       },
                   ),
                   TextSpan(
@@ -92,7 +94,7 @@ class ParserResultDialog extends StatelessWidget {
       ),
       actions: [
         FilledButton(
-          child: const Text('OK'),
+          child: Text(AppLocalizations.of(context).okay),
           onPressed: () {
             Navigator.of(context).pop();
           },

@@ -60,12 +60,12 @@ class ProfilePage extends StatelessWidget {
                       primaryItems: [
                         CommandBarButton(
                           icon: const Icon(FluentIcons.save),
-                          label: const Text('Save'),
+                          label: Text(AppLocalizations.of(context).save),
                           onPressed: () => _saveChanges(context),
                         ),
                         CommandBarButton(
                           icon: const Icon(FluentIcons.cancel),
-                          label: const Text('Cancel'),
+                          label: Text(AppLocalizations.of(context).cancel),
                           onPressed: () => Navigator.maybePop(context),
                         ),
                       ],
@@ -90,7 +90,8 @@ class ProfilePage extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Expander(
-                        header: const Text('Show title template'),
+                        header: Text(
+                            AppLocalizations.of(context).titleTemplate('Show')),
                         trailing: Text(editProfile.showTitleFormat),
                         content: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,7 +104,8 @@ class ProfilePage extends StatelessWidget {
                             ),
                             const SizedBox(height: 10),
                             InfoLabel(
-                              label: 'Available show title variables',
+                              label: AppLocalizations.of(context)
+                                  .availableVariables('Show'),
                               labelStyle:
                                   FluentTheme.of(context).typography.bodyStrong,
                               child: Column(
@@ -111,14 +113,15 @@ class ProfilePage extends StatelessWidget {
                                 children: [
                                   Text.rich(
                                     TextSpan(
-                                      text: 'Note: ',
+                                      text:
+                                          '${AppLocalizations.of(context).note}: ',
                                       style: FluentTheme.of(context)
                                           .typography
                                           .bodyStrong,
                                       children: [
                                         TextSpan(
-                                          text:
-                                              'This will apply to the show\'s folder title.',
+                                          text: AppLocalizations.of(context)
+                                              .showTitleNote,
                                           style: FluentTheme.of(context)
                                               .typography
                                               .body,
@@ -141,8 +144,9 @@ class ProfilePage extends StatelessWidget {
                                             displayInfoBar(context,
                                                 builder: (context, close) {
                                               return InfoBar(
-                                                title: const Text(
-                                                    'Copied to clipboard!'),
+                                                title: Text(
+                                                    AppLocalizations.of(context)
+                                                        .copiedHint),
                                                 action: IconButton(
                                                   icon: const Icon(
                                                       FluentIcons.clear),
@@ -163,7 +167,8 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Expander(
-                        header: const Text('Video title template'),
+                        header: Text(AppLocalizations.of(context)
+                            .titleTemplate('Video')),
                         trailing: Text(editProfile.videoTitleFormat),
                         content: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,7 +181,8 @@ class ProfilePage extends StatelessWidget {
                             ),
                             const SizedBox(height: 10),
                             InfoLabel(
-                              label: 'Available video title variables',
+                              label: AppLocalizations.of(context)
+                                  .availableVariables('Video'),
                               labelStyle:
                                   FluentTheme.of(context).typography.bodyStrong,
                               child: Column(
@@ -184,14 +190,15 @@ class ProfilePage extends StatelessWidget {
                                 children: [
                                   Text.rich(
                                     TextSpan(
-                                      text: 'Note: ',
+                                      text:
+                                          '${AppLocalizations.of(context).note}: ',
                                       style: FluentTheme.of(context)
                                           .typography
                                           .bodyStrong,
                                       children: [
                                         TextSpan(
-                                          text:
-                                              'This will apply to the video file title and the video track title.',
+                                          text: AppLocalizations.of(context)
+                                              .videoTitleNote,
                                           style: FluentTheme.of(context)
                                               .typography
                                               .body,
@@ -214,8 +221,9 @@ class ProfilePage extends StatelessWidget {
                                             displayInfoBar(context,
                                                 builder: (context, close) {
                                               return InfoBar(
-                                                title: const Text(
-                                                    'Copied to clipboard!'),
+                                                title: Text(
+                                                    AppLocalizations.of(context)
+                                                        .copiedHint),
                                                 action: IconButton(
                                                   icon: const Icon(
                                                       FluentIcons.clear),
@@ -236,7 +244,8 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Expander(
-                        header: const Text('Audio title template'),
+                        header: Text(AppLocalizations.of(context)
+                            .titleTemplate('Audio')),
                         trailing: Text(editProfile.audioTitleFormat),
                         content: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,7 +258,8 @@ class ProfilePage extends StatelessWidget {
                             ),
                             const SizedBox(height: 10),
                             InfoLabel(
-                              label: 'Available audio title variables',
+                              label: AppLocalizations.of(context)
+                                  .availableVariables('Audio'),
                               labelStyle:
                                   FluentTheme.of(context).typography.bodyStrong,
                               child: Column(
@@ -257,14 +267,15 @@ class ProfilePage extends StatelessWidget {
                                 children: [
                                   Text.rich(
                                     TextSpan(
-                                      text: 'Note: ',
+                                      text:
+                                          '${AppLocalizations.of(context).note}: ',
                                       style: FluentTheme.of(context)
                                           .typography
                                           .bodyStrong,
                                       children: [
                                         TextSpan(
-                                          text:
-                                              'This will apply to the audio track title.',
+                                          text: AppLocalizations.of(context)
+                                              .audioTitleNote,
                                           style: FluentTheme.of(context)
                                               .typography
                                               .body,
@@ -287,8 +298,9 @@ class ProfilePage extends StatelessWidget {
                                             displayInfoBar(context,
                                                 builder: (context, close) {
                                               return InfoBar(
-                                                title: const Text(
-                                                    'Copied to clipboard!'),
+                                                title: Text(
+                                                    AppLocalizations.of(context)
+                                                        .copiedHint),
                                                 action: IconButton(
                                                   icon: const Icon(
                                                       FluentIcons.clear),
@@ -309,7 +321,8 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Expander(
-                        header: const Text('Subtitle title template'),
+                        header: Text(AppLocalizations.of(context)
+                            .titleTemplate('Subtitle')),
                         trailing: Text(editProfile.subtitleTitleFormat),
                         content: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,7 +335,8 @@ class ProfilePage extends StatelessWidget {
                             ),
                             const SizedBox(height: 10),
                             InfoLabel(
-                              label: 'Available subtitle title variables',
+                              label: AppLocalizations.of(context)
+                                  .availableVariables('Subtitle'),
                               labelStyle:
                                   FluentTheme.of(context).typography.bodyStrong,
                               child: Column(
@@ -330,14 +344,15 @@ class ProfilePage extends StatelessWidget {
                                 children: [
                                   Text.rich(
                                     TextSpan(
-                                      text: 'Note: ',
+                                      text:
+                                          '${AppLocalizations.of(context).note}: ',
                                       style: FluentTheme.of(context)
                                           .typography
                                           .bodyStrong,
                                       children: [
                                         TextSpan(
-                                          text:
-                                              'This will apply to the subtitle track title.',
+                                          text: AppLocalizations.of(context)
+                                              .subtitleTitleNote,
                                           style: FluentTheme.of(context)
                                               .typography
                                               .body,
@@ -360,8 +375,9 @@ class ProfilePage extends StatelessWidget {
                                             displayInfoBar(context,
                                                 builder: (context, close) {
                                               return InfoBar(
-                                                title: const Text(
-                                                    'Copied to clipboard!'),
+                                                title: Text(
+                                                    AppLocalizations.of(context)
+                                                        .copiedHint),
                                                 action: IconButton(
                                                   icon: const Icon(
                                                       FluentIcons.clear),
@@ -382,8 +398,8 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Expander(
-                        header: const Text(
-                            'Select languages to include and choose to set as default.'),
+                        header: Text(AppLocalizations.of(context)
+                            .selectLanguageToInclude),
                         trailing: Visibility(
                           visible: profile.defaultLanguage.isNotEmpty,
                           child: Text(profile.defaultLanguage.isNotEmpty
@@ -402,7 +418,8 @@ class ProfilePage extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  const Text(' Languages: '),
+                                  Text(
+                                      ' ${AppLocalizations.of(context).languages}: '),
                                   Flexible(
                                     child: AutoSuggestBox<LanguageCode>(
                                       key: const Key('Search Languages'),
@@ -432,7 +449,8 @@ class ProfilePage extends StatelessWidget {
                               ),
                               Flexible(
                                 child: InfoLabel(
-                                  label: ' Selected Languages: ',
+                                  label:
+                                      ' ${AppLocalizations.of(context).selectedLanguages}: ',
                                   child: ReorderableListView.builder(
                                     shrinkWrap: true,
                                     buildDefaultDragHandles: false,
@@ -486,10 +504,12 @@ class ProfilePage extends StatelessWidget {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   if (code.warn) ...[
-                                                    const Tooltip(
+                                                    Tooltip(
                                                       message:
-                                                          'Indicates Non ISO 639-2 Language Codes. Players that do not support ISO 639-3 Language Codes will display different language such as \'und\' (Undetermined)',
-                                                      child: Icon(
+                                                          AppLocalizations.of(
+                                                                  context)
+                                                              .nonIso6392Hint,
+                                                      child: const Icon(
                                                           FluentIcons.warning),
                                                     ),
                                                     const SizedBox(width: 6),
@@ -512,8 +532,8 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Expander(
-                        header: const Text(
-                            'Select track flags and reorder which will set the Default flag based on order fallbacks.'),
+                        header: Text(AppLocalizations.of(context)
+                            .selectTrackFlagsAndReorder),
                         content: ConstrainedBox(
                           constraints: const BoxConstraints(maxHeight: 500),
                           child: Column(
@@ -524,7 +544,8 @@ class ProfilePage extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  const Text(' Flags: '),
+                                  Text(
+                                      ' ${AppLocalizations.of(context).flags}: '),
                                   Flexible(
                                     child: AutoSuggestBox<String>(
                                       key: const Key('Search Flags'),
@@ -550,7 +571,8 @@ class ProfilePage extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              const Text(' Selected Flags: '),
+                              Text(
+                                  ' ${AppLocalizations.of(context).selectedFlags}: '),
                               Flexible(
                                 child: ReorderableListView.builder(
                                   shrinkWrap: true,
@@ -597,12 +619,11 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Expander(
-                        header: const Text(
-                            'Replace texts with custom replacements.'),
+                        header: Text(AppLocalizations.of(context).replaceTexts),
                         trailing: FilledButton(
                           onPressed: () => _textModifierDialog(context, profile,
                               UserProfile.defaultModifiers.first, true),
-                          child: const Text('Add'),
+                          child: Text(AppLocalizations.of(context).add),
                         ),
                         content: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -648,8 +669,8 @@ class ProfilePage extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Checkbox(
-                        content: const Text(
-                            '''Use folder name as source title (Recommended). Otherwise it will use the first video file's name as a source title of the show.'''),
+                        content: Text(
+                            AppLocalizations.of(context).useFolderNameAsSource),
                         checked: profile.useFolderName,
                         onChanged: (value) =>
                             profile.update(useFolderName: value),
@@ -672,12 +693,11 @@ class ProfilePage extends StatelessWidget {
     final shouldPop = await showDialog<bool>(
       context: context,
       builder: (context) => ContentDialog(
-        title: const Text('Unsaved changes'),
-        content: const Text(
-            'You have made some changes without saving. Do you want to save or discard them?'),
+        title: Text(AppLocalizations.of(context).unsavedChanges),
+        content: Text(AppLocalizations.of(context).unsavedChangesHint),
         actions: [
           FilledButton(
-            child: const Text('Save'),
+            child: Text(AppLocalizations.of(context).save),
             onPressed: () {
               // Close dialog
               Navigator.pop(context, false);
@@ -687,11 +707,11 @@ class ProfilePage extends StatelessWidget {
             },
           ),
           Button(
-            child: const Text('Discard'),
+            child: Text(AppLocalizations.of(context).discard),
             onPressed: () => Navigator.pop(context, true),
           ),
           Button(
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context).cancel),
             onPressed: () => Navigator.pop(context, false),
           ),
         ],

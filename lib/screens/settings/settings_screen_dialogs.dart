@@ -1,6 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 
 import '../../models/models.dart';
+import '../../utilities/utilities.dart';
 
 class CreateProfileDialog extends StatelessWidget {
   CreateProfileDialog({
@@ -14,14 +15,14 @@ class CreateProfileDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: const Text('Create New Profile'),
+      title: Text(AppLocalizations.of(context).createNewProfile),
       content: ValueListenableBuilder<int>(
         valueListenable: selected,
         builder: (context, value, _) {
           return Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Template: '),
+              Text('${AppLocalizations.of(context).template}: '),
               ComboBox<int>(
                 value: value,
                 onChanged: (choice) {
@@ -42,11 +43,11 @@ class CreateProfileDialog extends StatelessWidget {
       ),
       actions: [
         Button(
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context).cancel),
           onPressed: () => Navigator.pop(context),
         ),
         FilledButton(
-          child: const Text('Continue'),
+          child: Text(AppLocalizations.of(context).continueStr),
           onPressed: () {
             Navigator.pop(context, selected.value);
           },

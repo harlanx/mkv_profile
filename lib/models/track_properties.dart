@@ -144,14 +144,17 @@ abstract class TrackProperties {
 class Flag {
   Flag({
     required this.name,
+    String? definedKey,
     String? shortenedName,
     required this.iconData,
     required this.argument,
     required this.descripton,
     this.value = false,
-  }) : shortenedName = shortenedName ?? name;
+  })  : shortenedName = shortenedName ?? name,
+        definedKey = definedKey ?? name.toLowerCase().replaceAll(' ', '_');
 
   final String name;
+  final String definedKey;
   late final String shortenedName;
   final Map<String, dynamic> iconData;
   final String argument;

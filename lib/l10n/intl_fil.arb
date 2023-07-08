@@ -1,0 +1,207 @@
+{
+  "movie": "Pelikula",
+  "series": "Serye",
+  "home": "Home",
+  "tasks": "Tasks",
+  "outputs": "Outputs",
+  "settings": "Settings",
+  "folder": "Folder",
+  "file": "File",
+  "embedded": "Embedded",
+  "name": "Pangalan",
+  "type": "Klase",
+  "size": "Laki",
+  "timeStamp": "Timestamp",
+  "contentPreview": "Preview ng nilalaman",
+  "show": "Palabas",
+  "video": "Bidyo",
+  "audio": "Awdyo",
+  "audios": "Mga awdyo",
+  "subtitle": "Subtitle",
+  "subtitles": "Mga subtitle",
+  "chapter": "Chapter",
+  "chapters": "Mga chapter",
+  "entries": "Mga entry",
+  "attachment": "Attachment",
+  "attachments": "Mga attachment",
+  "source": "Pinagmulan",
+  "folderTitle": "Pangalan ng folder",
+  "itemNameCantBeEmpty": "{itemType} name cannot be empty",
+  "@itemNameCantBeEmpty": {
+    "description": "Empty error hint by type",
+    "placeholders": {
+      "itemType": {
+        "type": "String",
+        "example": "File"
+      }
+    }
+  },
+  "itemNameContainInvalid": "{itemType} name contains invalid characters",
+  "@itemNameContainInvalid": {
+    "description": "Invalid character error hint by type",
+    "placeholders": {
+      "itemType": {
+        "type": "String",
+        "example": "File"
+      }
+    }
+  },
+  "outputFileTitle": "Pangalan ng output file",
+  "trackTitle": "Pangalan ng track title",
+  "language": "Lengguwahe",
+  "extraOptions": "Extrang opsyon",
+  "extraOptionsHint": "Gamitin ang variable %id% para sa track id",
+  "copyCommandHint": "Kopyahin ang generated mkvmerge command para sa file na ito",
+  "copiedHint": "Nakopya na sa clipboard!",
+  "include_description": "I-enable upang isama and aytem na ito item sa proseso muxing.",
+  "flag_descriptions": "{flag, select, default {I-enable upang ma-set and default flag sa aytem na ito.\nKaraniwang flag sa tracks na atomatikong pinipili ng media player maliban kung binago ng user.} original_language {I-enable upang ma-set ang original language flag sa aytem na ito.\nKarawniwang flag sa Audio and Subtitle tracks na kaparehas ang orihinal na lengguwahe ng palabas.} forced {I-enable upang ma set ang forced flag sa aytem na ito.\nMaaaring magamit ang flag na ito sa Subtitle tracks na may tanging pagsasalin lang sa lengguwaheng hindi madalas na ginamit sa palabas.\nKaraniwang flag para sa Subtitle tracks na pinipilit ang sariling ma-play sa anumang media player na sinusuportahan ito.} commentary {I-enable upang ma-set ang commentary flag sa aytem na ito.\nKaraniwang flag sa Audio and Subtitle tracks na may komentarya ng indibidwal/grupo na gumawa ng palabas.} hearing_impaired {I-enable upang ma set ang hearing impaired (SDH) flag sa aytem na ito.\nKaraniwang flag sa Subtitle tracks na may deskripsyon sa impormasyong pandinig mula sa palabas.} visual_impaired {I-enable upang ma-set ang visual impaired (AD) flag sa aytem na ito.\nKaraniwang flag sa Audio tracks na nagsasalaysay ng pangyayari sa palabas.} text_description {I-enable upang ma-set ang text description (TD) flag sa aytem na ito.\nKaraniwang flag sa Subtitle tracks para sa Audio tracks na nagsasalaysay ng pangyayari sa palabas.} other {}}",
+  "@flag_descriptions": {
+    "placeholders": {
+      "flag": {}
+    }
+  },
+  "remove_chapters_description": "I-enable upang tanggaling ang lahat ng embedded chapters.\nKaraniwang makikita and chapters sa mkv files at maaring gawin ng mano-mano sa isang chapter editor o kaya nama'y na muxed gamit ang isang chapter file.",
+  "remove_attachments_description": "I-enable upang tanggalin lahat ng embedded attachments.\nKaraniwang makikita ang attachments sa mkv files na may imahe ng poster bilang thumbnail at minsan nama'y kapag ang ass/ssa subtitle ay hindi naka-embed ang font sa mismong file na iyon.",
+  "documentation": "dokumentasyon",
+  "profile": "Profile",
+  "profiles": "Mga Profile",
+  "dropFoldersHere": "Mag-drop ng folder dito",
+  "selectFromList": "Pumili sa listahan",
+  "addFolder": "Mag-add ng folder",
+  "removeAll": "Alisin lahat",
+  "addToQueue": "Idagdag sa queue",
+  "startTasks": "Simulan ang tasks",
+  "remove": "Alisin",
+  "progess": "Progreso",
+  "info": "Impormasyon",
+  "date": "Petsa",
+  "duration": "Durasyon",
+  "status": "Istado",
+  "taskStatus": "{status, select, completed {Na-kumpleto} error {May error} other {}}",
+  "preferences": "Kagustuhan",
+  "directoryScanLimit": "Limitasyon ng pag-scan sa directory",
+  "maxActiveProcess": "Pinakamaraming aktibong proseso",
+  "maxActiveProcessHint": "Ang nire-rekomendang value ay 1. Ang MKVMerge ay hindi CPU intensive.\nIto ay nakaasa sa bandwidth ng storage/networking devices at RAM. Ang pagpapatakbo ng sabay-sabay ay walang benepisyo.",
+  "import": "Import",
+  "export": "Export",
+  "create": "Gumawa",
+  "createNewProfile": "Gumawa ng bagong profile",
+  "template": "Template",
+  "okay": "Okay",
+  "cancel": "I-kansela",
+  "continueStr": "Magpatuloy",
+  "save": "I-save",
+  "discard": "I-discard",
+  "note": "Nota",
+  "availableVariables": "Mga maaring magamit na {templateType} variables sa pangalan nito",
+  "@availableVariables": {
+    "description": "Available variables by type",
+    "placeholders": {
+      "templateType": {
+        "type": "String",
+        "example": "Video"
+      }
+    }
+  },
+  "titleTemplate": "Template sa pangalan ng {templateType}",
+  "@titleTemplate": {
+    "description": "Title template by type",
+    "placeholders": {
+      "templateType": {
+        "type": "String",
+        "example": "Video"
+      }
+    }
+  },
+  "showTitleNote": "Ito ay mag a-apply sa pangalan ng folder ng palabas",
+  "videoTitleNote": "Ito ay mag a-apply sa pangalan ng file ng bidyo at sa pangalan ng track nito",
+  "audioTitleNote": "Ito ay mag a-apply sa pangalan ng track ng awdyo",
+  "subtitleTitleNote": "Ito ay mag a-apply sa pangalan ng track ng subtitle",
+  "selectLanguageToInclude": "Piliin ang mga lengguwaheng isasama at pumili rin ng maaring gawing default",
+  "languages": "Mga lengguwahe",
+  "selectedLanguages": "Mga pinili",
+  "selectTrackFlagsAndReorder": "Pumili ng track flags at i-reorder, ito ay mag se-set ng Default flag base sa pagkakasunod ng fallbacks",
+  "flags": "Flags",
+  "selectedFlags": "Mga pinili",
+  "replaceTexts": "Palitan ang text gamit ang ginustong pamalit",
+  "add": "Mag-add",
+  "removeString": "Alisin ang text",
+  "replaceWithWhiteSpace": "Palitan ng white space",
+  "useFolderNameAsSource": "Gamitin ang pangalan ng folder bilang source title (Recommended).\\nKung hindi naman ay gagamitin ang pangalan ng unang video bilang source title para sa palabas",
+  "personalization": "Personalisasyon",
+  "theme": "Theme",
+  "accent": "Accent",
+  "mode": "Mode",
+  "changeLanguage": "Baguhin ang lengguwahe",
+  "misc": "Miscellaneous",
+  "tools": "Kagamitan",
+  "download": "Download",
+  "about": "About",
+  "appName": "Pangalan ng app",
+  "appDescription": "Awtomatikong i-manage at mag mux ng files ng serye o pelikula sa kadalasang conventions na ginagamit ng mga media players at media servers. Ang GUI ay intensyonal na ginawang simple at idinesenyo para sa pinaka kaunting kinakailangan na user interactions sa pamamagitan ng per profile na konpigrusayon sa pag-manage files at pag-generate ng commands na gagamitin para sa muxing process.",
+  "version": "Beryson",
+  "build": "Build",
+  "windowEffect": "Effect sa Window",
+  "toolFound": "Nahanap ang {toolName} at maaari ng gamitin",
+  "@toolFound": {
+    "description": "Tool found by toolName",
+    "placeholders": {
+      "toolName": {
+        "example": "MediaInfo",
+        "type": "String"
+      }
+    }
+  },
+  "toolNotFound": "Hindi mahanap ang {toolName} o kaya nama'y ang file na pinili ay hindi akma, ang app na ito ay hindi gagana na may maling kagamitan.",
+  "@toolNotFound": {
+    "description": "Tool found by toolName",
+    "placeholders": {
+      "toolName": {
+        "example": "MediaInfo",
+        "type": "String"
+      }
+    }
+  },
+  "toolCannotChange": "Hindi maaring baguhin ang {toolName} habang ginagamit",
+  "@toolCannotChange": {
+    "description": "Tool found by toolName",
+    "placeholders": {
+      "toolName": {
+        "example": "MediaInfo",
+        "type": "String"
+      }
+    }
+  },
+  "toolBrowse": "I-browse and file para sa {toolName}",
+  "@toolBrowse": {
+    "description": "Tool found by toolName",
+    "placeholders": {
+      "toolName": {
+        "example": "MediaInfo",
+        "type": "String"
+      }
+    }
+  },
+  "profileName": "Pangalan ng profile",
+  "nameCannotBeEmpty": "Hindi maaaring blangko ang pangalan",
+  "textModifier": "Text modifier",
+  "replacementHint": "Ang ipapalit. Maaaring gumamit ng Regex. (Isa lamang)",
+  "replaceablesHint": "Mga maaring palitan. Maaring gumamit ng Regex. (Isa lang sa bawat line)",
+  "caseSensitivityHint": "I-enable ang case sensitivity para sa mga inilagay na texts",
+  "nonIso6392Hint": "Nag i-indika ng hindi 639-2 Language Codes. Ang mga player na hindi sumu-suporta sa ISO 639-3 Language Codes ay mag di-display ng ibang pangalan ng lengguwahe katulad ng 'und' (Undetermined)",
+  "unsavedChanges": "Hindi pa na-save",
+  "unsavedChangesHint": "May mga ginawa kang pagbabago ng hindi pa na-save. Gusto mo bang i-save o i-discard ang mga ito.",
+  "requirements": "Mga kinakailangan",
+  "missingTools": "Mga nawawalang tool",
+  "scanResult": "Resulta ng scan",
+  "toolLocation": "Lokasyon ng {toolName}",
+  "@toolLocation": {
+    "description": "Tool found by toolName",
+    "placeholders": {
+      "toolName": {
+        "example": "MediaInfo",
+        "type": "String"
+      }
+    }
+  }
+}

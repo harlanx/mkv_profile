@@ -5,7 +5,7 @@ description: Automatically manage and mux series or movie files to the common co
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.5.1+13
+version: 0.5.2+14
 
 environment:
   sdk: ">=2.19.0 <3.0.0"
@@ -13,10 +13,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   ffi: ^2.0.2
   path: ^1.8.3
   intl: ^0.18.0
-  win32: ^4.1.4
+  win32: ^5.0.5
   async: ^2.11.0
   shimmer: ^2.0.0
   provider: ^6.0.5
@@ -47,6 +49,12 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
+
+  fonts:
+    - family: NotoColorEmojiWindows
+      fonts:
+        - asset: assets/fonts/NotoColorEmoji_Windows.ttf
 
   assets:
     - assets/icons/
@@ -83,8 +91,8 @@ msix_config:
   # If anyone had doubts on the certificate, this is how it was created.
   # https://sahajrana.medium.com/how-to-generate-a-pfx-certificate-for-flutter-windows-msix-lib-a860cdcebb8
   # Can be manually typed it in but my case it has been set up in repo secrets and specified only on github actions
-  certificate_path:
-  certificate_password:
+  certificate_path: null
+  certificate_password: null
   sign_msix: true
   install_certificate: false
   # For the specifications of the capabilities of the app

@@ -21,14 +21,14 @@ class FolderTitleDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return ContentDialog(
       constraints: const BoxConstraints(maxWidth: 600),
-      title: const Text('Folder'),
+      title: Text(AppLocalizations.of(context).folder),
       content: ListView(
         shrinkWrap: true,
         padding: const EdgeInsets.symmetric(horizontal: 12),
         children: [
           SelectableText.rich(
             TextSpan(
-              text: 'Source:\n',
+              text: '${AppLocalizations.of(context).source}:\n',
               children: [
                 TextSpan(
                   text: season != null
@@ -56,7 +56,7 @@ class FolderTitleDialog extends StatelessWidget {
             style: FluentTheme.of(context).typography.bodyStrong,
           ),
           Text(
-            'Folder Title:',
+            '${AppLocalizations.of(context).folderTitle}:',
             style: FluentTheme.of(context).typography.bodyStrong,
           ),
           Form(
@@ -71,10 +71,12 @@ class FolderTitleDialog extends StatelessWidget {
               validator: (value) {
                 if (value != null) {
                   if (value.isEmpty) {
-                    return 'Folder name cannot be empty';
+                    return AppLocalizations.of(context).itemNameCantBeEmpty(
+                        AppLocalizations.of(context).folder);
                   }
                   if (!value.isValidFileName) {
-                    return 'Folder name contains invalid characters';
+                    return AppLocalizations.of(context).itemNameContainInvalid(
+                        AppLocalizations.of(context).folder);
                   }
                 }
                 return null;
@@ -85,11 +87,11 @@ class FolderTitleDialog extends StatelessWidget {
       ),
       actions: [
         Button(
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context).cancel),
           onPressed: () => Navigator.pop(context, false),
         ),
         FilledButton(
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context).save),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               if (season == null) {
@@ -153,9 +155,9 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('Video'),
+          Text(AppLocalizations.of(context).video),
           Tooltip(
-            message: 'Copy the generated mkvmerge command for this file.',
+            message: AppLocalizations.of(context).copyCommandHint,
             child: IconButton(
               icon: const Icon(FluentIcons.text_document_settings),
               onPressed: () async {
@@ -163,7 +165,7 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                     text: widget.v.command(widget.show).join(' ')));
                 displayInfoBar(context, builder: (context, close) {
                   return InfoBar(
-                    title: const Text('Copied to clipboard!'),
+                    title: Text(AppLocalizations.of(context).copiedHint),
                     action: IconButton(
                       icon: const Icon(FluentIcons.clear),
                       onPressed: close,
@@ -182,7 +184,7 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
         children: [
           SelectableText.rich(
             TextSpan(
-              text: 'Source:\n',
+              text: '${AppLocalizations.of(context).source}:\n',
               children: [
                 TextSpan(
                   text: widget.v.mainFile.name.noBreakHyphen,
@@ -200,7 +202,7 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
             style: FluentTheme.of(context).typography.bodyStrong,
           ),
           InfoLabel(
-            label: 'Output File Title:',
+            label: '${AppLocalizations.of(context).outputFileTitle}:',
             labelStyle: FluentTheme.of(context).typography.bodyStrong,
             child: Form(
               key: _formKey,
@@ -214,10 +216,13 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                 validator: (value) {
                   if (value != null) {
                     if (value.isEmpty) {
-                      return 'File name cannot be empty';
+                      return AppLocalizations.of(context).itemNameCantBeEmpty(
+                          AppLocalizations.of(context).file);
                     }
                     if (!value.isValidFileName) {
-                      return 'File name contains invalid characters';
+                      return AppLocalizations.of(context)
+                          .itemNameContainInvalid(
+                              AppLocalizations.of(context).file);
                     }
                   }
                   return null;
@@ -226,12 +231,12 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
             ),
           ),
           InfoLabel(
-            label: 'Track Title:',
+            label: '${AppLocalizations.of(context).trackTitle}:',
             labelStyle: FluentTheme.of(context).typography.bodyStrong,
             child: TextBox(controller: trackTitleCtrl),
           ),
           InfoLabel(
-            label: 'Language:',
+            label: '${AppLocalizations.of(context).language}:',
             labelStyle: FluentTheme.of(context).typography.bodyStrong,
             child: AutoSuggestBox<LanguageCode>(
               controller: languageCtrl,
@@ -260,11 +265,12 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
           const SizedBox(height: 10),
           Text.rich(
             TextSpan(
-              text: 'Extra Options',
+              text: AppLocalizations.of(context).extraOptions,
               children: [
                 WidgetSpan(
                   child: Tooltip(
-                    message: 'MKVMerge documentation',
+                    message:
+                        'MKVMerge ${AppLocalizations.of(context).documentation}',
                     child: RichText(
                       text: TextSpan(
                         text: ' [?]',
@@ -286,7 +292,8 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                     ),
                   ),
                 ),
-                const TextSpan(text: ': Use variable %id% for track id'),
+                TextSpan(
+                    text: ': ${AppLocalizations.of(context).extraOptionsHint}'),
               ],
             ),
             style: FluentTheme.of(context).typography.bodyStrong,
@@ -304,8 +311,7 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                   valueListenable: include,
                   builder: (context, value, child) {
                     return Tooltip(
-                      message:
-                          'Enable to include this item in the merging process.',
+                      message: AppLocalizations.of(context).include_description,
                       child: mt.ChoiceChip(
                         avatar: const Icon(FluentIcons.link),
                         label: const Text('Include'),
@@ -323,7 +329,8 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                     valueListenable: flagEntry.value,
                     builder: (context, value, child) {
                       return Tooltip(
-                        message: flagEntry.key.descripton,
+                        message: AppLocalizations.of(context)
+                            .flag_descriptions(flagEntry.key.definedKey),
                         child: mt.ChoiceChip(
                           avatar: Icon(
                             IconData(
@@ -349,8 +356,8 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                   valueListenable: removeChapters,
                   builder: (context, value, child) {
                     return Tooltip(
-                      message:
-                          'Enable to remove all of the embedded chapters.\nIt is usually found in mkv files and can be hand generated on a chapter editor or merged using a chapter file.',
+                      message: AppLocalizations.of(context)
+                          .remove_chapters_description,
                       child: mt.ChoiceChip(
                         avatar: const Icon(mt.Icons.label_off_rounded),
                         label: const Text('Remove Chapters'),
@@ -367,8 +374,8 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                   valueListenable: removeAttachments,
                   builder: (context, value, child) {
                     return Tooltip(
-                      message:
-                          'Enable to remove all of the embedded attachments.\nIt is usually found in mkv files with custom image poster thumbnail and rarely on ass/ssa subtitles with non-embedded font on itself.',
+                      message: AppLocalizations.of(context)
+                          .remove_attachments_description,
                       child: mt.ChoiceChip(
                         avatar: const Icon(mt.Icons.link_off_rounded),
                         label: const Text('Remove Attachments'),
@@ -388,11 +395,11 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
       ),
       actions: [
         Button(
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context).cancel),
           onPressed: () => Navigator.pop(context, false),
         ),
         FilledButton(
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context).save),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               widget.v.fileTitle = fileTitleCtrl.text;
@@ -462,13 +469,14 @@ class _TrackDialogState extends State<TrackDialog> {
         children: [
           Text.rich(
             TextSpan(
-              text: 'Source (${embedded ? 'Embedded' : 'File'}):\n',
+              text:
+                  '${AppLocalizations.of(context).source} (${embedded ? AppLocalizations.of(context).embedded : AppLocalizations.of(context).file}):\n',
               children: [
                 TextSpan(
                   text: embedded
                       ? [
                           (widget.track as EmbeddedTrack).uid,
-                          (widget.track as EmbeddedTrack).sourceTitle
+                          (widget.track as EmbeddedTrack).sourceTitle ?? ''
                         ].join('\n')
                       : (widget.track as AddedTrack).file.name.noBreakHyphen,
                   style:
@@ -489,12 +497,12 @@ class _TrackDialogState extends State<TrackDialog> {
             style: FluentTheme.of(context).typography.bodyStrong,
           ),
           InfoLabel(
-            label: 'Track Title:',
+            label: '${AppLocalizations.of(context).trackTitle}:',
             labelStyle: FluentTheme.of(context).typography.bodyStrong,
             child: TextBox(controller: titleCtrl),
           ),
           InfoLabel(
-            label: 'Language:',
+            label: '${AppLocalizations.of(context).language}:',
             labelStyle: FluentTheme.of(context).typography.bodyStrong,
             child: AutoSuggestBox<LanguageCode>(
               controller: languageCtrl,
@@ -523,11 +531,12 @@ class _TrackDialogState extends State<TrackDialog> {
           const SizedBox(height: 10),
           Text.rich(
             TextSpan(
-              text: 'Extra Options',
+              text: AppLocalizations.of(context).extraOptions,
               children: [
                 WidgetSpan(
                   child: Tooltip(
-                    message: 'MKVMerge documentation',
+                    message:
+                        'MKVMerge ${AppLocalizations.of(context).documentation}',
                     child: RichText(
                       text: TextSpan(
                         text: ' [?]',
@@ -549,7 +558,8 @@ class _TrackDialogState extends State<TrackDialog> {
                     ),
                   ),
                 ),
-                const TextSpan(text: ': Use variable %id% for track id'),
+                TextSpan(
+                    text: ': ${AppLocalizations.of(context).extraOptionsHint}'),
               ],
             ),
             style: FluentTheme.of(context).typography.bodyStrong,
@@ -567,8 +577,7 @@ class _TrackDialogState extends State<TrackDialog> {
                   valueListenable: include,
                   builder: (context, value, child) {
                     return Tooltip(
-                      message:
-                          'Enable to include this item in the merging process.',
+                      message: AppLocalizations.of(context).include_description,
                       child: mt.ChoiceChip(
                         avatar: const Icon(FluentIcons.link),
                         label: const Text('Include'),
@@ -586,7 +595,8 @@ class _TrackDialogState extends State<TrackDialog> {
                     valueListenable: flagEntry.value,
                     builder: (context, value, child) {
                       return Tooltip(
-                        message: flagEntry.key.descripton,
+                        message: AppLocalizations.of(context)
+                            .flag_descriptions(flagEntry.key.definedKey),
                         child: mt.ChoiceChip(
                           avatar: Icon(
                             IconData(
@@ -615,11 +625,11 @@ class _TrackDialogState extends State<TrackDialog> {
       ),
       actions: [
         Button(
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context).cancel),
           onPressed: () => Navigator.pop(context, false),
         ),
         FilledButton(
-          child: const Text('Save'),
+          child: Text(AppLocalizations.of(context).save),
           onPressed: () {
             widget.track.update(
               title: titleCtrl.text,
@@ -644,7 +654,8 @@ class ExtraDialog extends StatelessWidget {
   final String trackType;
   final TrackProperties track;
   late final bool embedded = track is EmbeddedTrack;
-  late final bool isChapter = trackType == 'Chapter';
+  late final bool isChapter = trackType ==
+      AppLocalizations.of(AppData.mainNavigatorKey.currentContext!).chapter;
   late final include = ValueNotifier(track.include);
   late final extraCtrl = TextEditingController(text: track.extraOptions);
   late final _mainCtrl = ScrollController(),
@@ -667,13 +678,13 @@ class ExtraDialog extends StatelessWidget {
                 children: [
                   TableCell(
                       child: Text(
-                    'Timestamp',
+                    AppLocalizations.of(context).timeStamp,
                     style: FluentTheme.of(context).typography.bodyStrong,
                   )),
                   const TableCell(child: SizedBox.shrink()),
                   TableCell(
                       child: Text(
-                    'Title',
+                    AppLocalizations.of(context).name,
                     style: FluentTheme.of(context).typography.bodyStrong,
                   )),
                 ],
@@ -719,16 +730,18 @@ class ExtraDialog extends StatelessWidget {
     if (embedded) {
       final info = ((track as EmbeddedTrack).info as AttachmentInfo);
       return [
-        Text('Name: ${info.name}'),
-        Text('Type: ${info.type}'),
-        Text('Size: ${info.size.formatByteSize()}'),
+        Text('${AppLocalizations.of(context).name}: ${info.name}'),
+        Text('${AppLocalizations.of(context).type}: ${info.type}'),
+        Text(
+            '${AppLocalizations.of(context).size}: ${info.size.formatByteSize()}'),
       ];
     }
     final fileInfo = (track as AddedTrack).file;
     return [
-      Text('Name: ${fileInfo.name}'),
-      Text('Type: ${fileInfo.extension}'),
-      Text('Size: ${fileInfo.lengthSync().formatByteSize()}'),
+      Text('${AppLocalizations.of(context).name}: ${fileInfo.name}'),
+      Text('${AppLocalizations.of(context).type}: ${fileInfo.extension}'),
+      Text(
+          '${AppLocalizations.of(context).size}: ${fileInfo.lengthSync().formatByteSize()}'),
     ];
   }
 
@@ -745,7 +758,8 @@ class ExtraDialog extends StatelessWidget {
           children: [
             Text.rich(
               TextSpan(
-                text: 'Source (${embedded ? 'Embedded' : 'File'}):\n',
+                text:
+                    '${AppLocalizations.of(context).source} (${embedded ? AppLocalizations.of(context).embedded : AppLocalizations.of(context).file}):\n',
                 children: [
                   TextSpan(
                     text: embedded
@@ -767,7 +781,7 @@ class ExtraDialog extends StatelessWidget {
               style: FluentTheme.of(context).typography.bodyStrong,
             ),
             Expander(
-              header: const Text('Content preview'),
+              header: Text(AppLocalizations.of(context).contentPreview),
               headerHeight: 32,
               content: Container(
                 decoration: isChapter && !embedded
@@ -801,11 +815,12 @@ class ExtraDialog extends StatelessWidget {
               const SizedBox(height: 10),
               Text.rich(
                 TextSpan(
-                  text: 'Extra Options',
+                  text: AppLocalizations.of(context).extraOptions,
                   children: [
                     WidgetSpan(
                       child: Tooltip(
-                        message: 'MKVMerge documentation',
+                        message:
+                            'MKVMerge ${AppLocalizations.of(context).documentation}',
                         child: RichText(
                           text: TextSpan(
                             text: ' [?]',
@@ -846,7 +861,7 @@ class ExtraDialog extends StatelessWidget {
                       builder: (context, value, child) {
                         return Tooltip(
                           message:
-                              'Enable to include this item in the merging process.',
+                              AppLocalizations.of(context).include_description,
                           child: mt.ChoiceChip(
                             avatar: const Icon(FluentIcons.link),
                             label: const Text('Include'),
@@ -869,16 +884,16 @@ class ExtraDialog extends StatelessWidget {
       actions: [
         if (embedded) ...[
           Button(
-            child: const Text('Okay'),
+            child: Text(AppLocalizations.of(context).okay),
             onPressed: () => Navigator.pop(context, false),
           ),
         ] else ...[
           Button(
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context).cancel),
             onPressed: () => Navigator.pop(context, false),
           ),
           FilledButton(
-            child: const Text('Save'),
+            child: Text(AppLocalizations.of(context).save),
             onPressed: () {
               track.update(
                 include: include.value,

@@ -30,6 +30,7 @@ class AppSettingsNotifier extends ChangeNotifier {
     this.themeMode = ThemeMode.system,
     this.accentMode = AccentMode.custom,
     this.customAccent = const Color(0xff468600),
+    this.locale = const Locale('en'),
     this.windowEffect = WindowsFluentEffect.disabled,
     this.windowSize = const Size(1280, 720),
     this.isMaximized = false,
@@ -45,6 +46,7 @@ class AppSettingsNotifier extends ChangeNotifier {
   ThemeMode themeMode;
   AccentMode accentMode;
   Color customAccent;
+  Locale locale;
   WindowsFluentEffect windowEffect;
   Size windowSize;
   bool isMaximized;
@@ -64,6 +66,7 @@ class AppSettingsNotifier extends ChangeNotifier {
       themeMode: ThemeMode.values.byName(json['themeMode']),
       accentMode: AccentMode.values.byName(json['accentMode']),
       customAccent: Color(json['customAccent']),
+      locale: json['locale'],
       windowEffect: WindowsFluentEffect.values.byName(json['windowEffect']),
       windowSize: Size(
         json['windowSize']['width'],
@@ -83,6 +86,7 @@ class AppSettingsNotifier extends ChangeNotifier {
         'themeMode': themeMode.name,
         'accentMode': accentMode.name,
         'customAccent': customAccent.value,
+        'locale': locale,
         'windowEffect': windowEffect.name,
         'windowSize': {'width': windowSize.width, 'height': windowSize.height},
         'isMaximized': isMaximized,
@@ -102,6 +106,7 @@ class AppSettingsNotifier extends ChangeNotifier {
       themeMode = data.themeMode;
       accentMode = data.accentMode;
       customAccent = data.customAccent;
+      locale = data.locale;
       windowEffect = data.windowEffect;
       windowSize = data.windowSize;
       isMaximized = data.isMaximized;
@@ -159,6 +164,11 @@ class AppSettingsNotifier extends ChangeNotifier {
 
   void setCustomAccent(Color customAccent) {
     this.customAccent = customAccent;
+    notifyListeners();
+  }
+
+  void setLocale(Locale locale) {
+    this.locale = locale;
     notifyListeners();
   }
 

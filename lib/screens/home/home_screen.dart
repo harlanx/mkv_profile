@@ -48,12 +48,18 @@ class HomeScreen extends StatelessWidget {
             return Container(
               padding: const EdgeInsets.all(5.0),
               color: dragging
-                  ? FluentTheme.of(context).disabledColor.withOpacity(0.15)
+                  ? FluentTheme.of(context)
+                      .resources
+                      .textFillColorDisabled
+                      .withOpacity(0.15)
                   : null,
-              child: const Center(
+              child: Center(
                 child: Text(
-                  'Drop folders here.',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context).dropFoldersHere,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             );
@@ -116,7 +122,10 @@ class InputPanel extends StatelessWidget {
               return Container(
                 padding: const EdgeInsets.all(5.0),
                 color: dragging
-                    ? FluentTheme.of(context).disabledColor.withOpacity(0.15)
+                    ? FluentTheme.of(context)
+                        .resources
+                        .textFillColorDisabled
+                        .withOpacity(0.15)
                     : null,
                 child: Scrollbar(
                   controller: _controller,
@@ -192,7 +201,8 @@ class _InputTileState extends State<InputTile> {
           if (snapshot.connectionState != ConnectionState.done) {
             // Loading Animations
             return Shimmer.fromColors(
-              baseColor: FluentTheme.of(context).disabledColor,
+              baseColor:
+                  FluentTheme.of(context).resources.textFillColorDisabled,
               highlightColor: FluentTheme.of(context).activeColor,
               child: ListTile(
                 leading: SizedBox(
@@ -202,7 +212,9 @@ class _InputTileState extends State<InputTile> {
                       height: 16,
                       width: 35,
                       decoration: BoxDecoration(
-                        color: FluentTheme.of(context).disabledColor,
+                        color: FluentTheme.of(context)
+                            .resources
+                            .textFillColorDisabled,
                         borderRadius: BorderRadius.circular(5),
                       ),
                     ),
@@ -213,7 +225,8 @@ class _InputTileState extends State<InputTile> {
                   height: 16,
                   width: 150,
                   decoration: BoxDecoration(
-                    color: FluentTheme.of(context).disabledColor,
+                    color:
+                        FluentTheme.of(context).resources.textFillColorDisabled,
                     borderRadius: BorderRadius.circular(5),
                   ),
                 ),
@@ -222,7 +235,8 @@ class _InputTileState extends State<InputTile> {
                   height: 12,
                   width: 180,
                   decoration: BoxDecoration(
-                    color: FluentTheme.of(context).disabledColor,
+                    color:
+                        FluentTheme.of(context).resources.textFillColorDisabled,
                     borderRadius: BorderRadius.circular(5),
                   ),
                 ),
@@ -233,7 +247,9 @@ class _InputTileState extends State<InputTile> {
                       height: 8,
                       width: 25,
                       decoration: BoxDecoration(
-                        color: FluentTheme.of(context).disabledColor,
+                        color: FluentTheme.of(context)
+                            .resources
+                            .textFillColorDisabled,
                         borderRadius: BorderRadius.circular(5),
                       ),
                     ),
@@ -252,7 +268,9 @@ class _InputTileState extends State<InputTile> {
                 leading: Container(
                   height: 40,
                   alignment: Alignment.center,
-                  child: Text(sn.show is Movie ? '(Movie)' : '(Series)'),
+                  child: Text(sn.show is Movie
+                      ? '(${AppLocalizations.of(context).movie})'
+                      : '(${AppLocalizations.of(context).series})'),
                 ),
                 title: Text(
                   sn.show.directory.name,
@@ -276,7 +294,7 @@ class _InputTileState extends State<InputTile> {
                   height: 40,
                   alignment: Alignment.center,
                   child: Tooltip(
-                    message: 'Remove',
+                    message: AppLocalizations.of(context).remove,
                     child: IconButton(
                       icon: const Icon(FluentIcons.remove),
                       onPressed: () {
@@ -310,10 +328,13 @@ class InfoPanel extends StatelessWidget {
       valueListenable: selectedID,
       builder: (context, id, _) {
         if (id == null) {
-          return const Center(
+          return Center(
             child: Text(
-              'Select from list',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              AppLocalizations.of(context).selectFromList,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           );
         }
@@ -518,10 +539,11 @@ class InfoPanel extends StatelessWidget {
             value: '${video.mainFile.path}Audios',
             expanded: expandAud,
             leading: const Icon(FluentIcons.volume3),
-            content: const Text('Audios'),
+            content: Text(AppLocalizations.of(context).audios),
             children: List<TreeViewItem>.from(
               audios.map(
-                (e) => _trackTree(context, 'Audio', e, sn),
+                (e) => _trackTree(
+                    context, AppLocalizations.of(context).audio, e, sn),
               ),
             ),
           ),
@@ -531,10 +553,11 @@ class InfoPanel extends StatelessWidget {
             value: '${video.mainFile.path}Subtitles',
             expanded: expandSub,
             leading: const Icon(FluentIcons.cc),
-            content: const Text('Subtitles'),
+            content: Text(AppLocalizations.of(context).subtitles),
             children: List<TreeViewItem>.from(
               subtitles.map(
-                (e) => _trackTree(context, 'Subtitle', e, sn),
+                (e) => _trackTree(
+                    context, AppLocalizations.of(context).subtitle, e, sn),
               ),
             ),
           ),
@@ -544,10 +567,11 @@ class InfoPanel extends StatelessWidget {
             value: '${video.mainFile.path}Chapters',
             expanded: expandChap,
             leading: const Icon(FluentIcons.double_bookmark),
-            content: const Text('Chapters'),
+            content: Text(AppLocalizations.of(context).chapters),
             children: List<TreeViewItem>.from(
               chapters.map(
-                (e) => _extraTree(context, 'Chapter', e, sn),
+                (e) => _extraTree(
+                    context, AppLocalizations.of(context).chapter, e, sn),
               ),
             ),
           ),
@@ -557,10 +581,11 @@ class InfoPanel extends StatelessWidget {
             value: '${video.mainFile.path}Attachments',
             expanded: expandAttach,
             leading: const Icon(FluentIcons.attach),
-            content: const Text('Attachments'),
+            content: Text(AppLocalizations.of(context).attachments),
             children: List<TreeViewItem>.from(
               attachments.map(
-                (e) => _extraTree(context, 'Attachment', e, sn),
+                (e) => _extraTree(
+                    context, AppLocalizations.of(context).attachment, e, sn),
               ),
             ),
           ),
@@ -646,14 +671,14 @@ class InfoPanel extends StatelessWidget {
     final theme = FluentTheme.of(context);
 
     String displayName = '';
-    if (type == 'Chapter') {
+    if (type == AppLocalizations.of(context).chapter) {
       if (embedded) {
         displayName =
-            '${extra.uid} (Entries: ${(extra.info as MenuInfo).chapters.length})';
+            '${extra.uid} (${AppLocalizations.of(context).entries}: ${(extra.info as MenuInfo).chapters.length})';
       } else {
         displayName = (extra as AddedTrack).file.name;
       }
-    } else if (type == 'Attachment') {
+    } else if (type == AppLocalizations.of(context).attachment) {
       if (embedded) {
         displayName = '${extra.uid} (${(extra.info as AttachmentInfo).name})';
       } else {

@@ -70,7 +70,7 @@ class OutputsScreenState extends State<OutputsScreen>
                 primaryItems: [
                   CommandBarButton(
                     icon: const Icon(FluentIcons.delete),
-                    label: const Text('Remove'),
+                    label: Text(AppLocalizations.of(context).remove),
                     onPressed: outputs.selected.isEmpty
                         ? null
                         : () {
@@ -190,7 +190,7 @@ class OutputsScreenState extends State<OutputsScreen>
     _manager.removeColumns(_manager.columns);
     _manager.insertColumns(0, [
       PlutoColumn(
-        title: 'Info',
+        title: AppLocalizations.of(context).info,
         field: 'info',
         type: PlutoColumnType.number(),
         readOnly: true,
@@ -237,7 +237,7 @@ class OutputsScreenState extends State<OutputsScreen>
         },
       ),
       PlutoColumn(
-        title: 'Profile',
+        title: AppLocalizations.of(context).profile,
         field: 'profile',
         type: PlutoColumnType.number(),
         readOnly: true,
@@ -254,7 +254,7 @@ class OutputsScreenState extends State<OutputsScreen>
         },
       ),
       PlutoColumn(
-        title: 'Date',
+        title: AppLocalizations.of(context).date,
         field: 'date',
         type: PlutoColumnType.number(),
         readOnly: true,
@@ -272,7 +272,7 @@ class OutputsScreenState extends State<OutputsScreen>
         },
       ),
       PlutoColumn(
-        title: 'Duration',
+        title: AppLocalizations.of(context).duration,
         field: 'duration',
         type: PlutoColumnType.number(),
         readOnly: true,
@@ -289,7 +289,7 @@ class OutputsScreenState extends State<OutputsScreen>
         },
       ),
       PlutoColumn(
-        title: 'Status',
+        title: AppLocalizations.of(context).status,
         field: 'status',
         type: PlutoColumnType.number(),
         readOnly: true,
@@ -302,7 +302,8 @@ class OutputsScreenState extends State<OutputsScreen>
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           final output = outputs.items[id]!;
-          return Text(output.info.taskStatus.name.capitalized);
+          return Text(AppLocalizations.of(context)
+              .taskStatus(output.info.taskStatus.name));
         },
       ),
     ]);

@@ -6,6 +6,39 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:path/path.dart' as p;
 import 'package:win32/win32.dart';
 
+extension LocaleExtension on Locale {
+  // Update also when adding new locales
+  String get name {
+    switch (languageCode) {
+      case 'en':
+        return 'English';
+
+      case 'fil':
+        return 'Filipino';
+      default:
+        return '';
+    }
+  }
+
+  // Note: Use NotoColorEmoji (Windows Compatible) since some OS like windows doesn't support (render) flag emojis
+  // https://github.com/googlefonts/noto-emoji/tree/main/fonts
+  String get flagEmoji {
+    switch (languageCode) {
+      case 'en':
+        return _getFlagEmoji('GB');
+      case 'fil':
+        return _getFlagEmoji('PH');
+      default:
+        return '🏳️';
+    }
+  }
+
+  static String _getFlagEmoji(String countryCode) {
+    return countryCode.toUpperCase().replaceAllMapped(RegExp(r'[A-Z]'),
+        (match) => String.fromCharCode(match.group(0)!.codeUnitAt(0) + 127397));
+  }
+}
+
 extension FileSystemEntityExtension on FileSystemEntity {
   /// Returns the name of the file with the extension.
   /// Folder names are returned as is.
