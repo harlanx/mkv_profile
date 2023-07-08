@@ -4,8 +4,7 @@
 <img src="assets/icons/mkv_profile.png" width="300"/>
 </p>
 
-Automatically manage and mux series or movie files to the common conventions used by media players and media servers.
-The GUI is intentionally made simple and is designed for least user interactions by implementing per profile configuration to manage files and generate a command to be used on mkvmerge process.
+Automatically manage and mux series or movie files to the common conventions used by media players and media servers. The GUI is intentionally made simple and is designed for least user interactions by implementing per profile configuration to manage files and generate a command to be used on muxing process.
 
 ## Preview
 <p align="center">
@@ -94,14 +93,14 @@ Head to [Releases](https://github.com/harlanx/mkv_profile/releases) section for 
     |Text Description|`%text_description%`|
 - Specify the Languages to be Included
 - Specifying the Subtitle Default Flag
-    - Specify Which Language can be set to Default
+    - Specify which Language can be set to Default
     - Specify the Order Fallbacks of Flags that will be set as default
         - NOTE: If Default is used in the Flag Order, It will set the Default Flag to a subtitle track that doesn't have any of the available track flags set to true.
 - Modifiers
     - User can specify text or regex pattern that will be replaced by another specified text or an empty text.
 
 ## Title Scanning
-- **Show:** Uses folder name (if Use Folder Name is set to TRUE in Profile Configuration) or the file name of first video available from the list to be used as a source title alongside with the modifiers. Variables specified in the *Show* title format will be replaced with the corresponding data.
+- **Show:** Uses folder name (if Use Folder Name is set to TRUE in Profile Configuration) or the file name of first video available to be used as a source title alongside with the modifiers. Variables specified in the *Show* title format will be replaced with the corresponding data.
 - **Video:** Uses the video file's name as the source title to be used alongside with the modifiers. Variables specified in the *Video* title format will be replaced with the corresponding data.
 - **Audio:** Variables specified in the *Audio* title format will be replaced with the corresponding data.
 - **Subtitle:** Variables specified in the *Subtitle* title format will be replaced with the corresponding data.
@@ -121,7 +120,7 @@ Head to [Releases](https://github.com/harlanx/mkv_profile/releases) section for 
     - NOTE: This option is only available for added (non-embedded) attachments.
 
 ## Detection of Movies or Series
-This app assumes folders with single video file as movie, for folders that contains multiple videos — will be detected as series. If detected as series, file names will be used to assume and detect any indication of Season and Episode numbers.
+This app assumes folders with single video file as movie, for folders that contains multiple videos — will be detected as series. If detected as series, file names will be used to assume and detect any indication the Season and Episode numbers.
 
 ## Supported Formats
 **Video:** [avi, mov, mp4, mpeg, mpg, m4v, mkv]
@@ -137,7 +136,7 @@ This app assumes folders with single video file as movie, for folders that conta
 **Image:** [jpg, jpeg, png]
 
 ## Third Party Requirements
-This app relies on the third party tools [MediaInfo](https://mediaarea.net/en/MediaInfo) and [MKVMerge](https://mkvtoolnix.download/doc/mkvmerge.html) thus required for this app to work. You can download them in their websites:
+This app rely on the third party tools [MediaInfo](https://mediaarea.net/en/MediaInfo) and [MKVMerge](https://mkvtoolnix.download/doc/mkvmerge.html) thus required for this app to work. You can download it in their websites:
 - [MediaInfo](https://mediaarea.net/en/MediaInfo/Download/Windows)
 - [MKVMerge](https://mkvtoolnix.download/downloads.html#windows)
 
@@ -160,7 +159,7 @@ The saved path was probably from an old installation, to reset or clear old app 
 This app have a test that makes sure if third party tools work before doing any actions.
 If you opt out to use the version of third party tools that comes with this app, or you have downloaded a newer version but it doesn't work. Make sure that:
 - The directory and the file you've specified still exists
-- Make sure to use the correct version of the file
+- You have the correct version of the file
     - **MediaInfo File Required**
         - Windows
         - 64 bit
@@ -173,4 +172,4 @@ If you opt out to use the version of third party tools that comes with this app,
         - You can [Download](https://mkvtoolnix.download/downloads.html#windows) it here and choose portable if you only need to get the mkvmerge file or installer (it's a set of tools) if you need those other tools that comes with it.
 
 ## How can I contribute to the project?
-Any contributions such as reporting bugs will be a great help in making better experience. Any person interested in collaborating with this project are gladly welcome.
+Any contributions such as reporting bugs will be a great help in making better experience. Anyone interested in collaborating with this project are welcome to contribute.

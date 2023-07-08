@@ -58,7 +58,8 @@
   "@flag_descriptions": {
     "placeholders": {
       "flag": {}
-    }
+    },
+    "description": "Track flag descriptions by flag"
   },
   "remove_chapters_description": "I-enable upang tanggaling ang lahat ng embedded chapters.\nKaraniwang makikita and chapters sa mkv files at maaring gawin ng mano-mano sa isang chapter editor o kaya nama'y na muxed gamit ang isang chapter file.",
   "remove_attachments_description": "I-enable upang tanggalin lahat ng embedded attachments.\nKaraniwang makikita ang attachments sa mkv files na may imahe ng poster bilang thumbnail at minsan nama'y kapag ang ass/ssa subtitle ay hindi naka-embed ang font sa mismong file na iyon.",
@@ -82,8 +83,8 @@
   "directoryScanLimit": "Limitasyon ng pag-scan sa directory",
   "maxActiveProcess": "Pinakamaraming aktibong proseso",
   "maxActiveProcessHint": "Ang nire-rekomendang value ay 1. Ang MKVMerge ay hindi CPU intensive.\nIto ay nakaasa sa bandwidth ng storage/networking devices at RAM. Ang pagpapatakbo ng sabay-sabay ay walang benepisyo.",
-  "import": "Import",
-  "export": "Export",
+  "import": "Mag-import",
+  "export": "I-export",
   "create": "Gumawa",
   "createNewProfile": "Gumawa ng bagong profile",
   "template": "Template",
@@ -125,8 +126,6 @@
   "selectedFlags": "Mga pinili",
   "replaceTexts": "Palitan ang text gamit ang ginustong pamalit",
   "add": "Mag-add",
-  "removeString": "Alisin ang text",
-  "replaceWithWhiteSpace": "Palitan ng white space",
   "useFolderNameAsSource": "Gamitin ang pangalan ng folder bilang source title (Recommended).\\nKung hindi naman ay gagamitin ang pangalan ng unang video bilang source title para sa palabas",
   "personalization": "Personalisasyon",
   "theme": "Theme",
@@ -134,7 +133,7 @@
   "mode": "Mode",
   "changeLanguage": "Baguhin ang lengguwahe",
   "misc": "Miscellaneous",
-  "tools": "Kagamitan",
+  "tools": "Mga tools",
   "download": "Download",
   "about": "About",
   "appName": "Pangalan ng app",
@@ -154,7 +153,7 @@
   },
   "toolNotFound": "Hindi mahanap ang {toolName} o kaya nama'y ang file na pinili ay hindi akma, ang app na ito ay hindi gagana na may maling kagamitan.",
   "@toolNotFound": {
-    "description": "Tool found by toolName",
+    "description": "Tool not found by toolName",
     "placeholders": {
       "toolName": {
         "example": "MediaInfo",
@@ -164,7 +163,7 @@
   },
   "toolCannotChange": "Hindi maaring baguhin ang {toolName} habang ginagamit",
   "@toolCannotChange": {
-    "description": "Tool found by toolName",
+    "description": "Tool cannot change by toolName",
     "placeholders": {
       "toolName": {
         "example": "MediaInfo",
@@ -174,7 +173,7 @@
   },
   "toolBrowse": "I-browse and file para sa {toolName}",
   "@toolBrowse": {
-    "description": "Tool found by toolName",
+    "description": "Browse tool by toolName",
     "placeholders": {
       "toolName": {
         "example": "MediaInfo",
@@ -196,10 +195,20 @@
   "scanResult": "Resulta ng scan",
   "toolLocation": "Lokasyon ng {toolName}",
   "@toolLocation": {
-    "description": "Tool found by toolName",
+    "description": "Tool location by toolName",
     "placeholders": {
       "toolName": {
         "example": "MediaInfo",
+        "type": "String"
+      }
+    }
+  },
+  "replacementPreview": "{replacement, select, remove_string {Tanggalin ang text} replace_with_whitespace {Palitan ng whitespace} other {replacement}}",
+  "@replacementPreview": {
+    "description": "Replacement preview by replacement",
+    "placeholders": {
+      "replacement": {
+        "example": "remove_string",
         "type": "String"
       }
     }

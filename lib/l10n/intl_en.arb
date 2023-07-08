@@ -58,7 +58,8 @@
   "@flag_descriptions": {
     "placeholders": {
       "flag": {}
-    }
+    },
+    "description": "Track flag descriptions by flag"
   },
   "remove_chapters_description": "Enable to remove all of the embedded chapters.\nChapters is usually found in mkv files and can be hand generated on a chapter editor or muxed using a chapter file.",
   "remove_attachments_description": "Enable to remove all of the embedded attachments.\nAttachments is usually found in mkv files with custom image poster thumbnail and rarely on ass/ssa subtitles with non-embedded font on itself.",
@@ -125,8 +126,6 @@
   "selectedFlags": "Selected flags",
   "replaceTexts": "Replace texts with custom replacement",
   "add": "Add",
-  "removeString": "Remove text",
-  "replaceWithWhiteSpace": "Replace with white space",
   "useFolderNameAsSource": "Use folder name as source title (Recommended).\\nOtherwise it will use the first video file's name as a source title of the show",
   "personalization": "Personalization",
   "theme": "Theme",
@@ -154,7 +153,7 @@
   },
   "toolNotFound": "{toolName} is not found or the specified file is incorrect, the app will not work with wrong tools.",
   "@toolNotFound": {
-    "description": "Tool found by toolName",
+    "description": "Tool not found by toolName",
     "placeholders": {
       "toolName": {
         "example": "MediaInfo",
@@ -164,7 +163,7 @@
   },
   "toolCannotChange": "Cannot change {toolName} while being used",
   "@toolCannotChange": {
-    "description": "Tool found by toolName",
+    "description": "Tool cannot change by toolName",
     "placeholders": {
       "toolName": {
         "example": "MediaInfo",
@@ -174,7 +173,7 @@
   },
   "toolBrowse": "Browse the file for {toolName}.",
   "@toolBrowse": {
-    "description": "Tool found by toolName",
+    "description": "Browse tool by toolName",
     "placeholders": {
       "toolName": {
         "example": "MediaInfo",
@@ -196,10 +195,20 @@
   "scanResult": "Scan result",
   "toolLocation": "{toolName} location",
   "@toolLocation": {
-    "description": "Tool found by toolName",
+    "description": "Tool location by toolName",
     "placeholders": {
       "toolName": {
         "example": "MediaInfo",
+        "type": "String"
+      }
+    }
+  },
+  "replacementPreview": "{replacement, select, remove_string {Remove text} replace_with_whitespace {Replace with whitespace} other {replacement}}",
+  "@replacementPreview": {
+    "description": "Replacement preview by replacement",
+    "placeholders": {
+      "replacement": {
+        "example": "remove_string",
         "type": "String"
       }
     }

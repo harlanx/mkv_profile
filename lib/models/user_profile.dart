@@ -318,9 +318,9 @@ class TextModifier {
   String get replacementPreview {
     String preview = '';
     if (replacement.isEmpty) {
-      preview = 'Remove String';
+      preview = 'remove_string';
     } else if (replacement.trim().isEmpty) {
-      preview = 'Replace with White Space';
+      preview = 'replace_with_whitespace';
     } else {
       preview = replacement;
     }

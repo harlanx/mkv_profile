@@ -641,7 +641,9 @@ class ProfilePage extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   subtitle: Text(
-                                    e.replacementPreview,
+                                    AppLocalizations.of(context)
+                                        .replacementPreview(
+                                            e.replacementPreview),
                                     maxLines: 1,
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,

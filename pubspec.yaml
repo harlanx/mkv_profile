@@ -1,5 +1,5 @@
 name: mkv_profile
-description: Automatically manage and mux series or movie files to the common conventions used by media players and media servers. The GUI is intentionally made simple and is designed for least user interactions by implementing per profile configuration to manage files and generate a command to be used on mkvmerge process.
+description: Automatically manage and mux series or movie files to the common conventions used by media players and media servers. The GUI is intentionally made simple and is designed for least user interactions by implementing per profile configuration to manage files and generate a command to be used on muxing process.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -84,15 +84,15 @@ msix_config:
   # Unfortunately I had to use Self-Signed Certificate since I'm not publishing this app on Microsoft Store
   # and trusted signed certificates comes with a huge cost...
   # I'll just add an instruction how to install the certificate on the client/user's machine in order for
-  # the app to be installed using an msix installer or tell them to just use the good old extracted archive file
+  # the app to be installed using an msix installer or tell them to just use the extracted archive file
   # where they can run the app portably.
-  # Link below is the instruction for installing certificate.
+  # The link below is the instruction for installing certificate.
   # https://diyusthad.com/2022/10/solved-untrusted-certificate-when-installing-msix-build-using-flutter.html
   # If anyone had doubts on the certificate, this is how it was created.
   # https://sahajrana.medium.com/how-to-generate-a-pfx-certificate-for-flutter-windows-msix-lib-a860cdcebb8
-  # Can be manually typed it in but my case it has been set up in repo secrets and specified only on github actions
-  certificate_path: null
-  certificate_password: null
+  # Can be manually typed it in but in my case it has been set up in repo secrets and specified only on github actions
+  certificate_path:
+  certificate_password:
   sign_msix: true
   install_certificate: false
   # For the specifications of the capabilities of the app
