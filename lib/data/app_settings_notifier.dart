@@ -66,7 +66,7 @@ class AppSettingsNotifier extends ChangeNotifier {
       themeMode: ThemeMode.values.byName(json['themeMode']),
       accentMode: AccentMode.values.byName(json['accentMode']),
       customAccent: Color(json['customAccent']),
-      locale: json['locale'],
+      locale: Locale(json['locale']),
       windowEffect: WindowsFluentEffect.values.byName(json['windowEffect']),
       windowSize: Size(
         json['windowSize']['width'],
@@ -86,7 +86,7 @@ class AppSettingsNotifier extends ChangeNotifier {
         'themeMode': themeMode.name,
         'accentMode': accentMode.name,
         'customAccent': customAccent.value,
-        'locale': locale,
+        'locale': locale.languageCode,
         'windowEffect': windowEffect.name,
         'windowSize': {'width': windowSize.width, 'height': windowSize.height},
         'isMaximized': isMaximized,
