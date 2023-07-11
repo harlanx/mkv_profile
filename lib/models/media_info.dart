@@ -224,9 +224,12 @@ class MenuInfo {
   List<ChapterInfo> chapters;
 
   factory MenuInfo.fromJson(Map<String, dynamic> json) {
-    final rawChapters = json['extra'];
+    final Map<String, dynamic> rawChapters = json['extra'];
+    // Remove non chapter entries
+    rawChapters.removeWhere(
+        (key, value) => !RegExp(r'_\d{2}_\d{2}_\d{2}_\d{3}').hasMatch(key));
     return MenuInfo(
-      id: int.parse(json['StreamKindID']),
+      id: int.parse(json['StreamOrder'] ?? json['StreamKindID']),
       uid: json.hashCode.toString(),
       count: int.parse(json['Count']),
       chapters: List<ChapterInfo>.from(
