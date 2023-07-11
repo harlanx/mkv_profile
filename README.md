@@ -147,13 +147,18 @@ This project uses self signed certificate because trusted signed certificates fr
 If you have doubts about the certificate, [Read more here](https://github.com/harlanx/mkv_profile/blob/93f22cf071d54826499b63e9d6869b6ac00384a4/pubspec.yaml#L76C1-L76C108)
 
 ## Third party tools path is default but it's not working?
-The saved path was probably from an old installation, to reset or clear old app data:
-- Reminder: Export the profiles you've created before procedding.
-- Open File Explorer
-- Head to C:\Users\\`<Username>`\AppData\Roaming **or** C:\Users\\`<Username>`\AppData\Local\Packages
-- Find the folder that contains the word `harlanx` and delete it
-- Reopen the app
-- The path will be set to the default path of the third party binaries that comes with the app
+The saved path was probably from an old installation, to reset it or entirely clear old app data:
+- **Reset Tool Path**
+    - Head to Settings
+    - On the Miscellaneous section find and expand Tools section
+    - Click on the reset button to use the default path.
+- **Clear Old App Data**
+    - Reminder: Export the profiles you've created before procedding.
+    - Open File Explorer
+    - Head to C:\Users\\`<Username>`\AppData\Roaming **or** C:\Users\\`<Username>`\AppData\Local\Packages
+    - Find the folder that contains the word `harlanx` and delete it
+    - Reopen the app
+    - The path will be set to the default path of the third party binaries that comes with the app
 
 ## Specified custom path of the third party tools but it doesn't work?
 This app have a test that makes sure if third party tools work before doing any actions.

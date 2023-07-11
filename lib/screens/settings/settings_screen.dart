@@ -606,55 +606,72 @@ class MiscSection extends StatelessWidget {
                       ],
                     ),
                   ),
-                  TextBox(
-                    readOnly: true,
-                    controller:
-                        TextEditingController(text: appSettings.mediaInfoPath),
-                    prefix: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Tooltip(
-                        message: AppData.mediaInfoLoaded
-                            ? AppLocalizations.of(context)
-                                .toolFound('MediaInfo')
-                            : AppLocalizations.of(context)
-                                .toolNotFound('MediaInfo'),
-                        child: Icon(
-                          AppData.mediaInfoLoaded
-                              ? FluentIcons.check_mark
-                              : FluentIcons.warning,
+                  Row(
+                    children: [
+                      Flexible(
+                        child: TextBox(
+                          readOnly: true,
+                          controller: TextEditingController(
+                              text: appSettings.mediaInfoPath),
+                          prefix: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Tooltip(
+                              message: AppData.mediaInfoLoaded
+                                  ? AppLocalizations.of(context)
+                                      .toolFound('MediaInfo')
+                                  : AppLocalizations.of(context)
+                                      .toolNotFound('MediaInfo'),
+                              child: Icon(
+                                AppData.mediaInfoLoaded
+                                    ? FluentIcons.check_mark
+                                    : FluentIcons.warning,
+                              ),
+                            ),
+                          ),
+                          suffix: Tooltip(
+                            message: MetadataScanner.active
+                                ? AppLocalizations.of(context)
+                                    .toolCannotChange('MediaInfo')
+                                : AppLocalizations.of(context)
+                                    .toolBrowse('MediaInfo'),
+                            child: IconButton(
+                              icon: const Icon(
+                                  FluentIcons.open_folder_horizontal),
+                              onPressed: MetadataScanner.active
+                                  ? null
+                                  : () async {
+                                      final file = await openFile(
+                                        initialDirectory:
+                                            File(appSettings.mediaInfoPath)
+                                                .parent
+                                                .path,
+                                        acceptedTypeGroups: [
+                                          const XTypeGroup(
+                                            label: 'MediaInfo',
+                                            extensions: ['dll'],
+                                          ),
+                                        ],
+                                      );
+                                      if (file != null) {
+                                        await appSettings
+                                            .updateMediaInfoPath(file.path);
+                                      }
+                                    },
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                    suffix: Tooltip(
-                      message: MetadataScanner.active
-                          ? AppLocalizations.of(context)
-                              .toolCannotChange('MediaInfo')
-                          : AppLocalizations.of(context)
-                              .toolBrowse('MediaInfo'),
-                      child: IconButton(
-                        icon: const Icon(FluentIcons.open_folder_horizontal),
-                        onPressed: MetadataScanner.active
-                            ? null
-                            : () async {
-                                final file = await openFile(
-                                  initialDirectory:
-                                      File(appSettings.mediaInfoPath)
-                                          .parent
-                                          .path,
-                                  acceptedTypeGroups: [
-                                    const XTypeGroup(
-                                      label: 'MediaInfo',
-                                      extensions: ['dll'],
-                                    ),
-                                  ],
-                                );
-                                if (file != null) {
-                                  await appSettings
-                                      .updateMediaInfoPath(file.path);
-                                }
-                              },
+                      Tooltip(
+                        message: 'Reset and use the default tool path',
+                        child: IconButton(
+                          icon: const Icon(FluentIcons.reset),
+                          onPressed: () async {
+                            await appSettings.updateMediaInfoPath(
+                                AppData.defaultMediaInfoPath);
+                          },
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                   Text.rich(
                     TextSpan(
@@ -678,53 +695,72 @@ class MiscSection extends StatelessWidget {
                       ],
                     ),
                   ),
-                  TextBox(
-                    readOnly: true,
-                    controller:
-                        TextEditingController(text: appSettings.mkvMergePath),
-                    prefix: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Tooltip(
-                        message: AppData.mkvMergeLoaded
-                            ? AppLocalizations.of(context).toolFound('MKVMerge')
-                            : AppLocalizations.of(context)
-                                .toolNotFound('MKVMerge'),
-                        child: Icon(
-                          AppData.mkvMergeLoaded
-                              ? FluentIcons.check_mark
-                              : FluentIcons.warning,
+                  Row(
+                    children: [
+                      Flexible(
+                        child: TextBox(
+                          readOnly: true,
+                          controller: TextEditingController(
+                              text: appSettings.mkvMergePath),
+                          prefix: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Tooltip(
+                              message: AppData.mkvMergeLoaded
+                                  ? AppLocalizations.of(context)
+                                      .toolFound('MKVMerge')
+                                  : AppLocalizations.of(context)
+                                      .toolNotFound('MKVMerge'),
+                              child: Icon(
+                                AppData.mkvMergeLoaded
+                                    ? FluentIcons.check_mark
+                                    : FluentIcons.warning,
+                              ),
+                            ),
+                          ),
+                          suffix: Tooltip(
+                            message: ShowMerger.active
+                                ? AppLocalizations.of(context)
+                                    .toolCannotChange('MKVMerge')
+                                : AppLocalizations.of(context)
+                                    .toolBrowse('MKVMerge'),
+                            child: IconButton(
+                              icon: const Icon(
+                                  FluentIcons.open_folder_horizontal),
+                              onPressed: ShowMerger.active
+                                  ? null
+                                  : () async {
+                                      final file = await openFile(
+                                        initialDirectory:
+                                            File(appSettings.mkvMergePath)
+                                                .parent
+                                                .path,
+                                        acceptedTypeGroups: [
+                                          const XTypeGroup(
+                                            label: 'mkvmerge',
+                                            extensions: ['exe'],
+                                          )
+                                        ],
+                                      );
+                                      if (file != null) {
+                                        await appSettings
+                                            .updateMkvMergePath(file.path);
+                                      }
+                                    },
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                    suffix: Tooltip(
-                      message: ShowMerger.active
-                          ? AppLocalizations.of(context)
-                              .toolCannotChange('MKVMerge')
-                          : AppLocalizations.of(context).toolBrowse('MKVMerge'),
-                      child: IconButton(
-                        icon: const Icon(FluentIcons.open_folder_horizontal),
-                        onPressed: ShowMerger.active
-                            ? null
-                            : () async {
-                                final file = await openFile(
-                                  initialDirectory:
-                                      File(appSettings.mkvMergePath)
-                                          .parent
-                                          .path,
-                                  acceptedTypeGroups: [
-                                    const XTypeGroup(
-                                      label: 'mkvmerge',
-                                      extensions: ['exe'],
-                                    )
-                                  ],
-                                );
-                                if (file != null) {
-                                  await appSettings
-                                      .updateMkvMergePath(file.path);
-                                }
-                              },
+                      Tooltip(
+                        message: 'Reset and use the default tool path',
+                        child: IconButton(
+                          icon: const Icon(FluentIcons.reset),
+                          onPressed: () async {
+                            await appSettings.updateMkvMergePath(
+                                AppData.defaultMKVMergePath);
+                          },
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ],
               ),

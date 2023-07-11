@@ -38,6 +38,10 @@ class AppData {
   static final mainNavigatorKey = GlobalKey<NavigatorState>();
   // Directory of our executable
   static final exeDir = File(Platform.resolvedExecutable).parent;
+  static final defaultMediaInfoPath =
+      '${exeDir.path}\\data\\flutter_assets\\assets\\mediainfo\\MediaInfo.dll';
+  static final defaultMKVMergePath =
+      '${exeDir.path}\\data\\flutter_assets\\assets\\mkvmerge\\mkvmerge.exe';
   // External tools' file names in assets
   static const _mediainfoFile = 'MediaInfo.dll';
   static const _mkvmergeFile = 'mkvmerge.exe';

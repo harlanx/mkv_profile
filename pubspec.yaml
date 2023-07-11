@@ -5,7 +5,7 @@ description: Automatically manage and mux series or movie files to the common co
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.5.2+14
+version: 0.5.3+15
 
 environment:
   sdk: ">=2.19.0 <3.0.0"
@@ -80,7 +80,7 @@ msix_config:
   tile_icon_path: ./assets/icons/mkv_profile.ico
   icons_background_color: transparent
   # Specify the supported languages if the app supports Internationalization.
-  languages: en-us
+  languages: en, fil
   # Unfortunately I had to use Self-Signed Certificate since I'm not publishing this app on Microsoft Store
   # and trusted signed certificates comes with a huge cost...
   # I'll just add an instruction how to install the certificate on the client/user's machine in order for
