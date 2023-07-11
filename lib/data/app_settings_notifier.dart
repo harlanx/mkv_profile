@@ -131,12 +131,7 @@ class AppSettingsNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setThemeMode(ThemeMode themeMode) async {
-    // reload system_theme
-    // this is currently the only way to reload the system's accent color
-    // there's no built in listener in flutter for system accent color yet
-    await SystemTheme.accentColor.load();
-
+  void setThemeMode(ThemeMode themeMode) {
     this.themeMode = themeMode;
     // For default window title bar
     // switch (themeMode) {
@@ -153,16 +148,12 @@ class AppSettingsNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setAccentMode(AccentMode accentMode) async {
-    if (accentMode == AccentMode.system) {
-      await SystemTheme.accentColor.load();
-    }
-
+  void setAccentMode(AccentMode accentMode) {
     this.accentMode = accentMode;
     notifyListeners();
   }
 
-  void setCustomAccent(Color customAccent) {
+  void setAccentColor(Color customAccent) {
     this.customAccent = customAccent;
     notifyListeners();
   }
@@ -209,17 +200,26 @@ class AppSettingsNotifier extends ChangeNotifier {
   /// and few modifications to approximately match it.
   AccentColor get accentColor {
     if (accentMode == AccentMode.system) {
-      return AccentColor.swatch({
-        'darkest': SystemTheme.accentColor.darkest,
-        'darker': SystemTheme.accentColor.darker,
-        'dark': SystemTheme.accentColor.dark,
-        'normal': SystemTheme.accentColor.accent,
-        'light': SystemTheme.accentColor.light,
-        'lighter': SystemTheme.accentColor.lighter,
-        'lightest': SystemTheme.accentColor.lightest,
-      });
+      return _systemAccent;
     }
+    return _customAccent;
+  }
 
+  late AccentColor _systemAccent;
+
+  set currentSystemAccent(SystemAccentColor systemAccent) {
+    _systemAccent = AccentColor.swatch({
+      'darkest': systemAccent.darkest,
+      'darker': systemAccent.darker,
+      'dark': systemAccent.dark,
+      'normal': systemAccent.accent,
+      'light': systemAccent.light,
+      'lighter': systemAccent.lighter,
+      'lightest': systemAccent.lightest,
+    });
+  }
+
+  AccentColor get _customAccent {
     // You can create schemes using SeedColorScheme.fromSeeds or FlexSchemeColor.from
     // but they generate very different schemes.
     // We'll just prefer SeedColorScheme since it providers more color options.

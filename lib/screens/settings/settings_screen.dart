@@ -408,7 +408,7 @@ class PersonalizationSection extends StatelessWidget {
                         content: Text(e.name.titleCased),
                         checked: appSettings.themeMode == e,
                         onChanged: (value) async {
-                          await appSettings.setThemeMode(e);
+                          appSettings.setThemeMode(e);
                           WidgetsBinding.instance
                               .addPostFrameCallback((_) async {
                             await Future.delayed(
@@ -539,7 +539,7 @@ class PersonalizationSection extends StatelessWidget {
                             ColorPickerType.wheel: true,
                           },
                           onColorChanged: (val) {
-                            appSettings.setCustomAccent(val);
+                            appSettings.setAccentColor(val);
                           },
                         ),
                       ),

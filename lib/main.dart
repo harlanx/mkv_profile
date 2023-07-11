@@ -14,8 +14,6 @@ void main() async {
   // flutter bindings
   WidgetsFlutterBinding.ensureInitialized();
   // system_theme
-  // We could use windows_ui package instead but as of
-  // writing this app it has some dependency constraint issues.
   await SystemTheme.accentColor.load();
   // flutter_acrylic
   await Window.initialize();
@@ -87,7 +85,7 @@ class _MyAppState extends State<MyApp>
   @override
   void didChangePlatformBrightness() async {
     // Update app theme when user changes dark or light mode in windows personalization settings
-    await AppData.appSettings.setThemeMode(AppData.appSettings.themeMode);
+    AppData.appSettings.setThemeMode(AppData.appSettings.themeMode);
 
     // Force update window effect since it won't match the thememode light
     // and dark mode colors if changed on runtime.
@@ -120,37 +118,42 @@ class _MyAppState extends State<MyApp>
       ],
       builder: (context, _) {
         final appSettings = context.watch<AppSettingsNotifier>();
-        return FluentApp(
-          //showPerformanceOverlay: true,
-          debugShowCheckedModeBanner: false,
-          title: AppData.appTitle,
-          navigatorKey: AppData.mainNavigatorKey,
-          color: appSettings.accentColor,
-          themeMode: appSettings.themeMode,
-          theme: appSettings.lightTheme,
-          darkTheme: appSettings.darkTheme,
-          localizationsDelegates: [
-            // Defined localizations that isn't available from fluent_ui package yet.
-            // Use i18n manager for locally managing translations
-            // though unmaintained, it's still working as expected
-            // https://github.com/gilmarsquinelato/i18n-manager
-            CustomFluentLocalizationDelegate(),
-            // fluent_ui localization delegate
-            FluentLocalizations.delegate,
-            // Generated localization delegates
-            ...AppLocalizations.localizationsDelegates,
-          ],
-          supportedLocales: const [...AppLocalizations.supportedLocales],
-          locale: appSettings.locale,
-          localeResolutionCallback: (locale, supportedLocales) {
-            if (AppLocalizations.supportedLocales.contains(locale)) {
-              return locale;
-            }
-            // Locale fallback
-            return const Locale('en');
+        return SystemThemeBuilder(
+          builder: (context, systemAccent) {
+            appSettings.currentSystemAccent = systemAccent;
+            return FluentApp(
+              //showPerformanceOverlay: true,
+              debugShowCheckedModeBanner: false,
+              title: AppData.appTitle,
+              navigatorKey: AppData.mainNavigatorKey,
+              color: appSettings.accentColor,
+              themeMode: appSettings.themeMode,
+              theme: appSettings.lightTheme,
+              darkTheme: appSettings.darkTheme,
+              localizationsDelegates: [
+                // Defined localizations that isn't available from fluent_ui package yet.
+                // Use i18n manager for locally managing translations
+                // though unmaintained, it's still working as expected
+                // https://github.com/gilmarsquinelato/i18n-manager
+                CustomFluentLocalizationDelegate(),
+                // fluent_ui localization delegate
+                FluentLocalizations.delegate,
+                // Generated localization delegates
+                ...AppLocalizations.localizationsDelegates,
+              ],
+              supportedLocales: const [...AppLocalizations.supportedLocales],
+              locale: appSettings.locale,
+              localeResolutionCallback: (locale, supportedLocales) {
+                if (AppLocalizations.supportedLocales.contains(locale)) {
+                  return locale;
+                }
+                // Locale fallback
+                return const Locale('en');
+              },
+              initialRoute: '/',
+              home: const MainScreen(),
+            );
           },
-          initialRoute: '/',
-          home: const MainScreen(),
         );
       },
     );

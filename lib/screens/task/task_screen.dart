@@ -3,7 +3,6 @@ import 'package:fluent_ui/fluent_ui.dart';
 
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:provider/provider.dart';
-import 'package:system_theme/system_theme.dart';
 
 import '../../data/app_data.dart';
 import '../../services/app_services.dart';
@@ -235,7 +234,9 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
       BuildContext context, ThemeMode themeMode) {
     final accent = context.read<AppSettingsNotifier>().accentColor;
     if (themeMode == ThemeMode.dark ||
-        (themeMode == ThemeMode.system && SystemTheme.isDarkMode)) {
+        (themeMode == ThemeMode.system &&
+            WidgetsBinding
+                .instance.platformDispatcher.platformBrightness.isDark)) {
       return PlutoGridConfiguration.dark(
         style: PlutoGridStyleConfig.dark(
           rowColor: FluentTheme.of(context).cardColor.withOpacity(0.1),
