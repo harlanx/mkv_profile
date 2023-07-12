@@ -221,8 +221,8 @@ class PreferencesSection extends StatelessWidget {
                     onPressed: () async {
                       final int? profileID = await showDialog<int?>(
                         context: context,
-                        builder: (context) =>
-                            CreateProfileDialog(templates: profiles.items),
+                        builder: (context) => CreateProfileDialog(
+                            templates: profiles.items.values.toList()),
                       );
                       if (context.mounted && profileID != null) {
                         Navigator.push(
@@ -247,7 +247,7 @@ class PreferencesSection extends StatelessWidget {
                   profiles.items.values.map(
                     (p) {
                       // Default profiles' id
-                      final isDefault = p.id == 0 || p.id == 1 || p.id == 2;
+                      final isDefault = p.id <= 2;
                       return Card(
                         padding: const EdgeInsets.only(left: 8.0, right: 4.0),
                         borderRadius: BorderRadius.circular(4),

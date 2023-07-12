@@ -621,7 +621,7 @@ class ProfilePage extends StatelessWidget {
                       Expander(
                         header: Text(AppLocalizations.of(context).replaceTexts),
                         trailing: FilledButton(
-                          onPressed: () => _textModifierDialog(context, profile,
+                          onPressed: () => _textModifierDialog(context,
                               UserProfile.defaultModifiers.first, true),
                           child: Text(AppLocalizations.of(context).add),
                         ),
@@ -635,7 +635,7 @@ class ProfilePage extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(4),
                                 child: ListTile(
                                   title: Text(
-                                    e.replaceablePreview,
+                                    e.replaceablesPreview,
                                     maxLines: 1,
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,
@@ -654,7 +654,7 @@ class ProfilePage extends StatelessWidget {
                                       IconButton(
                                         icon: const Icon(FluentIcons.edit),
                                         onPressed: () => _textModifierDialog(
-                                            context, profile, e, false),
+                                            context, e, false),
                                       ),
                                       IconButton(
                                         icon: const Icon(FluentIcons.delete),
@@ -756,12 +756,12 @@ class ProfilePage extends StatelessWidget {
     }
   }
 
-  void _textModifierDialog(BuildContext context, UserProfile profile,
-      TextModifier modifier, bool isNew) async {
+  void _textModifierDialog(
+      BuildContext context, TextModifier modifier, bool isNew) async {
     await showDialog<TextModifier>(
       context: context,
       builder: (context) => TextModifierDialog(
-        profile: profile,
+        profile: editProfile,
         sourceModifier: modifier,
         isNew: isNew,
       ),

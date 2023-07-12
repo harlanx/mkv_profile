@@ -19,7 +19,7 @@ class TitleScanner {
   /// Title scanner by replacing the matched strings using the list [UserProfile.modifiers]
   static String _modifiedTitle(String source, List<TextModifier> modifiers) {
     for (var i in modifiers) {
-      for (var j in i.replaceable) {
+      for (var j in i.replaceables) {
         source = source.replaceAll(
             RegExp(j.regexSafe, caseSensitive: i.caseSensitive), i.replacement);
       }

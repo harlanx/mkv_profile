@@ -121,7 +121,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
     ),
     TextModifier(
       id: 1,
-      replaceable: [
+      replaceables: [
         '.',
         '_',
         '-',
@@ -176,26 +176,29 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
       };
 
   UserProfile copyWith({
-    String? name,
     int? id,
+    String? name,
     String? showTitleFormat,
     String? videoTitleFormat,
+    String? audioTitleFormat,
+    String? subtitleTitleFormat,
     String? defaultLanguage,
     List<String>? languages,
     List<String>? defaultFlagOrder,
     List<TextModifier>? modifiers,
     bool? useFolderName,
-    bool? defaultSdh,
   }) =>
       UserProfile(
         name: name ?? this.name,
         id: id ?? this.id,
         showTitleFormat: showTitleFormat ?? this.showTitleFormat,
         videoTitleFormat: videoTitleFormat ?? this.videoTitleFormat,
+        audioTitleFormat: audioTitleFormat ?? this.audioTitleFormat,
+        subtitleTitleFormat: subtitleTitleFormat ?? this.subtitleTitleFormat,
         defaultLanguage: defaultLanguage ?? this.defaultLanguage,
-        languages: languages ?? this.languages,
-        defaultFlagOrder: defaultFlagOrder ?? this.defaultFlagOrder,
-        modifiers: modifiers ?? this.modifiers,
+        languages: languages ?? List.from(this.languages),
+        defaultFlagOrder: defaultFlagOrder ?? List.from(this.defaultFlagOrder),
+        modifiers: modifiers ?? List.from(this.modifiers),
         useFolderName: useFolderName ?? this.useFolderName,
       );
 
@@ -304,16 +307,16 @@ class TextModifier {
   TextModifier({
     required this.id,
     required this.replacement,
-    required this.replaceable,
+    required this.replaceables,
     this.caseSensitive = false,
   });
 
   int id;
   String replacement;
-  List<String> replaceable;
+  List<String> replaceables;
   bool caseSensitive;
 
-  String get replaceablePreview => replaceable.join('  •  ');
+  String get replaceablesPreview => replaceables.join('  •  ');
 
   String get replacementPreview {
     String preview = '';
@@ -330,38 +333,38 @@ class TextModifier {
   TextModifier copyWith({
     int? id,
     String? replacement,
-    List<String>? replaceable,
+    List<String>? replaceables,
     bool? caseSensitive,
   }) =>
       TextModifier(
         id: id ?? this.id,
         replacement: replacement ?? this.replacement,
-        replaceable: replaceable ?? this.replaceable,
+        replaceables: replaceables ?? List.from(this.replaceables),
         caseSensitive: caseSensitive ?? this.caseSensitive,
       );
 
   void update({
     int? id,
     String? replacement,
-    List<String>? replaceable,
+    List<String>? replaceables,
     bool? caseSensitive,
   }) {
     this.id = id ?? this.id;
     this.replacement = replacement ?? this.replacement;
-    this.replaceable = replaceable ?? this.replaceable;
+    this.replaceables = replaceables ?? this.replaceables;
     this.caseSensitive = caseSensitive ?? this.caseSensitive;
   }
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'replaceable': replaceable,
+        'replaceables': replaceables,
         'replacement': replacement,
       };
 
   factory TextModifier.fromJson(Map<String, dynamic> json) {
     return TextModifier(
       id: json['id'],
-      replaceable: List<String>.from((json['replaceable'])),
+      replaceables: List<String>.from((json['replaceables'])),
       replacement: json['replacement'],
     );
   }

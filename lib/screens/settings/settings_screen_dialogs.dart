@@ -8,7 +8,7 @@ class CreateProfileDialog extends StatelessWidget {
     super.key,
     required this.templates,
   });
-  final Map<int, UserProfile> templates;
+  final List<UserProfile> templates;
 
   final ValueNotifier<int> selected = ValueNotifier(0);
 
@@ -29,10 +29,10 @@ class CreateProfileDialog extends StatelessWidget {
                   if (choice != null) selected.value = choice;
                 },
                 items: List.from(
-                  templates.entries.map(
+                  templates.map(
                     (e) => ComboBoxItem(
-                      value: e.key,
-                      child: Text(e.value.name),
+                      value: e.id,
+                      child: Text(e.name),
                     ),
                   ),
                 ),

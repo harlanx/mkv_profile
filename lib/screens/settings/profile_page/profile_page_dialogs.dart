@@ -58,26 +58,26 @@ class TextModifierDialog extends StatelessWidget {
     required this.isNew,
   }) {
     if (isNew) {
-      modifier = sourceModifier.copyWith(
+      editModifier = sourceModifier.copyWith(
         replacement: '',
-        replaceable: [],
+        replaceables: [],
         caseSensitive: false,
       );
     } else {
-      modifier = sourceModifier;
+      editModifier = sourceModifier.copyWith();
     }
   }
 
   final UserProfile profile;
   final TextModifier sourceModifier;
-  late final TextModifier modifier;
+  late final TextModifier editModifier;
   final bool isNew;
 
   late final replacementCtrl =
-      TextEditingController(text: modifier.replacement);
-  late final replaceableCtrl =
-      TextEditingController(text: modifier.replaceable.join('\n'));
-  late final caseSensitive = ValueNotifier(modifier.caseSensitive);
+      TextEditingController(text: editModifier.replacement);
+  late final replaceablesCtrl =
+      TextEditingController(text: editModifier.replaceables.join('\n'));
+  late final caseSensitive = ValueNotifier(editModifier.caseSensitive);
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +108,7 @@ class TextModifierDialog extends StatelessWidget {
                 );
               }),
           TextBox(
-            controller: replaceableCtrl,
+            controller: replaceablesCtrl,
             maxLines: null,
           ),
         ],
@@ -124,17 +124,18 @@ class TextModifierDialog extends StatelessWidget {
             if (isNew) {
               profile.addModifier(
                 TextModifier(
-                  id: DateTime.now().millisecondsSinceEpoch + modifier.hashCode,
+                  id: DateTime.now().millisecondsSinceEpoch +
+                      editModifier.hashCode,
                   caseSensitive: caseSensitive.value,
                   replacement: replacementCtrl.text,
-                  replaceable: replaceableCtrl.text.split('\n'),
+                  replaceables: replaceablesCtrl.text.split('\n'),
                 ),
               );
             } else {
-              sourceModifier.update(
+              editModifier.update(
                 caseSensitive: caseSensitive.value,
                 replacement: replacementCtrl.text,
-                replaceable: replaceableCtrl.text.split('\n'),
+                replaceables: replaceablesCtrl.text.split('\n'),
               );
               profile.update();
             }
