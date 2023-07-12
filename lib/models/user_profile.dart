@@ -71,28 +71,12 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
   ];
 
   static List<TextModifier> defaultModifiers = [
+    // Recommended to put regex at the end for better result
     TextModifier(
       id: 0,
-      replaceable: [
-        r'\b\d{4}\b', // Year
-        r'Season.\d+|S.\d+|Season \d+|S \d+', // Season
-        r'Episode.\d+|E.\d+|Episode \d+|E \d+', // Episode
-        r'\d{3,4}p', //'1080p', '720p', '480p',
-        '1080',
-        '720',
-        '480',
-        r'x.\d{3}|x\d{3}', //'x.264', 'x.265', 'x264', 'x265',
-        r'h.\d{3}|h\d{3}', //'h.264', //'h.265', 'h264', 'h265',
-        r'[\d]+bit', //'10bit', '8bit',
-        r'Part\.\d|Part\s\d', //'Part.1', 'Part.2', 'Part 1','Part 2',
-        r'DD\d+.\d+|DDP\d+.\d+', // 'DDP2.0', 'DDP5.1', Dolby Digital (Plus)
-        r'TrueHD.\d+.\d+', // 'TrueHD.7.1', 'TrueHD.5.1', Atmos
-        r'\[(.*?)\]|\((.*?)\)', // [Anything with square brackets] (and Parentheses)
-        r'\d+(?:\.\d+)?MB|\d+(?:\.\d+)?GB', // 200MB, 150.20MB, 2GB, 2.5GB
-        r'\bM{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})\b', // Roman numerals
+      replaceables: [
         'HEVC',
         'WEB',
-        'NF',
         'Web-Dl',
         'WEBRip',
         'BluRay',
@@ -115,7 +99,22 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         'ION265',
         'ION10',
         'GalaxyRG',
-        'XEBEC'
+        'XEBEC',
+        'Infinite',
+        'NF',
+        r'\b\d{4}\b', // Year
+        r'Season.\d+|S.\d+|Season \d+|S \d+', // Season
+        r'Episode.\d+|E.\d+|Episode \d+|E \d+', // Episode
+        r'\d{3,4}p', //'1080p', '720p', '480p',
+        r'x.\d{3}|x\d{3}', //'x.264', 'x.265', 'x264', 'x265',
+        r'h.\d{3}|h\d{3}', //'h.264', //'h.265', 'h264', 'h265',
+        r'[\d]+bit', //'10bit', '8bit',
+        r'Part\.\d|Part\s\d', //'Part.1', 'Part.2', 'Part 1','Part 2',
+        r'DD\d+.\d+|DDP\d+.\d+', // 'DDP2.0', 'DDP5.1', Dolby Digital (Plus)
+        r'TrueHD.\d+.\d+', // 'TrueHD.7.1', 'TrueHD.5.1', Atmos
+        r'\[(.*?)\]|\((.*?)\)', // [Anything with square brackets] (and Parentheses)
+        r'\d+(?:\.\d+)?MB|\d+(?:\.\d+)?GB', // 200MB, 150.20MB, 2GB, 2.5GB
+        r'\bM{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})\b', // Roman numerals
       ],
       replacement: '',
     ),
