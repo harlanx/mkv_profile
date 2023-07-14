@@ -212,5 +212,38 @@
         "type": "String"
       }
     }
-  }
+  },
+  "checkUpdate": "Check for updates",
+  "yes": "Yes",
+  "deleteItemConfirmation": "Are you sure you want to delete {item}?",
+  "@deleteItemConfirmation": {
+    "description": "Delete confirmation by item",
+    "placeholders": {
+      "item": {
+        "example": "Profile",
+        "type": "String"
+      }
+    }
+  },
+  "deleteItem": "Delete {item}",
+  "@deleteItem": {
+    "description": "Delete by item",
+    "placeholders": {
+      "item": {
+        "example": "Profile",
+        "type": "String"
+      }
+    }
+  },
+  "newVersionAvailable": "New version available! {version}",
+  "@newVersionAvailable": {
+    "description": "New version by version",
+    "placeholders": {
+      "version": {
+        "example": "1.0.0",
+        "type": "String"
+      }
+    }
+  },
+  "youAreUsingLatestVersion": "You are using the latest version"
 }

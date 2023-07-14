@@ -163,7 +163,7 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
               onPressed: () async {
                 Clipboard.setData(ClipboardData(
                     text: widget.v.command(widget.show).join(' ')));
-                displayInfoBar(context, builder: (context, close) {
+                await displayInfoBar(context, builder: (context, close) {
                   return InfoBar(
                     title: Text(AppLocalizations.of(context).copiedHint),
                     action: IconButton(

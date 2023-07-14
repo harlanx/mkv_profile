@@ -5,6 +5,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 
 import 'package:async/async.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
@@ -786,6 +787,7 @@ class _AboutTileState extends State<AboutTile> {
   late final PackageInfo packageInfo;
   final AsyncMemoizer _memoizer = AsyncMemoizer();
   late final future = fetchPackageInfo();
+  final isCheckingUpdate = ValueNotifier<bool>(false);
 
   Future<void> fetchPackageInfo() async {
     await _memoizer.runOnce(() async {
@@ -798,6 +800,74 @@ class _AboutTileState extends State<AboutTile> {
     return Expander(
       leading: const Icon(FluentIcons.info),
       header: Text(AppLocalizations.of(context).about),
+      trailing: ValueListenableBuilder<bool>(
+          valueListenable: isCheckingUpdate,
+          builder: (context, value, child) {
+            return Button(
+              onPressed: !value
+                  ? () async {
+                      try {
+                        isCheckingUpdate.value = true;
+                        final url = Uri.https('api.github.com',
+                            'repos/harlanx/mkv_profile/releases');
+                        await http.get(url).then((response) async {
+                          final List<dynamic> json = jsonDecode(response.body);
+                          if (json.isNotEmpty) {
+                            final String latestVersion = json.first['tag_name'];
+                            if (Utilities.isNewVersionAvailable(
+                                packageInfo.version,
+                                latestVersion.replaceAll('v', ''))) {
+                              await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) {
+                                    return NewUpdateDialog(latestVersion);
+                                  }).then((value) async {
+                                if (value ??= false) {
+                                  final url = json.first['html_url'];
+                                  if (await canLaunchUrl(Uri.parse(url))) {
+                                    await launchUrl(Uri.parse(url));
+                                  }
+                                }
+                              });
+                            } else {
+                              await displayInfoBar(context,
+                                  builder: (context, close) {
+                                return InfoBar(
+                                  title: Text(AppLocalizations.of(context)
+                                      .youAreUsingLatestVersion),
+                                  action: IconButton(
+                                    icon: const Icon(FluentIcons.clear),
+                                    onPressed: close,
+                                  ),
+                                  severity: InfoBarSeverity.info,
+                                );
+                              });
+                            }
+                          }
+                        });
+                      } catch (_) {}
+                      isCheckingUpdate.value = false;
+                    }
+                  : null,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ...[
+                    if (value)
+                      SizedBox(
+                        height: FluentTheme.of(context).iconTheme.size,
+                        width: FluentTheme.of(context).iconTheme.size,
+                        child: const ProgressRing(),
+                      )
+                    else
+                      const Icon(FluentIcons.history)
+                  ],
+                  const SizedBox(width: 8),
+                  Text(AppLocalizations.of(context).checkUpdate),
+                ],
+              ),
+            );
+          }),
       content: FutureBuilder(
           future: future,
           builder: (context, snapshot) {
@@ -823,7 +893,7 @@ class _AboutTileState extends State<AboutTile> {
                       text: '${AppLocalizations.of(context).version}: ',
                       children: [
                         TextSpan(
-                          text: packageInfo.version.toString(),
+                          text: packageInfo.version,
                           style: FluentTheme.of(context).typography.body,
                         ),
                       ],

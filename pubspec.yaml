@@ -5,7 +5,7 @@ description: Automatically manage and mux series or movie files to the common co
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.5.4+16
+version: 0.5.5+17
 
 environment:
   sdk: ">=2.19.0 <3.0.0"
@@ -16,6 +16,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   ffi: ^2.0.2
+  http: ^1.1.0
   path: ^1.8.3
   intl: ^0.18.0
   win32: ^5.0.5

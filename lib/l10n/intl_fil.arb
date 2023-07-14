@@ -212,5 +212,38 @@
         "type": "String"
       }
     }
-  }
+  },
+  "checkUpdate": "Mag-check ng update",
+  "yes": "oo",
+  "deleteItemConfirmation": "Magpatuloy na i-delete ang {item}?",
+  "@deleteItemConfirmation": {
+    "description": "Delete confirmation by item",
+    "placeholders": {
+      "item": {
+        "example": "Profile",
+        "type": "String"
+      }
+    }
+  },
+  "deleteItem": "I-delete ang {item}",
+  "@deleteItem": {
+    "description": "Delete by item",
+    "placeholders": {
+      "item": {
+        "example": "Profile",
+        "type": "String"
+      }
+    }
+  },
+  "newVersionAvailable": "May bagong bersyo na available! {version}",
+  "@newVersionAvailable": {
+    "description": "New version by version",
+    "placeholders": {
+      "version": {
+        "example": "1.0.0",
+        "type": "String"
+      }
+    }
+  },
+  "youAreUsingLatestVersion": "Ginagamit mo na ang pinakabagong bersyon"
 }

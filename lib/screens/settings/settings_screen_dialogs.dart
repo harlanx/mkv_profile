@@ -70,15 +70,42 @@ class DeleteDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: Text('Delete $title'),
-      content: Text('Are you sure you want to delete $item?'),
+      title: Text(AppLocalizations.of(context).deleteItem(title)),
+      content: Text(AppLocalizations.of(context).deleteItemConfirmation(item)),
       actions: [
         Button(
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context).cancel),
           onPressed: () => Navigator.pop(context, false),
         ),
         FilledButton(
-          child: const Text('Yes'),
+          child: Text(AppLocalizations.of(context).yes),
+          onPressed: () => Navigator.pop(context, true),
+        ),
+      ],
+    );
+  }
+}
+
+class NewUpdateDialog extends StatelessWidget {
+  const NewUpdateDialog(
+    this.version, {
+    Key? key,
+  }) : super(key: key);
+
+  final String version;
+
+  @override
+  Widget build(BuildContext context) {
+    return ContentDialog(
+      title: Text(AppLocalizations.of(context).checkUpdate),
+      content: Text(AppLocalizations.of(context).newVersionAvailable(version)),
+      actions: [
+        Button(
+          child: Text(AppLocalizations.of(context).okay),
+          onPressed: () => Navigator.pop(context, false),
+        ),
+        FilledButton(
+          child: Text(AppLocalizations.of(context).download),
           onPressed: () => Navigator.pop(context, true),
         ),
       ],
