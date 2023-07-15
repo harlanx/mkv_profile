@@ -106,7 +106,7 @@ class VideoInfo extends TrackProperties {
       duration: double.parse(json['Duration']),
       width: int.parse(json['Width']),
       height: int.parse(json['Height']),
-      frameRate: double.parse(json['FrameRate']),
+      frameRate: double.parse(json['FrameRate'] ?? json['FrameRate_Original']),
       streamSize: int.parse(json['StreamSize']),
       encoding: json['Encoded_Library_Name'] ?? json['Format_Commercial'],
       title: json['Title'],
