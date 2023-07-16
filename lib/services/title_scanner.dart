@@ -203,7 +203,20 @@ class TitleScanner {
     }
 
     formats.forEach((key, value) {
-      titleFormat = titleFormat.replaceFirst(key, value);
+      final variable = key.replaceAll('%', '');
+      final pattern = RegExp('%[^%]*$variable[^%]*%');
+      if (pattern.hasMatch(titleFormat)) {
+        if (value.isEmpty) {
+          titleFormat = titleFormat.replaceAll(pattern, '');
+        } else {
+          titleFormat = titleFormat.replaceAllMapped(pattern, (match) {
+            final originalPlaceholder = match.group(0);
+            final replacedPlaceholder =
+                originalPlaceholder!.replaceAll(variable, value);
+            return replacedPlaceholder.replaceAll('%', '');
+          });
+        }
+      }
     });
 
     return titleFormat.singleSpace.trim();
@@ -233,7 +246,20 @@ class TitleScanner {
     }
 
     formats.forEach((key, value) {
-      titleFormat = titleFormat.replaceFirst(key, value);
+      final variable = key.replaceAll('%', '');
+      final pattern = RegExp('%[^%]*$variable[^%]*%');
+      if (pattern.hasMatch(titleFormat)) {
+        if (value.isEmpty) {
+          titleFormat = titleFormat.replaceAll(pattern, '');
+        } else {
+          titleFormat = titleFormat.replaceAllMapped(pattern, (match) {
+            final originalPlaceholder = match.group(0);
+            final replacedPlaceholder =
+                originalPlaceholder!.replaceAll(variable, value);
+            return replacedPlaceholder.replaceAll('%', '');
+          });
+        }
+      }
     });
 
     return titleFormat.singleSpace.trim();

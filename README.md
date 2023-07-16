@@ -84,7 +84,7 @@ Automatically manage and mux series or movie files to the common conventions use
     |Visual Impaired|`%visual_impaired%`|
     |Text Description|`%text_description%`|
 - Subtitle Title Formats
-    - ***Example:*** %language%% (hearing_impaired)%% (forced%)
+    - ***Example:*** %language%% (hearing_impaired)%% (forced)%
 
     |Data|Variable|
     |:-|:-|
