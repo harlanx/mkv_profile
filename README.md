@@ -16,7 +16,7 @@ Automatically manage and mux series or movie files to the common conventions use
 </p>
 
 ## Download
-Head to [Releases](https://github.com/harlanx/mkv_profile/releases) section for the latest version
+[![GitHub Latest Release](https://img.shields.io/github/release/harlanx/mkv_profile.svg)](https://github.com/harlanx/mkv_profile/releases/latest) [![Github Total Downloads](https://img.shields.io/github/downloads/harlanx/mkv_profile/total.svg)](https://github.com/harlanx/mkv_profile/releases)
 
 ## Installation
 - **Portable (ZIP)**
@@ -107,6 +107,10 @@ Head to [Releases](https://github.com/harlanx/mkv_profile/releases) section for 
 - Specify Extra options (mkvmerge commands) for tracks
 
 ## Title Scanning
+**Note:** Characters can be conditional if the variable used has no data\
+e.g. **Video Title Format** is set to `%show_title%% - Sseason_number%%Eepisode_number%% - episode_title%`\
+If episode_title has data, then it will return `Tom Clancy's Jack Ryan - S01E01 - Pilot`\
+otherwise if empty, will return  `Tom Clancy's Jack Ryan - S01E01`
 - **Show:** Uses folder name (if Use Folder Name is set to TRUE in Profile Configuration) or the file name of first video available to be used as a source title alongside with the modifiers. Variables specified in the *Show* title format will be replaced with the corresponding data.
 - **Video:** Uses the video file's name as the source title to be used alongside with the modifiers. Variables specified in the *Video* title format will be replaced with the corresponding data.
 - **Audio:** Variables specified in the *Audio* title format will be replaced with the corresponding data.
