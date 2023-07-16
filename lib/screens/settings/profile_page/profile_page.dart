@@ -702,9 +702,10 @@ class ProfilePage extends StatelessWidget {
                                   child: ReorderableListView.builder(
                                     shrinkWrap: true,
                                     buildDefaultDragHandles: false,
-                                    itemCount: profile.languages.length,
-                                    onReorder: (oldIndex, newIndex) => profile
-                                        .reorderLanguages(oldIndex, newIndex),
+                                    itemCount: editProfile.languages.length,
+                                    onReorder: (oldIndex, newIndex) =>
+                                        editProfile.reorderLanguages(
+                                            oldIndex, newIndex),
                                     proxyDecorator: (child, index, animation) =>
                                         _proxyDecorator(
                                             child, index, animation),
@@ -714,7 +715,7 @@ class ProfilePage extends StatelessWidget {
                                               .elementAt(index));
 
                                       final isDefault = code.iso6393 ==
-                                          profile.defaultLanguage;
+                                          editProfile.defaultLanguage;
                                       return ReorderableDragStartListener(
                                         key: ValueKey(code),
                                         index: index,
@@ -741,7 +742,7 @@ class ProfilePage extends StatelessWidget {
                                               icon: const Icon(
                                                   FluentIcons.remove),
                                               onPressed: () =>
-                                                  profile.updateLanguages(
+                                                  editProfile.updateLanguages(
                                                       code.iso6393, false),
                                             ),
                                             title: SizedBox(
@@ -825,13 +826,14 @@ class ProfilePage extends StatelessWidget {
                                 child: ReorderableListView.builder(
                                   shrinkWrap: true,
                                   buildDefaultDragHandles: false,
-                                  itemCount: profile.defaultFlagOrder.length,
-                                  onReorder: (oldIndex, newIndex) => profile
+                                  itemCount:
+                                      editProfile.defaultFlagOrder.length,
+                                  onReorder: (oldIndex, newIndex) => editProfile
                                       .reorderFlagOrder(oldIndex, newIndex),
                                   proxyDecorator: (child, index, animation) =>
                                       _proxyDecorator(child, index, animation),
                                   itemBuilder: (context, index) {
-                                    final flag = profile.defaultFlagOrder
+                                    final flag = editProfile.defaultFlagOrder
                                         .elementAt(index);
                                     return ReorderableDragStartListener(
                                       key: ValueKey(flag),
@@ -876,7 +878,7 @@ class ProfilePage extends StatelessWidget {
                         content: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: List<Card>.from(
-                            profile.modifiers.map(
+                            editProfile.modifiers.map(
                               (e) => Card(
                                 padding: const EdgeInsets.only(
                                     left: 8.0, right: 4.0),
@@ -907,7 +909,7 @@ class ProfilePage extends StatelessWidget {
                                       IconButton(
                                         icon: const Icon(FluentIcons.delete),
                                         onPressed: () =>
-                                            profile.deleteModifier(e.id),
+                                            editProfile.deleteModifier(e.id),
                                       ),
                                     ],
                                   ),
@@ -921,9 +923,9 @@ class ProfilePage extends StatelessWidget {
                       Checkbox(
                         content: Text(
                             AppLocalizations.of(context).useFolderNameAsSource),
-                        checked: profile.useFolderName,
+                        checked: editProfile.useFolderName,
                         onChanged: (value) =>
-                            profile.update(useFolderName: value),
+                            editProfile.update(useFolderName: value),
                       ),
                     ],
                   ),
@@ -991,6 +993,7 @@ class ProfilePage extends StatelessWidget {
         subtitleExtraOptions: editProfile.subtitleExtraOptions,
         attachmentExtraOptions: editProfile.attachmentExtraOptions,
         languages: editProfile.languages,
+        defaultFlagOrder: editProfile.defaultFlagOrder,
         name: editProfile.name,
         modifiers: editProfile.modifiers,
         useFolderName: editProfile.useFolderName,
