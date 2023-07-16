@@ -10,6 +10,10 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
     this.videoTitleFormat = '%title%',
     this.audioTitleFormat = '',
     this.subtitleTitleFormat = '',
+    this.videoExtraOptions = '',
+    this.audioExtraOptions = '',
+    this.subtitleExtraOptions = '',
+    this.attachmentExtraOptions = '',
     this.defaultLanguage = '',
     this.languages = const [],
     this.defaultFlagOrder = const [],
@@ -137,6 +141,10 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
   String videoTitleFormat;
   String audioTitleFormat;
   String subtitleTitleFormat;
+  String videoExtraOptions;
+  String audioExtraOptions;
+  String subtitleExtraOptions;
+  String attachmentExtraOptions;
   String defaultLanguage;
   List<String> languages;
   List<String> defaultFlagOrder;
@@ -151,6 +159,10 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
       videoTitleFormat: json['videoTitleFormat'],
       audioTitleFormat: json['audioTitleFormat'],
       subtitleTitleFormat: json['subtitleTitleFormat'],
+      videoExtraOptions: json['videoExtraOptions'],
+      audioExtraOptions: json['audioExtraOptions'],
+      subtitleExtraOptions: json['subtitleExtraOptions'],
+      attachmentExtraOptions: json['attachmentExtraOptions'],
       defaultLanguage: json['defaultLanguage'],
       languages: List<String>.from(json['languages']),
       defaultFlagOrder: List<String>.from(json['defaultFlagOrder']),
@@ -167,6 +179,10 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         'videoTitleFormat': videoTitleFormat,
         'audioTitleFormat': audioTitleFormat,
         'subtitleTitleFormat': subtitleTitleFormat,
+        'videoExtraOptions': videoExtraOptions,
+        'audioExtraOptions': audioExtraOptions,
+        'subtitleExtraOptions': subtitleExtraOptions,
+        'attachmentExtraOptions': attachmentExtraOptions,
         'defaultLanguage': defaultLanguage,
         'languages': languages,
         'defaultFlagOrder': defaultFlagOrder,
@@ -181,6 +197,10 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
     String? videoTitleFormat,
     String? audioTitleFormat,
     String? subtitleTitleFormat,
+    String? videoExtraOptions,
+    String? audioExtraOptions,
+    String? subtitleExtraOptions,
+    String? attachmentExtraOptions,
     String? defaultLanguage,
     List<String>? languages,
     List<String>? defaultFlagOrder,
@@ -194,6 +214,11 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         videoTitleFormat: videoTitleFormat ?? this.videoTitleFormat,
         audioTitleFormat: audioTitleFormat ?? this.audioTitleFormat,
         subtitleTitleFormat: subtitleTitleFormat ?? this.subtitleTitleFormat,
+        videoExtraOptions: videoExtraOptions ?? this.videoExtraOptions,
+        audioExtraOptions: audioExtraOptions ?? this.audioExtraOptions,
+        subtitleExtraOptions: subtitleExtraOptions ?? this.subtitleExtraOptions,
+        attachmentExtraOptions:
+            attachmentExtraOptions ?? this.attachmentExtraOptions,
         defaultLanguage: defaultLanguage ?? this.defaultLanguage,
         languages: languages ?? List.from(this.languages),
         defaultFlagOrder: defaultFlagOrder ?? List.from(this.defaultFlagOrder),
@@ -208,6 +233,10 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
     String? videoTitleFormat,
     String? audioTitleFormat,
     String? subtitleTitleFormat,
+    String? videoExtraOptions,
+    String? audioExtraOptions,
+    String? subtitleExtraOptions,
+    String? attachmentExtraOptions,
     String? defaultLanguage,
     List<String>? languages,
     List<String>? defaultFlagOrder,
@@ -220,6 +249,12 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
     this.videoTitleFormat = videoTitleFormat ?? this.videoTitleFormat;
     this.audioTitleFormat = audioTitleFormat ?? this.audioTitleFormat;
     this.subtitleTitleFormat = subtitleTitleFormat ?? this.subtitleTitleFormat;
+    this.videoExtraOptions = videoExtraOptions ?? this.videoExtraOptions;
+    this.audioExtraOptions = audioExtraOptions ?? this.audioExtraOptions;
+    this.subtitleExtraOptions =
+        subtitleExtraOptions ?? this.subtitleExtraOptions;
+    this.attachmentExtraOptions;
+    attachmentExtraOptions ?? this.attachmentExtraOptions;
     this.defaultLanguage = defaultLanguage ?? this.defaultLanguage;
     this.languages = languages ?? this.languages;
     this.defaultFlagOrder = defaultFlagOrder ?? this.defaultFlagOrder;
@@ -290,10 +325,16 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
 
   @override
   List<Object> get props => [
-        name,
         id,
+        name,
         showTitleFormat,
         videoTitleFormat,
+        audioTitleFormat,
+        subtitleTitleFormat,
+        videoExtraOptions,
+        audioExtraOptions,
+        subtitleExtraOptions,
+        attachmentExtraOptions,
         defaultLanguage,
         languages,
         defaultFlagOrder,

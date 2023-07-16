@@ -98,6 +98,7 @@ Head to [Releases](https://github.com/harlanx/mkv_profile/releases) section for 
         - NOTE: If Default is used in the Flag Order, It will set the Default Flag to a subtitle track that doesn't have any of the available track flags set to true.
 - Modifiers
     - User can specify text or regex pattern that will be replaced by another specified text or an empty text.
+- Specify Extra options (mkvmerge commands) for tracks
 
 ## Title Scanning
 - **Show:** Uses folder name (if Use Folder Name is set to TRUE in Profile Configuration) or the file name of first video available to be used as a source title alongside with the modifiers. Variables specified in the *Show* title format will be replaced with the corresponding data.

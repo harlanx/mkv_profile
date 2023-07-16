@@ -41,29 +41,34 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
 
   void _previewProfile() {
     show.title = TitleScanner.show(this);
-    if (show is Movie) {
-      final movie = show as Movie;
-      movie.video.fileTitle = TitleScanner.video(movie.video, false, profile);
-      movie.video.title = movie.video.fileTitle;
-      _previewTracks(movie.video);
-    } else {
-      for (var v in (show as Series).allVideos) {
-        v.fileTitle = TitleScanner.video(v, true, profile);
-        v.title = v.fileTitle;
-        _previewTracks(v);
-      }
+    final videos =
+        show is Movie ? [(show as Movie).video] : (show as Series).allVideos;
+    for (var video in videos) {
+      video.fileTitle = TitleScanner.video(video, profile);
+      video.title = video.fileTitle;
+      video.extraOptions = profile.videoExtraOptions;
+      _previewTracks(video);
     }
   }
 
-  void _previewTracks(Video v) {
-    _assignDefault([...v.embeddedAudios, ...v.addedAudios]);
-    _assignDefault([...v.embeddedSubtitles, ...v.addedSubtitles]);
+  void _previewTracks(Video video) {
+    _assignDefault([...video.embeddedAudios, ...video.addedAudios]);
+    _assignDefault([...video.embeddedSubtitles, ...video.addedSubtitles]);
     sortTracks();
-    for (var a in [...v.embeddedAudios, ...v.addedAudios]) {
-      a.title = TitleScanner.audio(a, profile);
+    for (var audio in [...video.embeddedAudios, ...video.addedAudios]) {
+      audio.title = TitleScanner.audio(audio, profile);
+      audio.extraOptions = profile.audioExtraOptions;
     }
-    for (var s in [...v.embeddedSubtitles, ...v.addedSubtitles]) {
-      s.title = TitleScanner.subtitle(s, profile);
+    for (var subtitle in [
+      ...video.embeddedSubtitles,
+      ...video.addedSubtitles
+    ]) {
+      subtitle.title = TitleScanner.subtitle(subtitle, profile);
+      subtitle.extraOptions = profile.subtitleExtraOptions;
+    }
+
+    for (var attachment in video.addedAttachments) {
+      attachment.extraOptions = profile.attachmentExtraOptions;
     }
   }
 
@@ -102,14 +107,8 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
   /// Original Language, Forced, Commentary,
   /// HearingImpaired, VisualImpaired, TextDescription
   void sortTracks() {
-    final videos = [];
-    if (show is Movie) {
-      final movie = show as Movie;
-      videos.add(movie.video);
-    } else {
-      final series = show as Series;
-      videos.addAll(series.allVideos);
-    }
+    final videos =
+        show is Movie ? [(show as Movie).video] : (show as Series).allVideos;
 
     for (var v in videos) {
       v.embeddedAudios.sort(_sortMethodA);

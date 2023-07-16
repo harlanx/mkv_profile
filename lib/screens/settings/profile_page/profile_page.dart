@@ -1,9 +1,11 @@
 import 'dart:ui';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' as mt;
 import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../data/app_data.dart';
 import '../../../models/models.dart';
@@ -29,14 +31,23 @@ class ProfilePage extends StatelessWidget {
   final UserProfile sourceProfile;
   late final UserProfile editProfile;
   final bool isNew;
-  late final showCtrl =
+  late final showTitleCtrl =
       TextEditingController(text: editProfile.showTitleFormat);
-  late final videoCtrl =
+  late final videoTitleCtrl =
       TextEditingController(text: editProfile.videoTitleFormat);
-  late final audioCtrl =
+  late final audioTitleCtrl =
       TextEditingController(text: editProfile.audioTitleFormat);
-  late final subtitleCtrl =
+  late final subtitleTitleCtrl =
       TextEditingController(text: editProfile.subtitleTitleFormat);
+  late final videoExtraCtrl =
+      TextEditingController(text: editProfile.videoExtraOptions);
+  late final audioExtraCtrl =
+      TextEditingController(text: editProfile.audioExtraOptions);
+  late final subtitleExtraCtrl =
+      TextEditingController(text: editProfile.subtitleExtraOptions);
+  late final attachmentExtraCtrl =
+      TextEditingController(text: editProfile.attachmentExtraOptions);
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -97,7 +108,7 @@ class ProfilePage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             TextBox(
-                              controller: showCtrl,
+                              controller: showTitleCtrl,
                               onChanged: (value) {
                                 editProfile.update(showTitleFormat: value);
                               },
@@ -174,7 +185,7 @@ class ProfilePage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             TextBox(
-                              controller: videoCtrl,
+                              controller: videoTitleCtrl,
                               onChanged: (value) {
                                 editProfile.update(videoTitleFormat: value);
                               },
@@ -251,7 +262,7 @@ class ProfilePage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             TextBox(
-                              controller: audioCtrl,
+                              controller: audioTitleCtrl,
                               onChanged: (value) {
                                 editProfile.update(subtitleTitleFormat: value);
                               },
@@ -328,7 +339,7 @@ class ProfilePage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             TextBox(
-                              controller: subtitleCtrl,
+                              controller: subtitleTitleCtrl,
                               onChanged: (value) {
                                 editProfile.update(subtitleTitleFormat: value);
                               },
@@ -393,6 +404,243 @@ class ProfilePage extends StatelessWidget {
                                   ),
                                 ],
                               ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expander(
+                        header: const Text('Video extra options'),
+                        trailing: Text(
+                          editProfile.videoExtraOptions,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextBox(
+                              controller: videoExtraCtrl,
+                              onChanged: (value) {
+                                editProfile.update(videoExtraOptions: value);
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            Text.rich(
+                              TextSpan(
+                                text: AppLocalizations.of(context).extraOptions,
+                                children: [
+                                  WidgetSpan(
+                                    child: Tooltip(
+                                      message:
+                                          'MKVMerge ${AppLocalizations.of(context).documentation}',
+                                      child: RichText(
+                                        text: TextSpan(
+                                          text: ' [?]',
+                                          style: FluentTheme.of(context)
+                                              .typography
+                                              .bodyStrong
+                                              ?.copyWith(
+                                                color: Colors.blue,
+                                              ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () async {
+                                              const url =
+                                                  r'https://mkvtoolnix.download/doc/mkvmerge.html';
+                                              if (await canLaunchUrl(
+                                                  Uri.parse(url))) {
+                                                await launchUrl(Uri.parse(url));
+                                              }
+                                            },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        ': ${AppLocalizations.of(context).extraOptionsHint}',
+                                  ),
+                                ],
+                              ),
+                              style:
+                                  FluentTheme.of(context).typography.bodyStrong,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expander(
+                        header: const Text('Audio extra options'),
+                        trailing: Text(
+                          editProfile.audioExtraOptions,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextBox(
+                              controller: audioExtraCtrl,
+                              onChanged: (value) {
+                                editProfile.update(audioExtraOptions: value);
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            Text.rich(
+                              TextSpan(
+                                text: AppLocalizations.of(context).extraOptions,
+                                children: [
+                                  WidgetSpan(
+                                    child: Tooltip(
+                                      message:
+                                          'MKVMerge ${AppLocalizations.of(context).documentation}',
+                                      child: RichText(
+                                        text: TextSpan(
+                                          text: ' [?]',
+                                          style: FluentTheme.of(context)
+                                              .typography
+                                              .bodyStrong
+                                              ?.copyWith(
+                                                color: Colors.blue,
+                                              ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () async {
+                                              const url =
+                                                  r'https://mkvtoolnix.download/doc/mkvmerge.html';
+                                              if (await canLaunchUrl(
+                                                  Uri.parse(url))) {
+                                                await launchUrl(Uri.parse(url));
+                                              }
+                                            },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        ': ${AppLocalizations.of(context).extraOptionsHint}',
+                                  ),
+                                ],
+                              ),
+                              style:
+                                  FluentTheme.of(context).typography.bodyStrong,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expander(
+                        header: const Text('Sujbtitle extra options'),
+                        trailing: Text(
+                          editProfile.subtitleExtraOptions,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextBox(
+                              controller: subtitleExtraCtrl,
+                              onChanged: (value) {
+                                editProfile.update(subtitleExtraOptions: value);
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            Text.rich(
+                              TextSpan(
+                                text: AppLocalizations.of(context).extraOptions,
+                                children: [
+                                  WidgetSpan(
+                                    child: Tooltip(
+                                      message:
+                                          'MKVMerge ${AppLocalizations.of(context).documentation}',
+                                      child: RichText(
+                                        text: TextSpan(
+                                          text: ' [?]',
+                                          style: FluentTheme.of(context)
+                                              .typography
+                                              .bodyStrong
+                                              ?.copyWith(
+                                                color: Colors.blue,
+                                              ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () async {
+                                              const url =
+                                                  r'https://mkvtoolnix.download/doc/mkvmerge.html';
+                                              if (await canLaunchUrl(
+                                                  Uri.parse(url))) {
+                                                await launchUrl(Uri.parse(url));
+                                              }
+                                            },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        ': ${AppLocalizations.of(context).extraOptionsHint}',
+                                  ),
+                                ],
+                              ),
+                              style:
+                                  FluentTheme.of(context).typography.bodyStrong,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expander(
+                        header: const Text('Attachment extra options'),
+                        trailing: Text(
+                          editProfile.attachmentExtraOptions,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextBox(
+                              controller: attachmentExtraCtrl,
+                              onChanged: (value) {
+                                editProfile.update(
+                                    attachmentExtraOptions: value);
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            Text.rich(
+                              TextSpan(
+                                text: AppLocalizations.of(context).extraOptions,
+                                children: [
+                                  WidgetSpan(
+                                    child: Tooltip(
+                                      message:
+                                          'MKVMerge ${AppLocalizations.of(context).documentation}',
+                                      child: RichText(
+                                        text: TextSpan(
+                                          text: ' [?]',
+                                          style: FluentTheme.of(context)
+                                              .typography
+                                              .bodyStrong
+                                              ?.copyWith(
+                                                color: Colors.blue,
+                                              ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () async {
+                                              const url =
+                                                  r'https://mkvtoolnix.download/doc/mkvmerge.html';
+                                              if (await canLaunchUrl(
+                                                  Uri.parse(url))) {
+                                                await launchUrl(Uri.parse(url));
+                                              }
+                                            },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        ': ${AppLocalizations.of(context).extraOptionsHint}',
+                                  ),
+                                ],
+                              ),
+                              style:
+                                  FluentTheme.of(context).typography.bodyStrong,
                             ),
                           ],
                         ),
@@ -736,6 +984,12 @@ class ProfilePage extends StatelessWidget {
         defaultLanguage: editProfile.defaultLanguage,
         showTitleFormat: editProfile.showTitleFormat,
         videoTitleFormat: editProfile.videoTitleFormat,
+        audioTitleFormat: editProfile.audioTitleFormat,
+        subtitleTitleFormat: editProfile.subtitleTitleFormat,
+        videoExtraOptions: editProfile.videoExtraOptions,
+        audioExtraOptions: editProfile.audioExtraOptions,
+        subtitleExtraOptions: editProfile.subtitleExtraOptions,
+        attachmentExtraOptions: editProfile.attachmentExtraOptions,
         languages: editProfile.languages,
         name: editProfile.name,
         modifiers: editProfile.modifiers,
