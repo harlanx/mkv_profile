@@ -245,5 +245,15 @@
       }
     }
   },
-  "youAreUsingLatestVersion": "Ginagamit mo na ang pinakabagong bersyon"
+  "youAreUsingLatestVersion": "Ginagamit mo na ang pinakabagong bersyon",
+  "trackExtraOptions": "Extrang opsyon sa {trackType}",
+  "@trackExtraOptions": {
+    "description": "Extra options by type",
+    "placeholders": {
+      "trackType": {
+        "type": "String",
+        "example": "Video"
+      }
+    }
+  }
 }

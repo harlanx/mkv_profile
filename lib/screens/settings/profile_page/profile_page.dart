@@ -409,7 +409,8 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Expander(
-                        header: const Text('Video extra options'),
+                        header: Text(AppLocalizations.of(context)
+                            .trackExtraOptions('Video')),
                         trailing: Text(
                           editProfile.videoExtraOptions,
                           maxLines: 1,
@@ -468,7 +469,8 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Expander(
-                        header: const Text('Audio extra options'),
+                        header: Text(AppLocalizations.of(context)
+                            .trackExtraOptions('Audio')),
                         trailing: Text(
                           editProfile.audioExtraOptions,
                           maxLines: 1,
@@ -527,7 +529,8 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Expander(
-                        header: const Text('Sujbtitle extra options'),
+                        header: Text(AppLocalizations.of(context)
+                            .trackExtraOptions('Subtitle')),
                         trailing: Text(
                           editProfile.subtitleExtraOptions,
                           maxLines: 1,
@@ -586,7 +589,8 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Expander(
-                        header: const Text('Attachment extra options'),
+                        header: Text(AppLocalizations.of(context)
+                            .trackExtraOptions('Attachment')),
                         trailing: Text(
                           editProfile.attachmentExtraOptions,
                           maxLines: 1,

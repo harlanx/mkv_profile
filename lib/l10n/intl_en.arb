@@ -245,5 +245,15 @@
       }
     }
   },
-  "youAreUsingLatestVersion": "You are using the latest version"
+  "youAreUsingLatestVersion": "You are using the latest version",
+  "trackExtraOptions": "{trackType} extra options",
+  "@trackExtraOptions": {
+    "description": "Extra options by type",
+    "placeholders": {
+      "trackType": {
+        "type": "String",
+        "example": "Video"
+      }
+    }
+  }
 }

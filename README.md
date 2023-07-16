@@ -104,6 +104,7 @@ Automatically manage and mux series or movie files to the common conventions use
         - NOTE: If Default is used in the Flag Order, It will set the Default Flag to a subtitle track that doesn't have any of the available track flags set to true.
 - Modifiers
     - User can specify text or regex pattern that will be replaced by another specified text or an empty text.
+    - Recommended to put longer text and Regex that matches long text at the start of the list and shortest text at the end of the list
 - Specify Extra options (mkvmerge commands) for tracks
 
 ## Title Scanning
@@ -167,9 +168,22 @@ The saved path was probably from an old installation, to reset it or entirely cl
     - Reminder: Export the profiles you've created before procedding.
     - Open File Explorer
     - Head to C:\Users\\`<Username>`\AppData\Roaming **or** C:\Users\\`<Username>`\AppData\Local\Packages
-    - Find the folder that contains the word `harlanx` and delete it
+    - Find the folder that contains the word `harlanx` or the folder inside it named `MKV Profile` then delete it
     - Reopen the app
     - The path will be set to the default path of the third party binaries that comes with the app
+## Updated the app, now it's showing white screen?
+- **Manually Migrate Old App Settings to New**
+    - Head to C:\Users\\`<Username>`\AppData\Roaming **or** C:\Users\\`<Username>`\AppData\Local\Packages
+    - Find the folder that contains the word `harlanx`
+    - Open the folder `MKV Profile` and create a backup copy of `shared_preferences.json`
+    - Now delete the entire `MKV Profile` folder and reopen the app
+    - Now you can recreate the profiles by manually copying contents from shared_preferences.json\
+    Note: Use a json formatter to find your required data easily
+- **Clear Old App Data and Start Over**
+    - Open File Explorer
+    - Head to C:\Users\\`<Username>`\AppData\Roaming **or** C:\Users\\`<Username>`\AppData\Local\Packages
+    - Find the folder that contains the word `harlanx` or the folder inside it named `MKV Profile` then delete it
+    - Reopen the app
 
 ## Specified custom path of the third party tools but it doesn't work?
 This app have a test that makes sure if third party tools work before doing any actions.
