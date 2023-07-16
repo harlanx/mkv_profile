@@ -27,7 +27,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
     '%frame_rate%',
     '%height%',
     '%size%',
-    '%title%',
+    '%show_title%',
     '%width%',
     '%year%',
   ];
@@ -36,13 +36,14 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
     '%language%',
     '%duration%',
     '%encoding%',
-    '%episode%',
+    '%episode_number%',
     '%format%',
     '%frame_rate%',
     '%height%',
-    '%season%',
+    '%season_number%',
     '%size%',
-    '%title%',
+    '%show_title%',
+    '%episode_title%',
     '%width%',
     '%year%',
   ];
@@ -75,37 +76,39 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
   ];
 
   static List<TextModifier> defaultModifiers = [
-    // Recommended to put regex at the end for better result
+    // Recommended to put the longest text at the start
+    // and put regex at the end for better result
     TextModifier(
       id: 0,
       replaceables: [
-        'HEVC',
-        'WEB',
-        'Web-Dl',
+        'GalaxyRG',
+        'Infinity',
+        'Complete',
+        'Subbed',
+        'Dubbed',
         'WEBRip',
         'BluRay',
-        'AMZN',
+        'Web-Dl',
+        'ION265',
+        'ION10',
+        'XEBEC',
         'BDRip',
-        'Rip',
         'Dolby',
         'Atmos',
+        'RARBG',
+        'ZMNT',
+        'YIFY',
+        'HEVC',
+        'AMZN',
         'DTS',
         'AAC',
         'SDR',
         'HDR',
-        'HD',
+        'WEB',
         'UHD',
-        'Subbed',
-        'Dubbed',
-        'Complete',
-        'RARBG',
-        'YIFY',
-        'ION265',
-        'ION10',
-        'GalaxyRG',
-        'XEBEC',
-        'Infinite',
+        'Rip',
         'NF',
+        'HD',
         r'\b\d{4}\b', // Year
         r'Season.\d+|S.\d+|Season \d+|S \d+', // Season
         r'Episode.\d+|E.\d+|Episode \d+|E \d+', // Episode

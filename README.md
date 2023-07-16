@@ -39,6 +39,8 @@ Head to [Releases](https://github.com/harlanx/mkv_profile/releases) section for 
 
 ## Available Profile Configurations
 - Show (Movie / Series) Title Formats
+    - ***Example:*** %show_title%% (year)%
+
     |Data|Variable|
     |:-|:-|
     |Duration|`%duration%`|
@@ -46,22 +48,24 @@ Head to [Releases](https://github.com/harlanx/mkv_profile/releases) section for 
     |Frame Rate|`%frame_rate%`|
     |Height|`%height%`|
     |Size|`%size%`|
-    |Title|`%title%`|
+    |Title|`%show_title%`|
     |Width|`%width%`|
     |Year|`%year%`|
 - Video Title Formats
+    - ***Example:*** %show_title%% - Sseason_number%%Eepisode_number%% - episode_title%
+
     |Data|Variable|
     |:-|:-|
     |Language|`%language%`|
     |Duration|`%duration%`|
     |Encoding|`%encoding%`|
-    |Episode (For Series)|`%episode%`|
+    |Episode (For Series)|`%episode_number%`|
     |Format|`%format%`|
     |Frame Rate|`%frame_rate%`|
     |Height|`%height%`|
-    |Season (For Series)|`%season%`|
+    |Season (For Series)|`%season_number%`|
     |Size|`%size%`|
-    |Title|`%title%`|
+    |Title|`%show_title%`|
     |Width|`%width%`|
     |Year|`%year%`|
 - Audio Title Formats
@@ -80,6 +84,8 @@ Head to [Releases](https://github.com/harlanx/mkv_profile/releases) section for 
     |Visual Impaired|`%visual_impaired%`|
     |Text Description|`%text_description%`|
 - Subtitle Title Formats
+    - ***Example:*** %language%% (hearing_impaired)%% (forced%)
+
     |Data|Variable|
     |:-|:-|
     |Language|`%language%`|

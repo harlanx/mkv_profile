@@ -17,16 +17,46 @@ class TitleScanner {
   }
 
   /// Title scanner by replacing the matched strings using the list [UserProfile.modifiers]
-  static String _modifiedTitle(String source, List<TextModifier> modifiers) {
+  static String _showTitle(String source, List<TextModifier> modifiers) {
+    var fileTitle =
+        source.split(RegExp(r'Episode.\d+|E.\d+|Episode \d+|E \d+')).first;
     for (var i in modifiers) {
       for (var j in i.replaceables) {
-        source = source.replaceAll(
+        fileTitle = fileTitle.replaceAll(
             RegExp(j.regexSafe, caseSensitive: i.caseSensitive), i.replacement);
       }
     }
 
     // Replace whitespaces to single whitespace and trim end for any whitespace.
-    return source.singleSpace.trim();
+    final result = fileTitle.singleSpace.trim();
+    if (result == ' ') {
+      return '';
+    }
+    return result;
+  }
+
+  /// Title scanner by replacing the matched strings using the list [UserProfile.modifiers]
+  static String _episodeTitle(String source, List<TextModifier> modifiers) {
+    var episodeTitle = '';
+    final possibleTitles =
+        source.split(RegExp(r'Episode.\d+|E.\d+|Episode \d+|E \d+'));
+    if (possibleTitles.length >= 2) {
+      episodeTitle = possibleTitles.last;
+      for (var i in modifiers) {
+        for (var j in i.replaceables) {
+          episodeTitle = episodeTitle.replaceAll(
+              RegExp(j.regexSafe, caseSensitive: i.caseSensitive),
+              i.replacement);
+        }
+      }
+    }
+
+    // Replace whitespaces to single whitespace and trim end for any whitespace.
+    final result = episodeTitle.singleSpace.trim();
+    if (result == ' ') {
+      return '';
+    }
+    return result;
   }
 
   static String _year(String source) {
@@ -63,19 +93,50 @@ class TitleScanner {
     formats['%frame_rate%'] = videoInfo.frameRate.toString();
     formats['%height%'] = videoInfo.height.toString();
     formats['%size%'] = info.generalInfo.fileSize.formatByteSize();
-    formats['%title%'] = _modifiedTitle(rawTitle, profile.modifiers);
+    formats['%show_title%'] = _showTitle(rawTitle, profile.modifiers);
     formats['%width%'] = videoInfo.width.toString();
     formats['%year%'] = _year(rawTitle);
 
     // Applying variable values
     formats.forEach((key, value) {
-      titleFormat = titleFormat.replaceFirst(key, value);
+      final variable = key.replaceAll('%', '');
+      final pattern = RegExp('%[^%]*$variable[^%]*%');
+      if (pattern.hasMatch(titleFormat)) {
+        if (value.isEmpty) {
+          titleFormat = titleFormat.replaceAll(pattern, '');
+        } else {
+          // Allows more than one same variable
+          titleFormat = titleFormat.replaceAllMapped(pattern, (match) {
+            final originalPlaceholder = match.group(0);
+            final replacedPlaceholder =
+                originalPlaceholder!.replaceAll(variable, value);
+            return replacedPlaceholder.replaceAll('%', '');
+          });
+          // Doesn't work with more than one same variable
+          // final matches = pattern.allMatches(titleFormat);
+          // final startPattern = RegExp('%[^%]*$variable');
+          // final endPattern = RegExp('$variable[^%]*%');
+          // final startMatch = startPattern.firstMatch(titleFormat);
+          // final endMatch = endPattern.firstMatch(titleFormat);
+
+          // if (startMatch != null && endMatch != null) {
+          //   final start = startMatch.start;
+          //   final end = endMatch.end;
+          //   final originalPlaceholder = titleFormat.substring(start, end);
+          //   titleFormat = titleFormat.replaceFirst(
+          //       originalPlaceholder,
+          //       originalPlaceholder
+          //           .replaceAll(variable, value)
+          //           .replaceAll('%', ''));
+          // }
+        }
+      }
     });
 
     return titleFormat.singleSpace.trim();
   }
 
-  static String video(Video video, bool isEpisode, UserProfile profile) {
+  static String video(Video video, UserProfile profile) {
     // If Profile (None) is selected just return the unmodified title
     if (profile.id == 0) return video.mainFile.title;
 
@@ -87,19 +148,35 @@ class TitleScanner {
     formats['%duration%'] =
         Duration(milliseconds: (videoInfo.duration * 1000).toInt()).format();
     formats['%encoding%'] = videoInfo.encoding;
-    formats['%episode%'] = video.episode?.toString().padLeft(2, '0') ?? '';
+    formats['%episode_number%'] =
+        video.episode?.toString().padLeft(2, '0') ?? '';
     formats['%format%'] = videoInfo.format;
     formats['%frame_rate%'] = videoInfo.frameRate.toString();
     formats['%height%'] = videoInfo.height.toString();
-    formats['%season%'] = video.season?.toString().padLeft(2, '0') ?? '';
+    formats['%season_number%'] = video.season?.toString().padLeft(2, '0') ?? '';
     formats['%size%'] = video.info.generalInfo.fileSize.formatByteSize();
-    formats['%title%'] =
-        _modifiedTitle(video.mainFile.title, profile.modifiers);
+    formats['%show_title%'] =
+        _showTitle(video.mainFile.title, profile.modifiers);
+    formats['%episode_title%'] =
+        _episodeTitle(video.mainFile.title, profile.modifiers);
     formats['%width%'] = videoInfo.width.toString();
     formats['%year%'] = _year(video.mainFile.title);
 
     formats.forEach((key, value) {
-      titleFormat = titleFormat.replaceFirst(key, value);
+      final variable = key.replaceAll('%', '');
+      final pattern = RegExp('%[^%]*$variable[^%]*%');
+      if (pattern.hasMatch(titleFormat)) {
+        if (value.isEmpty) {
+          titleFormat = titleFormat.replaceAll(pattern, '');
+        } else {
+          titleFormat = titleFormat.replaceAllMapped(pattern, (match) {
+            final originalPlaceholder = match.group(0);
+            final replacedPlaceholder =
+                originalPlaceholder!.replaceAll(variable, value);
+            return replacedPlaceholder.replaceAll('%', '');
+          });
+        }
+      }
     });
 
     return titleFormat.singleSpace.trim();
