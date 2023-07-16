@@ -219,6 +219,83 @@ class EmbeddedTrack extends TrackProperties {
       ],
     ];
   }
+
+  void loadInfo() {
+    flags['default']!.value = false;
+    flags['original_language']!.value = _isOriginalLanguage;
+    flags['forced']!.value = _isForced;
+    flags['commentary']!.value = _isCommentary;
+    flags['hearing_impaired']!.value = _isHearingImpaired;
+    flags['visual_impaired']!.value = _isVisualImpaired;
+    flags['text_description']!.value = _isTextDescription;
+  }
+
+  bool get _isOriginalLanguage {
+    final identifiers = ['Original Language'];
+    bool result = flags['original_language']!.value;
+    // If false, reconfirm by using track title;
+    if (!result) {
+      result = identifiers.any((identifier) =>
+          (title ?? '').contains(RegExp(identifier, caseSensitive: true)));
+    }
+
+    return result;
+  }
+
+  bool get _isForced {
+    final identifiers = ['Forced'];
+    bool result = flags['forced']!.value;
+    if (!result) {
+      result = identifiers.any((identifier) =>
+          (title ?? '').contains(RegExp(identifier, caseSensitive: true)));
+    }
+
+    return result;
+  }
+
+  bool get _isCommentary {
+    final identifiers = ['Commentary'];
+    bool result = flags['commentary']!.value;
+    if (!result) {
+      result = identifiers.any((identifier) =>
+          (title ?? '').contains(RegExp(identifier, caseSensitive: true)));
+    }
+
+    return result;
+  }
+
+  bool get _isHearingImpaired {
+    final identifiers = ['Hearing Impaired', 'SDH'];
+    bool result = flags['hearing_impaired']!.value;
+    if (!result) {
+      result = identifiers.any((identifier) =>
+          (title ?? '').contains(RegExp(identifier, caseSensitive: true)));
+    }
+
+    return result;
+  }
+
+  bool get _isVisualImpaired {
+    final identifiers = ['Visual Impaired', 'AD'];
+    bool result = flags['visual_impaired']!.value;
+    if (!result) {
+      result = identifiers.any((identifier) =>
+          (title ?? '').contains(RegExp(identifier, caseSensitive: true)));
+    }
+
+    return result;
+  }
+
+  bool get _isTextDescription {
+    final identifiers = ['Text Description', 'TD'];
+    bool result = flags['text_description']!.value;
+    if (!result) {
+      result = identifiers.any((identifier) =>
+          (title ?? '').contains(RegExp(identifier, caseSensitive: true)));
+    }
+
+    return result;
+  }
 }
 
 class AddedTrack extends TrackProperties {
@@ -239,43 +316,95 @@ class AddedTrack extends TrackProperties {
     }
 
     language = await AppData.languageCodes.identifyByText(file.title);
-    if (AppData.subtitleFormats.contains(file.extension)) {
-      flags['forced']!.value = await _isForced;
-      flags['hearing_impaired']!.value = await _isHearingImpaired;
-      flags['text_description']!.value = await _isTextDescription;
-    }
+    flags['original_language']!.value = _isOriginalLanguage;
+    flags['forced']!.value = await _isForced;
+    flags['commentary']!.value = _isCommentary;
+    flags['hearing_impaired']!.value = await _isHearingImpaired;
+    flags['visual_impaired']!.value = _isVisualImpaired;
+    flags['text_description']!.value = await _isTextDescription;
+  }
+
+  bool get _isOriginalLanguage {
+    final identifiers = ['Original Language'];
+    bool result = false;
+    result = identifiers.any((identifier) =>
+        file.title.contains(RegExp(identifier, caseSensitive: true)));
+
+    return result;
   }
 
   Future<bool> get _isForced async {
-    // Usually Forced Subtitles are less than 20KB
-    return await file.length() < 20000;
+    final identifiers = ['Forced'];
+    bool result = false;
+    result = identifiers.any((identifier) =>
+        file.title.contains(RegExp(identifier, caseSensitive: true)));
+
+    if (AppData.subtitleFormats.contains(file.extension)) {
+      // Usually Forced Subtitles are less than 20KB
+      result = await file.length() < 20000;
+    }
+    return result;
+  }
+
+  bool get _isCommentary {
+    final identifiers = ['Commentary'];
+    bool result = false;
+    result = identifiers.any((identifier) =>
+        file.title.contains(RegExp(identifier, caseSensitive: true)));
+
+    return result;
   }
 
   Future<bool> get _isHearingImpaired async {
-    const ls = LineSplitter();
-    final content = ls.convert(file.readAsStringSync());
-    final samples = content.take(500);
-    // Matches (), []. For  <i> </i>, we can use '\<i>(.*?)\<\/i>' however sometimes it exist in non sdh subtitles
-    final hearingIndicator = RegExp(r'\[(.*?)\]|\((.*?)\)');
-    final visualIndicator = RegExp(
-        r'\[(.*?)Description\]|\((.*?)Description\)|\[(.*?)AD\]|\((.*?)AD\)');
-    final hearingResult =
-        samples.where((text) => hearingIndicator.hasMatch(text));
-    final visualResult =
-        samples.where((text) => visualIndicator.hasMatch(text));
-    return hearingResult.length > 3 && visualResult.isEmpty;
+    final identifiers = ['Hearing Impaired', 'SDH'];
+    bool result = false;
+    result = identifiers.any((identifier) =>
+        file.title.contains(RegExp(identifier, caseSensitive: true)));
+
+    if (AppData.subtitleFormats.contains(file.extension)) {
+      const ls = LineSplitter();
+      final content = ls.convert(await file.readAsString());
+      final samples = content.take(500);
+      // Matches (), []. For  <i> </i>, we can use '\<i>(.*?)\<\/i>' however sometimes it exist in non sdh subtitles
+      final hearingIndicator = RegExp(r'\[(.*?)\]|\((.*?)\)');
+      final visualIndicator = RegExp(
+          r'\[(.*?)Description\]|\((.*?)Description\)|\[(.*?)AD\]|\((.*?)AD\)');
+      final hearingResult =
+          samples.where((text) => hearingIndicator.hasMatch(text));
+      final visualResult =
+          samples.where((text) => visualIndicator.hasMatch(text));
+      result = hearingResult.length > 3 && visualResult.isEmpty;
+    }
+    return result;
+  }
+
+  bool get _isVisualImpaired {
+    final identifiers = ['Visual Impaired', 'AD'];
+    bool result = false;
+    result = identifiers.any((identifier) =>
+        file.title.contains(RegExp(identifier, caseSensitive: true)));
+
+    return result;
   }
 
   Future<bool> get _isTextDescription async {
-    const ls = LineSplitter();
-    final content = ls.convert(file.readAsStringSync());
-    final samples = content.take(500);
-    // Matches (), []. For  <i> </i>, we can use '\<i>(.*?)\<\/i>' however sometimes it exist in non sdh subtitles
-    final visualIndicator = RegExp(
-        r'\[(.*?)Description\]|\((.*?)Description\)|\[(.*?)TD\]|\((.*?)TD\)|\[(.*?)AD\]|\((.*?)AD\)');
-    final visualResult =
-        samples.where((text) => visualIndicator.hasMatch(text));
-    return visualResult.length > 3;
+    final identifiers = ['Text Description', 'TD'];
+    bool result = false;
+    result = identifiers.any((identifier) =>
+        file.title.contains(RegExp(identifier, caseSensitive: true)));
+
+    if (AppData.subtitleFormats.contains(file.extension)) {
+      const ls = LineSplitter();
+      final content = ls.convert(await file.readAsString());
+      final samples = content.take(500);
+      // Matches (), []. For  <i> </i>, we can use '\<i>(.*?)\<\/i>' however sometimes it exist in non sdh subtitles
+      final visualIndicator = RegExp(
+          r'\[(.*?)Description\]|\((.*?)Description\)|\[(.*?)TD\]|\((.*?)TD\)|\[(.*?)AD\]|\((.*?)AD\)');
+      final visualResult =
+          samples.where((text) => visualIndicator.hasMatch(text));
+      result = visualResult.length > 3;
+    }
+    return result;
   }
 
   bool get isTrack {

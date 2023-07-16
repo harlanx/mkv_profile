@@ -27,11 +27,14 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
           show is Movie ? [(show as Movie).video] : (show as Series).allVideos;
       for (var v in videos) {
         await v.loadInfo();
-        for (var addedAudio in v.addedAudios) {
-          await addedAudio.loadInfo();
+        for (var embeddedTrack in [
+          ...v.embeddedAudios,
+          ...v.embeddedSubtitles
+        ]) {
+          embeddedTrack.loadInfo();
         }
-        for (var addedSub in v.addedSubtitles) {
-          await addedSub.loadInfo();
+        for (var addedTrack in [...v.addedAudios, ...v.addedSubtitles]) {
+          await addedTrack.loadInfo();
         }
       }
       MetadataScanner.unload();
