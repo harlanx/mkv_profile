@@ -5,6 +5,7 @@ import '../utilities/utilities.dart';
 
 class FileGrouper {
   static Future<GroupingResult> group(PathData pathData) async {
+    // Movie
     if (pathData.videos.length == 1) {
       final video = pathData.videos.first;
       return GroupingResult(
@@ -22,31 +23,33 @@ class FileGrouper {
       );
     }
 
+    // Series
     final Set<String> successGroup = {};
     final Set<String> failGroup = {};
-    final Set<String> seasonsStr = {};
+    final Set<int> seasonNumbers = {};
     // Get available seasons through directory names;
     for (var dir in pathData.directories) {
       final season = await _fetchSeason(dir.name);
       if (season != null) {
-        seasonsStr.add(season);
+        seasonNumbers.add(season);
       }
     }
     // Get available seasons through video file names;
     for (var vid in pathData.videos) {
       final season = await _fetchSeason(vid.title);
       if (season != null) {
-        seasonsStr.add(season);
+        seasonNumbers.add(season);
       }
     }
 
     final List<Season> seasons = [];
 
     // Assign Season 01 if no seasons found but multiple videos found.
-    if (seasonsStr.isEmpty && pathData.videos.isNotEmpty) {
-      const seasonInt = 1;
+    if (seasonNumbers.isEmpty && pathData.videos.isNotEmpty) {
+      const seasonNumber = 1;
       final List<Video> videos = [];
       for (var v in pathData.videos) {
+        final videoEpisode = await _fetchEpisode(v.title);
         final Set<File> relatedFiles = {};
         // Get files with same name as the video
         relatedFiles.addAll(
@@ -66,10 +69,22 @@ class FileGrouper {
           return otherFileMatch[0] == videoFileMatch[0];
         }).toSet());
 
+        // Get files using season number in path and episode number in file title
+        for (var otherFile in pathData.otherFiles) {
+          final otherFileSeason = await _fetchSeason(otherFile.path);
+          final otherFileEpisode = await _fetchEpisode(otherFile.title);
+          if (otherFileSeason != null && otherFileEpisode != null) {
+            if (seasonNumber == otherFileSeason &&
+                videoEpisode == otherFileEpisode) {
+              relatedFiles.add(otherFile);
+            }
+          }
+        }
+
         videos.add(Video(
           mainFile: v,
-          season: seasonInt,
-          episode: await _fetchEpisode(v.title),
+          season: seasonNumber,
+          episode: videoEpisode,
         )
           ..addedSubtitles.addAll(await _fetchSubtitles(relatedFiles.toList()))
           ..addedAudios.addAll(await _fetchAudios(relatedFiles.toList()))
@@ -79,14 +94,19 @@ class FileGrouper {
       }
       // Sort by file name
       videos.sort((a, b) => compareNatural(a.mainFile.name, b.mainFile.name));
-      seasons.add(Season(number: seasonInt, videos: videos));
+      seasons.add(Season(number: seasonNumber, videos: videos));
       successGroup.add('Season 01');
     } else {
-      for (var s in seasonsStr) {
-        final seasonInt = int.parse(s.replaceAll(RegExp(r'[^0-9]'), ''));
+      // Group files with detected season numbers
+      for (var seasonNumber in seasonNumbers) {
         final List<Video> videos = [];
+        final season = seasonNumber.toString().padLeft(2, '0');
+        final seasonPattern = RegExp(
+            'Season$season+|Season $season+|Season.$season+|S$season+|S.$season+|S $season+',
+            caseSensitive: false);
         for (var v in pathData.videos) {
-          if (v.title.contains(s)) {
+          if (v.title.contains(seasonPattern)) {
+            final videoEpisode = await _fetchEpisode(v.title);
             final Set<File> relatedFiles = {};
             // Get files with same name as the video
             relatedFiles.addAll(pathData.otherFiles
@@ -107,10 +127,22 @@ class FileGrouper {
               return otherFileMatch[0] == videoFileMatch[0];
             }).toSet());
 
+            // Get files using season number in path and episode number in file title
+            for (var otherFile in pathData.otherFiles) {
+              final otherFileSeason = await _fetchSeason(otherFile.path);
+              final otherFileEpisode = await _fetchEpisode(otherFile.title);
+              if (otherFileSeason != null && otherFileEpisode != null) {
+                if (seasonNumber == otherFileSeason &&
+                    videoEpisode == otherFileEpisode) {
+                  relatedFiles.add(otherFile);
+                }
+              }
+            }
+
             videos.add(Video(
               mainFile: v,
-              season: seasonInt,
-              episode: await _fetchEpisode(v.title),
+              season: seasonNumber,
+              episode: videoEpisode,
             )
               ..addedSubtitles
                   .addAll(await _fetchSubtitles(relatedFiles.toList()))
@@ -126,10 +158,10 @@ class FileGrouper {
           // Sort by file name
           videos
               .sort((a, b) => compareNatural(a.mainFile.name, b.mainFile.name));
-          seasons.add(Season(number: seasonInt, videos: videos));
-          successGroup.add('Season $seasonInt');
+          seasons.add(Season(number: seasonNumber, videos: videos));
+          successGroup.add('Season $seasonNumber');
         } else {
-          failGroup.add('Season $seasonInt');
+          failGroup.add('Season $seasonNumber');
         }
       }
     }
@@ -147,34 +179,39 @@ class FileGrouper {
     );
   }
 
-  static Future<String?> _fetchSeason(String fileName) async {
-    final extractSeason = RegExp(r'Season.\d+|S.\d+', caseSensitive: false);
-    if (extractSeason.hasMatch(fileName)) {
-      final result = extractSeason.firstMatch(fileName)![0].toString();
-      return result;
-    } else {
-      return null;
-    }
-  }
-
-  static Future<int?> _fetchEpisode(String fileName) async {
+  static Future<int?> _fetchSeason(String text) async {
     int? result;
-    // Extract the episode string
-    final episodeFullStr = RegExp(
-      r'Episode.\d+|E.\d+|Episode \d+|E \d+',
-      caseSensitive: false,
-    ).stringMatch(fileName);
-    if (episodeFullStr != null) {
-      // Extract the episode number
-      final episodeNumStr = RegExp(
-        r'\d+',
-        caseSensitive: false,
-      ).stringMatch(episodeFullStr);
-      if (episodeNumStr != null) {
-        result = int.parse(episodeNumStr);
+    // Extract the season string
+    final seasonPattern =
+        RegExp(r'Season.\d+|S.\d+|Season \d+|S \d+', caseSensitive: false);
+    final seasonMatch = seasonPattern.stringMatch(text);
+    if (seasonMatch != null) {
+      // Extract the season number
+      final numberPattern = RegExp(r'\d+', caseSensitive: false);
+      final numberMatch = numberPattern.stringMatch(seasonMatch);
+      if (numberMatch != null) {
+        // Parse season number string to int
+        result = int.parse(numberMatch);
       }
     }
+    return result;
+  }
 
+  static Future<int?> _fetchEpisode(String text) async {
+    int? result;
+    // Extract the episode string
+    final seasonPattern =
+        RegExp(r'Episode.\d+|E.\d+|Episode \d+|E \d+', caseSensitive: false);
+    final seasonMatch = seasonPattern.stringMatch(text);
+    if (seasonMatch != null) {
+      // Extract the season number
+      final numberPattern = RegExp(r'\d+', caseSensitive: false);
+      final numberMatch = numberPattern.stringMatch(seasonMatch);
+      if (numberMatch != null) {
+        // Parse season number string to int
+        result = int.parse(numberMatch);
+      }
+    }
     return result;
   }
 
