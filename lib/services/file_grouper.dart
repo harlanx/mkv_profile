@@ -6,12 +6,12 @@ import '../utilities/utilities.dart';
 class FileGrouper {
   static Future<GroupingResult> group(PathData pathData) async {
     if (pathData.videos.length == 1) {
-      final videoFile = pathData.videos.first;
+      final video = pathData.videos.first;
       return GroupingResult(
         Movie(
             directory: pathData.mainDir,
             video: Video(
-              mainFile: videoFile,
+              mainFile: video,
             )
               ..addedSubtitles
                   .addAll(await _fetchSubtitles(pathData.otherFiles))
@@ -44,21 +44,31 @@ class FileGrouper {
 
     // Assign Season 01 if no seasons found but multiple videos found.
     if (seasonsStr.isEmpty && pathData.videos.isNotEmpty) {
+      const seasonInt = 1;
       final List<Video> videos = [];
       for (var v in pathData.videos) {
         final Set<File> relatedFiles = {};
         // Get files with same name as the video
-        relatedFiles.addAll(pathData.otherFiles
-            .where((element) => element.title == v.title)
-            .toSet());
+        relatedFiles.addAll(
+            pathData.otherFiles.where((file) => file.title == v.title).toSet());
         // Get files with the same folder name as the video
         relatedFiles.addAll(pathData.otherFiles
-            .where((element) => element.parent.name == v.title)
+            .where((file) => file.parent.name == v.title)
             .toSet());
+        // Get files using S00E00 pattern
+        final sePattern = RegExp(r'S\d{2}E\d{2}');
+        relatedFiles.addAll(pathData.otherFiles.where((file) {
+          final otherFileMatch = sePattern.firstMatch(file.title);
+          final videoFileMatch = sePattern.firstMatch(v.title);
+          if (otherFileMatch == null || videoFileMatch == null) {
+            return false;
+          }
+          return otherFileMatch[0] == videoFileMatch[0];
+        }).toSet());
 
         videos.add(Video(
           mainFile: v,
-          season: 1,
+          season: seasonInt,
           episode: await _fetchEpisode(v.title),
         )
           ..addedSubtitles.addAll(await _fetchSubtitles(relatedFiles.toList()))
@@ -69,7 +79,7 @@ class FileGrouper {
       }
       // Sort by file name
       videos.sort((a, b) => compareNatural(a.mainFile.name, b.mainFile.name));
-      seasons.add(Season(number: 1, videos: videos));
+      seasons.add(Season(number: seasonInt, videos: videos));
       successGroup.add('Season 01');
     } else {
       for (var s in seasonsStr) {
@@ -86,6 +96,16 @@ class FileGrouper {
             relatedFiles.addAll(pathData.otherFiles
                 .where((element) => element.parent.name == v.title)
                 .toSet());
+            // Get files using S00E00 pattern
+            final sePattern = RegExp(r'S\d{2}E\d{2}');
+            relatedFiles.addAll(pathData.otherFiles.where((file) {
+              final otherFileMatch = sePattern.firstMatch(file.title);
+              final videoFileMatch = sePattern.firstMatch(v.title);
+              if (otherFileMatch == null || videoFileMatch == null) {
+                return false;
+              }
+              return otherFileMatch[0] == videoFileMatch[0];
+            }).toSet());
 
             videos.add(Video(
               mainFile: v,
@@ -115,7 +135,7 @@ class FileGrouper {
     }
 
     if (seasons.isEmpty) {
-      throw 'No correlation between files has been found.';
+      throw 'No correlation between files has been detected.';
     }
 
     return GroupingResult(
