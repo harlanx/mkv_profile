@@ -14,16 +14,23 @@ abstract class TrackProperties {
   bool include;
   String? extraOptions;
   Map<String, Flag> flags = {
-    'default': Flag(
-      name: 'Default',
+    'enabled': Flag(
+      name: 'Enabled',
       iconData: {
         'id': 0xe73e,
         'fontFamily': 'FluentIcons',
         'fontPackage': 'fluent_ui',
       },
+      argument: '--track-enabled-flag',
+    ),
+    'default': Flag(
+      name: 'Default',
+      iconData: {
+        'id': 0xea38,
+        'fontFamily': 'FluentIcons',
+        'fontPackage': 'fluent_ui',
+      },
       argument: '--default-track-flag',
-      descripton:
-          'Enable to set the default flag on this item.\nUsually a flag on tracks that is automatically chosen by the media player unless the user overrides it.',
     ),
     'original_language': Flag(
       name: 'Original Language',
@@ -34,8 +41,6 @@ abstract class TrackProperties {
         'fontPackage': 'fluent_ui',
       },
       argument: '--original-flag',
-      descripton:
-          'Enable to set the original language flag on this item.\nUsually a flag on Audio and Subtitle tracks that are the same with the content origin\'s language.',
     ),
     'forced': Flag(
       name: 'Forced',
@@ -45,8 +50,6 @@ abstract class TrackProperties {
         'fontPackage': 'fluent_ui',
       },
       argument: '--forced-display-flag',
-      descripton:
-          'Enable to set the forced flag on this item.\nThis flag can be used on Subtitle tracks that only has translations for the non-native language spoken in content\'s scenes.\nUsually a flag for Subtitle tracks that forces itself to be played on any media player that supports it.',
     ),
     'commentary': Flag(
       name: 'Commentary',
@@ -56,8 +59,6 @@ abstract class TrackProperties {
         'fontPackage': 'fluent_ui',
       },
       argument: '--commentary-flag',
-      descripton:
-          'Enable to set the commentary flag on this item.\nUsually a flag on Audio and Subtitle tracks that has the commentary of individuals/groups who worked on that content.',
     ),
     'hearing_impaired': Flag(
       name: 'Hearing Impaired',
@@ -67,8 +68,6 @@ abstract class TrackProperties {
         'fontFamily': 'MaterialIcons',
       },
       argument: '--hearing-impaired-flag',
-      descripton:
-          'Enable to set the hearing impaired (SDH) flag on this item.\nUsually a flag on Subtitle tracks that has descriptions to auditive information from the content.',
     ),
     'visual_impaired': Flag(
       name: 'Visual Impaired',
@@ -78,8 +77,6 @@ abstract class TrackProperties {
         'fontFamily': 'MaterialIcons',
       },
       argument: '--visual-impaired-flag',
-      descripton:
-          'Enable to set the visual impaired (AD) flag on this item.\nUsually a flag on Audio tracks that narrates the content\'s scenes.',
     ),
     'text_description': Flag(
       name: 'Text Description',
@@ -89,13 +86,12 @@ abstract class TrackProperties {
         'fontFamily': 'MaterialIcons',
       },
       argument: '--text-descriptions-flag',
-      descripton:
-          'Enable to set the text description (TD) flag on this item.\nUsually a flag on Subtitle tracks for the Audio tracks that narrates the content\'s scenes.',
     ),
   };
 
   /// Specified flag names according to the list [flags] declarations.
   static List<String> flagNames = [
+    'enabled',
     'default',
     'original_language',
     'forced',
@@ -113,6 +109,7 @@ abstract class TrackProperties {
     bool? include,
     Map<String, Flag>? flags,
     String? extraOptions,
+    bool? isEnabled,
     bool? isDefault,
     bool? isOriginal,
     bool? isForced,
@@ -126,6 +123,7 @@ abstract class TrackProperties {
     this.include = include ?? this.include;
     this.flags = flags ?? this.flags;
     this.extraOptions = extraOptions ?? this.extraOptions;
+    this.flags['enabled']!.value = isEnabled ?? this.flags['enabled']!.value;
     this.flags['default']!.value = isDefault ?? this.flags['default']!.value;
     this.flags['original_language']!.value =
         isOriginal ?? this.flags['original_language']!.value;
@@ -148,7 +146,6 @@ class Flag {
     String? shortenedName,
     required this.iconData,
     required this.argument,
-    required this.descripton,
     this.value = false,
   })  : shortenedName = shortenedName ?? name,
         definedKey = definedKey ?? name.toLowerCase().replaceAll(' ', '_');
@@ -158,22 +155,16 @@ class Flag {
   late final String shortenedName;
   final Map<String, dynamic> iconData;
   final String argument;
-  final String descripton;
   bool value;
 
   String get titleVar => value == true ? shortenedName : '';
 
   /// Generates an mkvmerge command for flag property
   List<String> command(int id) {
-    if (name == 'Default') {
-      if (value) {
-        return [argument, '$id:yes'];
-      } else {
-        return [argument, '$id:no'];
-      }
-    } else if (value) {
+    if (value) {
       return [argument, '$id:yes'];
+    } else {
+      return [argument, '$id:no'];
     }
-    return [];
   }
 }
