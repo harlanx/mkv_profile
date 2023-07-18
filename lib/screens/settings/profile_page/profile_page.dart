@@ -51,7 +51,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () => _onWillPop(context),
+      onWillPop: () async => await _onWillPop(context),
       child: NavigationView(
         appBar: FluentAppBar(context: context),
         content: ChangeNotifierProvider<UserProfile>.value(
@@ -150,21 +150,26 @@ class ProfilePage extends StatelessWidget {
                                         Button(
                                           child: Text(variable),
                                           onPressed: () async {
-                                            Clipboard.setData(
-                                                ClipboardData(text: variable));
-                                            displayInfoBar(context,
-                                                builder: (context, close) {
-                                              return InfoBar(
-                                                title: Text(
-                                                    AppLocalizations.of(context)
-                                                        .copiedHint),
-                                                action: IconButton(
-                                                  icon: const Icon(
-                                                      FluentIcons.clear),
-                                                  onPressed: close,
-                                                ),
-                                                severity: InfoBarSeverity.info,
-                                              );
+                                            await Clipboard.setData(
+                                                    ClipboardData(
+                                                        text: variable))
+                                                .then((_) {
+                                              displayInfoBar(context,
+                                                  builder: (context, close) {
+                                                return InfoBar(
+                                                  title: Text(
+                                                      AppLocalizations.of(
+                                                              context)
+                                                          .copiedHint),
+                                                  action: IconButton(
+                                                    icon: const Icon(
+                                                        FluentIcons.clear),
+                                                    onPressed: close,
+                                                  ),
+                                                  severity:
+                                                      InfoBarSeverity.info,
+                                                );
+                                              });
                                             });
                                           },
                                         ),
@@ -227,21 +232,26 @@ class ProfilePage extends StatelessWidget {
                                         Button(
                                           child: Text(variable),
                                           onPressed: () async {
-                                            Clipboard.setData(
-                                                ClipboardData(text: variable));
-                                            displayInfoBar(context,
-                                                builder: (context, close) {
-                                              return InfoBar(
-                                                title: Text(
-                                                    AppLocalizations.of(context)
-                                                        .copiedHint),
-                                                action: IconButton(
-                                                  icon: const Icon(
-                                                      FluentIcons.clear),
-                                                  onPressed: close,
-                                                ),
-                                                severity: InfoBarSeverity.info,
-                                              );
+                                            await Clipboard.setData(
+                                                    ClipboardData(
+                                                        text: variable))
+                                                .then((_) {
+                                              displayInfoBar(context,
+                                                  builder: (context, close) {
+                                                return InfoBar(
+                                                  title: Text(
+                                                      AppLocalizations.of(
+                                                              context)
+                                                          .copiedHint),
+                                                  action: IconButton(
+                                                    icon: const Icon(
+                                                        FluentIcons.clear),
+                                                    onPressed: close,
+                                                  ),
+                                                  severity:
+                                                      InfoBarSeverity.info,
+                                                );
+                                              });
                                             });
                                           },
                                         ),
@@ -304,21 +314,26 @@ class ProfilePage extends StatelessWidget {
                                         Button(
                                           child: Text(variable),
                                           onPressed: () async {
-                                            Clipboard.setData(
-                                                ClipboardData(text: variable));
-                                            displayInfoBar(context,
-                                                builder: (context, close) {
-                                              return InfoBar(
-                                                title: Text(
-                                                    AppLocalizations.of(context)
-                                                        .copiedHint),
-                                                action: IconButton(
-                                                  icon: const Icon(
-                                                      FluentIcons.clear),
-                                                  onPressed: close,
-                                                ),
-                                                severity: InfoBarSeverity.info,
-                                              );
+                                            await Clipboard.setData(
+                                                    ClipboardData(
+                                                        text: variable))
+                                                .then((_) {
+                                              displayInfoBar(context,
+                                                  builder: (context, close) {
+                                                return InfoBar(
+                                                  title: Text(
+                                                      AppLocalizations.of(
+                                                              context)
+                                                          .copiedHint),
+                                                  action: IconButton(
+                                                    icon: const Icon(
+                                                        FluentIcons.clear),
+                                                    onPressed: close,
+                                                  ),
+                                                  severity:
+                                                      InfoBarSeverity.info,
+                                                );
+                                              });
                                             });
                                           },
                                         ),
@@ -381,21 +396,26 @@ class ProfilePage extends StatelessWidget {
                                         Button(
                                           child: Text(variable),
                                           onPressed: () async {
-                                            Clipboard.setData(
-                                                ClipboardData(text: variable));
-                                            displayInfoBar(context,
-                                                builder: (context, close) {
-                                              return InfoBar(
-                                                title: Text(
-                                                    AppLocalizations.of(context)
-                                                        .copiedHint),
-                                                action: IconButton(
-                                                  icon: const Icon(
-                                                      FluentIcons.clear),
-                                                  onPressed: close,
-                                                ),
-                                                severity: InfoBarSeverity.info,
-                                              );
+                                            await Clipboard.setData(
+                                                    ClipboardData(
+                                                        text: variable))
+                                                .then((_) {
+                                              displayInfoBar(context,
+                                                  builder: (context, close) {
+                                                return InfoBar(
+                                                  title: Text(
+                                                      AppLocalizations.of(
+                                                              context)
+                                                          .copiedHint),
+                                                  action: IconButton(
+                                                    icon: const Icon(
+                                                        FluentIcons.clear),
+                                                    onPressed: close,
+                                                  ),
+                                                  severity:
+                                                      InfoBarSeverity.info,
+                                                );
+                                              });
                                             });
                                           },
                                         ),

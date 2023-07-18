@@ -102,9 +102,6 @@ class AppData {
     await languageCodes.load();
     // Loads from share preferences xml file
     await SharedPrefs.init().then((_) {
-      if (kDebugMode) {
-        SharedPrefs.clear();
-      }
       appSettings.load();
       profiles.load();
       outputs.load();
@@ -161,36 +158,4 @@ class AppData {
     }
     return false;
   }
-
-  // /// Copy app tool assets to the same folder as the executable and place onto a folder named bin
-  // static Future<void> _copyMediaInfo() async {
-  //   appSettings.mediaInfoPath = '${exeDir.path}\\bin\\$_mediainfoFile';
-  //   // Load from assets
-  //   final ByteData mediaInfoData =
-  //       await rootBundle.load('assets/mediainfo/$_mediainfoFile');
-  //   // Read bytes
-  //   final List<int> mediaInfoBytes = mediaInfoData.buffer
-  //       .asUint8List(mediaInfoData.offsetInBytes, mediaInfoData.lengthInBytes);
-  //   // Create the file with zero bytes.
-  //   final File mediainfoDll =
-  //       await File(appSettings.mediaInfoPath).create(recursive: true);
-  //   // Fill in with byte data
-  //   await mediainfoDll.writeAsBytes(mediaInfoBytes, flush: true);
-  //   mediaInfoLoaded = true;
-  // }
-
-  // static Future<void> _copyMkvMerge() async {
-  //   appSettings.mkvMergePath = '${exeDir.path}\\bin\\$_mkvmergeFile';
-  //   final ByteData mkvmergeData =
-  //       await rootBundle.load('assets/mkvmerge/$_mkvmergeFile');
-
-  //   final List<int> mkvmergeBytes = mkvmergeData.buffer
-  //       .asUint8List(mkvmergeData.offsetInBytes, mkvmergeData.lengthInBytes);
-
-  //   final File mkvmergeExe =
-  //       await File(appSettings.mkvMergePath).create(recursive: true);
-
-  //   await mkvmergeExe.writeAsBytes(mkvmergeBytes, flush: true);
-  //   mkvMergeLoaded = true;
-  // }
 }

@@ -220,17 +220,17 @@ class EmbeddedTrack extends TrackProperties {
     ];
   }
 
-  void loadInfo() {
+  Future<void> loadInfo() async {
     flags['default']!.value = false;
-    flags['original_language']!.value = _isOriginalLanguage;
-    flags['forced']!.value = _isForced;
-    flags['commentary']!.value = _isCommentary;
-    flags['hearing_impaired']!.value = _isHearingImpaired;
-    flags['visual_impaired']!.value = _isVisualImpaired;
-    flags['text_description']!.value = _isTextDescription;
+    flags['original_language']!.value = await _isOriginalLanguage;
+    flags['forced']!.value = await _isForced;
+    flags['commentary']!.value = await _isCommentary;
+    flags['hearing_impaired']!.value = await _isHearingImpaired;
+    flags['visual_impaired']!.value = await _isVisualImpaired;
+    flags['text_description']!.value = await _isTextDescription;
   }
 
-  bool get _isOriginalLanguage {
+  Future<bool> get _isOriginalLanguage async {
     final identifiers = ['Original Language'];
     bool result = flags['original_language']!.value;
     // If false, reconfirm by using track title;
@@ -242,7 +242,7 @@ class EmbeddedTrack extends TrackProperties {
     return result;
   }
 
-  bool get _isForced {
+  Future<bool> get _isForced async {
     final identifiers = ['Forced'];
     bool result = flags['forced']!.value;
     if (!result) {
@@ -253,7 +253,7 @@ class EmbeddedTrack extends TrackProperties {
     return result;
   }
 
-  bool get _isCommentary {
+  Future<bool> get _isCommentary async {
     final identifiers = ['Commentary'];
     bool result = flags['commentary']!.value;
     if (!result) {
@@ -264,7 +264,7 @@ class EmbeddedTrack extends TrackProperties {
     return result;
   }
 
-  bool get _isHearingImpaired {
+  Future<bool> get _isHearingImpaired async {
     final identifiers = ['Hearing Impaired', 'SDH'];
     bool result = flags['hearing_impaired']!.value;
     if (!result) {
@@ -275,7 +275,7 @@ class EmbeddedTrack extends TrackProperties {
     return result;
   }
 
-  bool get _isVisualImpaired {
+  Future<bool> get _isVisualImpaired async {
     final identifiers = ['Visual Impaired', 'AD'];
     bool result = flags['visual_impaired']!.value;
     if (!result) {
@@ -286,7 +286,7 @@ class EmbeddedTrack extends TrackProperties {
     return result;
   }
 
-  bool get _isTextDescription {
+  Future<bool> get _isTextDescription async {
     final identifiers = ['Text Description', 'TD'];
     bool result = flags['text_description']!.value;
     if (!result) {
@@ -316,15 +316,15 @@ class AddedTrack extends TrackProperties {
     }
 
     language = await AppData.languageCodes.identifyByText(file.title);
-    flags['original_language']!.value = _isOriginalLanguage;
+    flags['original_language']!.value = await _isOriginalLanguage;
     flags['forced']!.value = await _isForced;
-    flags['commentary']!.value = _isCommentary;
+    flags['commentary']!.value = await _isCommentary;
     flags['hearing_impaired']!.value = await _isHearingImpaired;
-    flags['visual_impaired']!.value = _isVisualImpaired;
+    flags['visual_impaired']!.value = await _isVisualImpaired;
     flags['text_description']!.value = await _isTextDescription;
   }
 
-  bool get _isOriginalLanguage {
+  Future<bool> get _isOriginalLanguage async {
     final identifiers = ['Original Language'];
     bool result = false;
     result = identifiers.any((identifier) =>
@@ -346,7 +346,7 @@ class AddedTrack extends TrackProperties {
     return result;
   }
 
-  bool get _isCommentary {
+  Future<bool> get _isCommentary async {
     final identifiers = ['Commentary'];
     bool result = false;
     result = identifiers.any((identifier) =>
@@ -378,7 +378,7 @@ class AddedTrack extends TrackProperties {
     return result;
   }
 
-  bool get _isVisualImpaired {
+  Future<bool> get _isVisualImpaired async {
     final identifiers = ['Visual Impaired', 'AD'];
     bool result = false;
     result = identifiers.any((identifier) =>

@@ -33,7 +33,7 @@ void main() async {
     skipTaskbar: false,
     backgroundColor: Colors.transparent,
   );
-  windowManager.waitUntilReadyToShow(windowOptions, () async {
+  await windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.setPreventClose(true);
     await windowManager.show();
     // Handles default title bar theme changes at startup
@@ -76,14 +76,13 @@ class _MyAppState extends State<MyApp>
     if (AppData.tasks.active) {
       await windowManager.minimize();
     } else {
-      await AppData.save().then((value) async {
-        await windowManager.destroy();
-      });
+      await AppData.save();
+      await windowManager.destroy();
     }
   }
 
   @override
-  void didChangePlatformBrightness() async {
+  void didChangePlatformBrightness() {
     // Update app theme when user changes dark or light mode in windows personalization settings
     AppData.appSettings.setThemeMode(AppData.appSettings.themeMode);
 

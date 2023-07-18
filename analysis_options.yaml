@@ -39,6 +39,7 @@ linter:
     prefer_final_locals: true
     prefer_relative_imports: true
     always_declare_return_types: true
+    unawaited_futures: true
 
 analyzer:
   errors:

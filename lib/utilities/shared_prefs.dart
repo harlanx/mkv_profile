@@ -12,7 +12,7 @@ class SharedPrefs {
 
     if (kDebugMode) {
       // Clear on debug mode.
-      _prefs.clear();
+      await _prefs.clear();
     }
     return _prefs;
   }

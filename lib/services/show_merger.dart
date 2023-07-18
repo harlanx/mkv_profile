@@ -56,7 +56,7 @@ class ShowMerger {
       final tn = selected.current.value;
       // Do fake process here
       for (var progress = 0.0; progress <= 100.0; progress += 2) {
-        windowManager.setProgressBar(progress / 100);
+        await windowManager.setProgressBar(progress / 100);
         if (!tln.active) break;
         await Future.delayed(const Duration(milliseconds: 100), () {
           tn.updateProgress(progress);
@@ -88,10 +88,10 @@ class ShowMerger {
         return;
       } else {
         selected.current.value.updateProgress(0.0);
-        windowManager.setProgressBar(0.0);
+        await windowManager.setProgressBar(0.0);
       }
     }
-    windowManager.setProgressBar(0.0);
+    await windowManager.setProgressBar(0.0);
     tln.updateStatus(false);
   }
 
@@ -138,10 +138,10 @@ class ShowMerger {
         return;
       } else {
         selected.current.value.updateProgress(0.0);
-        windowManager.setProgressBar(0.0);
+        await windowManager.setProgressBar(0.0);
       }
     }
-    windowManager.setProgressBar(0.0);
+    await windowManager.setProgressBar(0.0);
     tln.updateStatus(false);
   }
 
@@ -192,7 +192,7 @@ class ShowMerger {
       }
 
       debugPrint('Processing Item:${video.fileTitle}');
-      _processVideo(
+      await _processVideo(
         video,
         folder,
         tln,
