@@ -76,6 +76,7 @@ class Video extends TrackProperties {
 
   Future<void> loadInfo() async {
     info = await MetadataScanner.video(mainFile);
+    flags = info.videoInfo.first.flags;
 
     for (var audio in info.audioInfo) {
       embeddedAudios.add(
