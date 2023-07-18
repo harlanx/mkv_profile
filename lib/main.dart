@@ -33,7 +33,10 @@ void main() async {
     skipTaskbar: false,
     backgroundColor: Colors.transparent,
   );
-  await windowManager.waitUntilReadyToShow(windowOptions, () async {
+
+  // Causes app frame freeze on hot reload or hot restart so don't await this one.
+  // ignore: unawaited_futures
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.setPreventClose(true);
     await windowManager.show();
     // Handles default title bar theme changes at startup
