@@ -185,7 +185,6 @@ class InputTile extends StatefulWidget {
 
 class _InputTileState extends State<InputTile> {
   late final ShowNotifier sn = widget.sln.items[widget.id]!;
-  late final future = sn.loadInfo();
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +195,7 @@ class _InputTileState extends State<InputTile> {
         ),
       ),
       child: FutureBuilder<void>(
-        future: future,
+        future: sn.loadInfo(),
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             // Loading Animations
