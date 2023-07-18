@@ -114,6 +114,7 @@ class VideoInfo extends TrackProperties {
       ..language = AppData.languageCodes
           .identifyByCode(json['Language_String3'], json['Language'])
       ..update(
+        isEnabled: mkvVideoInfo?.enabledFlag ?? true,
         isDefault: mkvVideoInfo?.defaultFlag ?? false,
         isOriginal: mkvVideoInfo?.originalFlag ?? false,
         isForced: mkvVideoInfo?.forcedFlag ?? false,
@@ -163,6 +164,7 @@ class AudioInfo extends TrackProperties {
       ..language = AppData.languageCodes
           .identifyByCode(json['Language_String3'], json['Language'])
       ..update(
+        isEnabled: mkvAudioInfo?.enabledFlag ?? true,
         isDefault: mkvAudioInfo?.defaultFlag ?? false,
         isOriginal: mkvAudioInfo?.originalFlag ?? false,
         isForced: mkvAudioInfo?.forcedFlag ?? false,
@@ -199,6 +201,7 @@ class TextInfo extends TrackProperties {
       ..language = AppData.languageCodes
           .identifyByCode(json['Language_String3'], json['Language'])
       ..update(
+        isEnabled: mkvTextInfo?.enabledFlag ?? true,
         isDefault: mkvTextInfo?.defaultFlag ?? false,
         isOriginal: mkvTextInfo?.originalFlag ?? false,
         isForced: mkvTextInfo?.forcedFlag ?? false,

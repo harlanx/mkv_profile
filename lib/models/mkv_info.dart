@@ -55,6 +55,7 @@ class MkvTrackInfo {
   MkvTrackInfo({
     required this.id,
     required this.uid,
+    required this.enabledFlag,
     required this.defaultFlag,
     required this.originalFlag,
     required this.forcedFlag,
@@ -66,6 +67,7 @@ class MkvTrackInfo {
 
   final int id;
   final String uid;
+  final bool enabledFlag;
   final bool defaultFlag;
   final bool originalFlag;
   final bool forcedFlag;
@@ -81,6 +83,8 @@ class MkvTrackInfo {
     return MkvTrackInfo(
       id: json['id'],
       uid: uid,
+      // Value for enabled flag is true by default (even if not specified in metadta)
+      enabledFlag: props['enabled_track'] ?? true,
       defaultFlag: props['default_track'] ?? false,
       originalFlag: props['flag_original'] ?? false,
       forcedFlag: props['forced_track'] ?? false,
