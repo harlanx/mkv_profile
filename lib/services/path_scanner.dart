@@ -24,7 +24,7 @@ class PathScanner {
     } catch (e) {
       rethrow;
     }
-    return FileGrouper.group(dirContents);
+    return await FileGrouper.group(dirContents);
   }
 
   static Future<PathData> _recursiveScan(Directory dir) async {

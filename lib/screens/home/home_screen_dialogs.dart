@@ -161,17 +161,19 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
             child: IconButton(
               icon: const Icon(FluentIcons.text_document_settings),
               onPressed: () async {
-                Clipboard.setData(ClipboardData(
-                    text: widget.v.command(widget.show).join(' ')));
-                await displayInfoBar(context, builder: (context, close) {
-                  return InfoBar(
-                    title: Text(AppLocalizations.of(context).copiedHint),
-                    action: IconButton(
-                      icon: const Icon(FluentIcons.clear),
-                      onPressed: close,
-                    ),
-                    severity: InfoBarSeverity.info,
-                  );
+                await Clipboard.setData(ClipboardData(
+                        text: widget.v.command(widget.show).join(' ')))
+                    .then((_) {
+                  displayInfoBar(context, builder: (context, close) {
+                    return InfoBar(
+                      title: Text(AppLocalizations.of(context).copiedHint),
+                      action: IconButton(
+                        icon: const Icon(FluentIcons.clear),
+                        onPressed: close,
+                      ),
+                      severity: InfoBarSeverity.info,
+                    );
+                  });
                 });
               },
             ),

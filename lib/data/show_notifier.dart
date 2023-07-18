@@ -31,7 +31,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
           ...v.embeddedAudios,
           ...v.embeddedSubtitles
         ]) {
-          embeddedTrack.loadInfo();
+          await embeddedTrack.loadInfo();
         }
         for (var addedTrack in [...v.addedAudios, ...v.addedSubtitles]) {
           await addedTrack.loadInfo();
@@ -225,13 +225,13 @@ class ShowListNotifier extends ChangeNotifier {
         }
       }
       if (failedPaths.isNotEmpty) {
-        showDialog<void>(
+        await showDialog<void>(
           context: AppData.mainNavigatorKey.currentContext!,
           builder: (context) => ParserResultDialog(failedPaths: failedPaths),
         );
       }
     } else {
-      showDialog<void>(
+      await showDialog<void>(
         context: AppData.mainNavigatorKey.currentContext!,
         builder: (context) => const ToolNotExistDialog(
           toolName: 'MediaInfo',

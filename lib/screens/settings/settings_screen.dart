@@ -177,7 +177,7 @@ class PreferencesSection extends StatelessWidget {
                         ],
                       );
                       if (file != null) {
-                        profiles.import(file.path);
+                        await profiles.import(file.path);
                       }
                     },
                   ),
@@ -197,7 +197,7 @@ class PreferencesSection extends StatelessWidget {
                       );
                       if (output != null) {
                         final outputPath = '${output.path}.json';
-                        profiles.export(outputPath);
+                        await profiles.export(outputPath);
                       }
                     },
                     child: Row(
@@ -226,7 +226,7 @@ class PreferencesSection extends StatelessWidget {
                             templates: profiles.items.values.toList()),
                       );
                       if (context.mounted && profileID != null) {
-                        Navigator.push(
+                        await Navigator.push(
                           context,
                           FluentPageRoute(
                             builder: (context) {
@@ -441,8 +441,8 @@ class PersonalizationSection extends StatelessWidget {
                       child: RadioButton(
                         content: Text(e.name.titleCased),
                         checked: appSettings.windowEffect == e,
-                        onChanged: (value) {
-                          appSettings.setWindowEffect(context, e);
+                        onChanged: (value) async {
+                          await appSettings.setWindowEffect(context, e);
                         },
                       ),
                     ),
