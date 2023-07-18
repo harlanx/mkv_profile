@@ -94,7 +94,6 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
                 track.flags['default']!.value = false;
               }
             }
-            break;
           }
         } else {
           track.flags['default']!.value = false;
