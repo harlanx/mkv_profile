@@ -14,7 +14,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
     UserProfile profile,
   ) : super(show: show, profile: profile);
 
-  final Set<String> expandedTrees = {};
+  final Set<String> expandedNodes = {};
   final _memoizer = AsyncMemoizer();
 
   void refresh() => notifyListeners();
@@ -181,11 +181,11 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
   }
 
   void addToExpanded(String path) {
-    expandedTrees.add(path);
+    expandedNodes.add(path);
   }
 
   void removeFromExpanded(String path) {
-    expandedTrees.remove(path);
+    expandedNodes.remove(path);
   }
 }
 

@@ -318,14 +318,14 @@ class InfoPanel extends StatelessWidget {
     required this.selectedID,
   }) : super(key: key);
 
-  final ScrollController _controller = ScrollController();
+  final _controller = ScrollController();
   final ValueNotifier<int?> selectedID;
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: selectedID,
-      builder: (context, id, _) {
+      builder: (context, id, child) {
         if (id == null) {
           return Center(
             child: Text(
@@ -337,48 +337,41 @@ class InfoPanel extends StatelessWidget {
             ),
           );
         }
-        return ChangeNotifierProvider<ShowNotifier>.value(
+        return ChangeNotifierProvider.value(
           value: context.watch<ShowListNotifier>().items[id]!,
-          child: Consumer<ShowNotifier>(
-            builder: (context, sn, _) {
-              return TreeView(
-                shrinkWrap: true,
-                addRepaintBoundaries: false,
-                scrollController: _controller,
-                narrowSpacing: true,
-                onItemInvoked: (item, reason) async {
-                  if (reason == TreeViewItemInvokeReason.expandToggle) {
-                    if (!item.expanded) {
-                      sn.addToExpanded(item.value);
-                    } else {
-                      sn.removeFromExpanded(item.value);
-                    }
-                  }
-                },
-                items: [
-                  TreeViewItem(
-                    value: sn.show.directory.path,
-                    collapsable: false,
-                    leading: const Icon(FluentIcons.folder),
-                    onInvoked: (item, reason) async {
-                      if (reason == TreeViewItemInvokeReason.pressed) {
-                        return await _folderTitleDialog(context, sn);
-                      }
-                    },
-                    content: Text.rich(
-                      TextSpan(
-                          text: sn.show.title,
-                          style: FluentTheme.of(context).typography.body),
-                      softWrap: false,
-                      maxLines: 1,
-                      overflow: TextOverflow.fade,
-                    ),
-                    children: _treeViewNodes(context, sn),
+          builder: (context, child) {
+            final notifier = context.watch<ShowNotifier>();
+            return ListView(
+              controller: _controller,
+              padding: const EdgeInsets.all(8),
+              children: [
+                // Folder
+                HyperlinkButton(
+                  onPressed: () async =>
+                      await _folderTitleDialog(context, notifier),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(FluentIcons.folder),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text.rich(
+                          TextSpan(
+                              text: notifier.show.title,
+                              style: FluentTheme.of(context).typography.body),
+                          softWrap: false,
+                          maxLines: 1,
+                          overflow: TextOverflow.fade,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              );
-            },
-          ),
+                ),
+                // Nodes
+                ..._nodes(context, notifier),
+              ],
+            );
+          },
         );
       },
     );
@@ -386,98 +379,128 @@ class InfoPanel extends StatelessWidget {
 
   Future<void> _folderTitleDialog(
     BuildContext context,
-    ShowNotifier sn, [
-    Season? s,
+    ShowNotifier notifier, [
+    Season? season,
   ]) async {
-    bool? updated = await showDialog<bool>(
+    await showDialog<bool>(
       context: context,
-      builder: (context) => FolderTitleDialog(show: sn.show, season: s),
-    );
-    updated ??= false;
-    if (updated) {
-      sn.refresh();
-    }
+      builder: (context) =>
+          FolderTitleDialog(show: notifier.show, season: season),
+    ).then((updated) {
+      updated ??= false;
+      if (updated) {
+        notifier.refresh();
+      }
+    });
   }
 
   Future<void> _videoTitleDialog(
-    BuildContext ctx,
-    ShowNotifier sn,
-    Video v,
+    BuildContext context,
+    ShowNotifier notifier,
+    Video video,
   ) async {
-    bool? updated = await showDialog(
-      context: ctx,
-      builder: (context) => VideoTitleDialog(v: v, show: sn.show),
-    );
-    updated ??= false;
-    if (updated) {
-      for (var chapter in v.embeddedChapters) {
-        chapter.include = !v.removeChapters;
+    await showDialog<bool>(
+      context: context,
+      builder: (context) => VideoTitleDialog(v: video, show: notifier.show),
+    ).then((updated) {
+      updated ??= false;
+      if (updated) {
+        for (var chapter in video.embeddedChapters) {
+          chapter.include = !video.removeChapters;
+        }
+        for (var attachment in video.embeddedAttachments) {
+          attachment.include = !video.removeAttachments;
+        }
+        notifier.refresh();
       }
-      for (var attachment in v.embeddedAttachments) {
-        attachment.include = !v.removeAttachments;
-      }
-      sn.refresh();
-    }
+    });
   }
 
   Future<void> _trackDialog(
-    BuildContext ctx,
+    BuildContext context,
+    ShowNotifier notifier,
     String type,
-    ShowNotifier sn,
     TrackProperties track,
   ) async {
-    bool? updated = await showDialog<bool>(
-      context: ctx,
+    await showDialog<bool>(
+      context: context,
       builder: (context) => TrackDialog(trackType: type, track: track),
-    );
-    updated ??= false;
-    if (updated) {
-      sn.sortTracks();
-      sn.refresh();
-    }
+    ).then((updated) {
+      updated ??= false;
+      if (updated) {
+        notifier.sortTracks();
+        notifier.refresh();
+      }
+    });
   }
 
   Future<void> _extraDialog(
-    BuildContext ctx,
+    BuildContext context,
+    ShowNotifier notifier,
     String type,
-    ShowNotifier sn,
     TrackProperties extra,
   ) async {
-    bool? updated = await showDialog<bool>(
-      context: ctx,
+    await showDialog<bool>(
+      context: context,
       builder: (context) => ExtraDialog(trackType: type, track: extra),
-    );
-    updated ??= false;
-    if (updated) {
-      sn.refresh();
-    }
+    ).then((updated) {
+      updated ??= false;
+      if (updated) {
+        notifier.refresh();
+      }
+    });
   }
 
-  List<TreeViewItem> _treeViewNodes(BuildContext context, ShowNotifier sn) {
-    if (sn.show is Movie) {
-      final movie = sn.show as Movie;
-      return [_videoTree(context, movie.video, sn)];
+  List<Widget> _nodes(BuildContext context, ShowNotifier notifier) {
+    if (notifier.show is Movie) {
+      final movie = notifier.show as Movie;
+      return [_videoNode(context, notifier, 0, movie.video)];
     } else {
-      final series = sn.show as Series;
+      final series = notifier.show as Series;
       return List.from(
         series.seasons.map(
-          (s) {
-            final treeValue =
-                '${series.directory.name}${'Season ${s.number.toString().padLeft(2, '0')}'}';
-            final expanded =
-                sn.expandedTrees.any((value) => value == treeValue);
-            return TreeViewItem(
-              value: treeValue,
-              expanded: expanded,
-              content: Text(s.folderTitle),
-              leading: const Icon(FluentIcons.folder),
-              onInvoked: (item, reason) async {
-                if (reason == TreeViewItemInvokeReason.pressed) {
-                  return await _folderTitleDialog(context, sn, s);
+          (season) {
+            final nodeValue =
+                '${series.directory.name}${'Season ${season.number.toString().padLeft(2, '0')}'}';
+            final expandSeason =
+                notifier.expandedNodes.any((value) => value == nodeValue);
+            return CustomExpander(
+              initiallyExpanded: expandSeason,
+              onStateChanged: (value) {
+                if (value) {
+                  notifier.expandedNodes.add(nodeValue);
+                } else {
+                  notifier.expandedNodes.remove(nodeValue);
                 }
               },
-              children: List.from(
-                s.videos.map((v) => _videoTree(context, v, sn)),
+              headerHeight: 30,
+              header: HyperlinkButton(
+                onPressed: () async =>
+                    await _folderTitleDialog(context, notifier, season),
+                child: Row(
+                  children: [
+                    const Icon(FluentIcons.folder),
+                    const SizedBox(width: 8),
+                    Text.rich(
+                      TextSpan(
+                          text: season.folderTitle,
+                          style: FluentTheme.of(context).typography.body),
+                      softWrap: false,
+                      maxLines: 1,
+                      textAlign: TextAlign.start,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              contentPadding: EdgeInsets.zero,
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: List.from(
+                  season.videos
+                      .map((v) => _videoNode(context, notifier, 16, v)),
+                ),
               ),
             );
           },
@@ -487,16 +510,24 @@ class InfoPanel extends StatelessWidget {
   }
 
   // For Video Track
-  TreeViewItem _videoTree(BuildContext context, Video video, ShowNotifier sn) {
+  Widget _videoNode(
+    BuildContext context,
+    ShowNotifier notifier,
+    double leftPadding,
+    Video video,
+  ) {
+    final videoPadding = leftPadding;
+    final trackPadding = videoPadding + 32;
+    final itemPadding = trackPadding + 24;
     final expandVid =
-        sn.expandedTrees.any((value) => value == video.mainFile.path);
-    final expandAud = sn.expandedTrees
+        notifier.expandedNodes.any((value) => value == video.mainFile.path);
+    final expandAud = notifier.expandedNodes
         .any((value) => value == '${video.mainFile.path}Audios');
-    final expandSub = sn.expandedTrees
+    final expandSub = notifier.expandedNodes
         .any((value) => value == '${video.mainFile.path}Subtitles');
-    final expandChap = sn.expandedTrees
+    final expandChap = notifier.expandedNodes
         .any((value) => value == '${video.mainFile.path}Chapters');
-    final expandAttach = sn.expandedTrees
+    final expandAttach = notifier.expandedNodes
         .any((value) => value == '${video.mainFile.path}Attachments');
 
     final audios = [
@@ -515,156 +546,334 @@ class InfoPanel extends StatelessWidget {
       ...video.embeddedAttachments,
       ...video.addedAttachments
     ];
-    return TreeViewItem(
-      value: video.mainFile.path,
-      expanded: expandVid,
-      leading: const Icon(FluentIcons.my_movies_t_v),
-      onInvoked: (item, reason) async {
-        if (reason == TreeViewItemInvokeReason.pressed) {
-          return await _videoTitleDialog(context, sn, video);
+    // Video Node
+    return CustomExpander(
+      initiallyExpanded: expandVid,
+      onStateChanged: (value) {
+        if (value) {
+          notifier.expandedNodes.add(video.mainFile.path);
+        } else {
+          notifier.expandedNodes.remove(video.mainFile.path);
         }
       },
-      content: Text.rich(
-        TextSpan(
-            text: '${video.title}.${video.mainFile.extension}',
-            style: FluentTheme.of(context).typography.body),
-        softWrap: false,
-        maxLines: 1,
-        overflow: TextOverflow.fade,
+      headerHeight: 30,
+      header: HyperlinkButton(
+        onPressed: () async =>
+            await _videoTitleDialog(context, notifier, video),
+        child: Padding(
+          padding: EdgeInsets.only(left: videoPadding),
+          child: Row(
+            children: [
+              const Icon(FluentIcons.my_movies_t_v),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text.rich(
+                  TextSpan(
+                      text: '${video.fileTitle}.${video.mainFile.extension}',
+                      style: FluentTheme.of(context).typography.body),
+                  textAlign: TextAlign.start,
+                  softWrap: false,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      children: [
-        if (audios.isNotEmpty) ...[
-          TreeViewItem(
-            value: '${video.mainFile.path}Audios',
-            expanded: expandAud,
-            leading: const Icon(FluentIcons.volume3),
-            content: Text(AppLocalizations.of(context).audios),
-            children: List<TreeViewItem>.from(
-              audios.map(
-                (e) => _trackTree(
-                    context, AppLocalizations.of(context).audio, e, sn),
+      contentPadding: EdgeInsets.zero,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Audio Nodes
+          CustomExpander(
+            initiallyExpanded: expandAud,
+            onStateChanged: (value) {
+              if (value) {
+                notifier.expandedNodes.add('${video.mainFile.path}Audios');
+              } else {
+                notifier.expandedNodes.remove('${video.mainFile.path}Audios');
+              }
+            },
+            headerHeight: 30,
+            header: Padding(
+              padding: EdgeInsets.only(left: trackPadding),
+              child: Row(
+                children: [
+                  Icon(
+                    FluentIcons.volume3,
+                    color: FluentTheme.of(context).accentColor.lighter,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Text.rich(
+                    TextSpan(
+                        text: AppLocalizations.of(context).audios,
+                        style: FluentTheme.of(context).typography.body),
+                    softWrap: false,
+                    maxLines: 1,
+                    overflow: TextOverflow.fade,
+                  ),
+                ],
               ),
+            ),
+            contentPadding: EdgeInsets.zero,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var audio in audios)
+                  _trackNode(
+                    context,
+                    notifier,
+                    itemPadding,
+                    AppLocalizations.of(context).audio,
+                    audio,
+                  ),
+              ],
+            ),
+          ),
+          // Subtitle Nodes
+          CustomExpander(
+            initiallyExpanded: expandSub,
+            onStateChanged: (value) {
+              if (value) {
+                notifier.expandedNodes.add('${video.mainFile.path}Subtitles');
+              } else {
+                notifier.expandedNodes
+                    .remove('${video.mainFile.path}Subtitles');
+              }
+            },
+            headerHeight: 30,
+            header: Padding(
+              padding: EdgeInsets.only(left: trackPadding),
+              child: Row(
+                children: [
+                  Icon(
+                    FluentIcons.cc,
+                    color: FluentTheme.of(context).accentColor.lighter,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Text.rich(
+                    TextSpan(
+                        text: AppLocalizations.of(context).subtitles,
+                        style: FluentTheme.of(context).typography.body),
+                    softWrap: false,
+                    maxLines: 1,
+                    overflow: TextOverflow.fade,
+                  ),
+                ],
+              ),
+            ),
+            contentPadding: EdgeInsets.zero,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var subtitle in subtitles)
+                  _trackNode(
+                    context,
+                    notifier,
+                    itemPadding,
+                    AppLocalizations.of(context).subtitle,
+                    subtitle,
+                  ),
+              ],
+            ),
+          ),
+          // Chapter Nodes
+          CustomExpander(
+            initiallyExpanded: expandChap,
+            onStateChanged: (value) {
+              if (value) {
+                notifier.expandedNodes.add('${video.mainFile.path}Chapters');
+              } else {
+                notifier.expandedNodes.remove('${video.mainFile.path}Chapters');
+              }
+            },
+            headerHeight: 30,
+            header: Padding(
+              padding: EdgeInsets.only(left: trackPadding),
+              child: Row(
+                children: [
+                  Icon(
+                    FluentIcons.double_bookmark,
+                    color: FluentTheme.of(context).accentColor.lighter,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Text.rich(
+                    TextSpan(
+                        text: AppLocalizations.of(context).chapters,
+                        style: FluentTheme.of(context).typography.body),
+                    softWrap: false,
+                    maxLines: 1,
+                    overflow: TextOverflow.fade,
+                  ),
+                ],
+              ),
+            ),
+            contentPadding: EdgeInsets.zero,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var chapter in chapters)
+                  _extraNode(
+                    context,
+                    notifier,
+                    itemPadding,
+                    AppLocalizations.of(context).chapter,
+                    chapter,
+                  ),
+              ],
+            ),
+          ),
+          // Attachment Nodes
+          CustomExpander(
+            initiallyExpanded: expandAttach,
+            onStateChanged: (value) {
+              if (value) {
+                notifier.expandedNodes.add('${video.mainFile.path}Attachments');
+              } else {
+                notifier.expandedNodes
+                    .remove('${video.mainFile.path}Attachments');
+              }
+            },
+            headerHeight: 30,
+            header: Padding(
+              padding: EdgeInsets.only(left: trackPadding),
+              child: Row(
+                children: [
+                  Icon(
+                    FluentIcons.attach,
+                    color: FluentTheme.of(context).accentColor.lighter,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Text.rich(
+                    TextSpan(
+                        text: AppLocalizations.of(context).attachments,
+                        style: FluentTheme.of(context).typography.body),
+                    softWrap: false,
+                    maxLines: 1,
+                    overflow: TextOverflow.fade,
+                  ),
+                ],
+              ),
+            ),
+            contentPadding: EdgeInsets.zero,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var attachment in attachments)
+                  _extraNode(
+                    context,
+                    notifier,
+                    itemPadding,
+                    AppLocalizations.of(context).attachment,
+                    attachment,
+                  ),
+              ],
             ),
           ),
         ],
-        if (subtitles.isNotEmpty) ...[
-          TreeViewItem(
-            value: '${video.mainFile.path}Subtitles',
-            expanded: expandSub,
-            leading: const Icon(FluentIcons.cc),
-            content: Text(AppLocalizations.of(context).subtitles),
-            children: List<TreeViewItem>.from(
-              subtitles.map(
-                (e) => _trackTree(
-                    context, AppLocalizations.of(context).subtitle, e, sn),
-              ),
-            ),
-          ),
-        ],
-        if (chapters.isNotEmpty) ...[
-          TreeViewItem(
-            value: '${video.mainFile.path}Chapters',
-            expanded: expandChap,
-            leading: const Icon(FluentIcons.double_bookmark),
-            content: Text(AppLocalizations.of(context).chapters),
-            children: List<TreeViewItem>.from(
-              chapters.map(
-                (e) => _extraTree(
-                    context, AppLocalizations.of(context).chapter, e, sn),
-              ),
-            ),
-          ),
-        ],
-        if (attachments.isNotEmpty) ...[
-          TreeViewItem(
-            value: '${video.mainFile.path}Attachments',
-            expanded: expandAttach,
-            leading: const Icon(FluentIcons.attach),
-            content: Text(AppLocalizations.of(context).attachments),
-            children: List<TreeViewItem>.from(
-              attachments.map(
-                (e) => _extraTree(
-                    context, AppLocalizations.of(context).attachment, e, sn),
-              ),
-            ),
-          ),
-        ],
-      ],
+      ),
     );
   }
 
   // For Audios and Subtitles
-  TreeViewItem _trackTree(
+  Widget _trackNode(
     BuildContext context,
+    ShowNotifier notifier,
+    double leftPadding,
     String type,
     TrackProperties track,
-    ShowNotifier sn,
   ) {
     final bool embedded = track is EmbeddedTrack;
     final theme = FluentTheme.of(context);
-    return TreeViewItem(
-      value: embedded ? track.uid : (track as AddedTrack).file.path,
-      collapsable: false,
-      backgroundColor: !embedded
-          ? ButtonState.resolveWith(
-              (states) {
-                return ButtonThemeData.uncheckedInputColor(
-                  theme,
-                  (states.isPressing || states.isNone)
-                      ? {ButtonStates.hovering}
-                      : states.isHovering
-                          ? {ButtonStates.pressing}
-                          : states,
-                  transparentWhenNone: true,
-                );
-              },
-            )
-          : null,
-      leading: Icon(
-        FluentIcons.link,
-        color: track.include ? FluentTheme.of(context).accentColor : null,
-      ),
-      onInvoked: (item, reason) async {
-        if (reason == TreeViewItemInvokeReason.pressed) {
-          return await _trackDialog(context, type, sn, track);
-        }
-      },
-      content: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.fromLTRB(2, 0, 2, 4),
-            decoration: BoxDecoration(
-              border: Border.all(color: FluentTheme.of(context).activeColor),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              track.language.name,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+    return SizedBox(
+      height: 30,
+      child: HyperlinkButton(
+        onPressed: () async =>
+            await _trackDialog(context, notifier, type, track),
+        style: theme.buttonTheme.hyperlinkButtonStyle?.copyWith(
+          backgroundColor: !embedded
+              ? ButtonState.resolveWith(
+                  (states) {
+                    return ButtonThemeData.uncheckedInputColor(
+                      theme,
+                      (states.isPressing || states.isNone)
+                          ? {ButtonStates.hovering}
+                          : states.isHovering
+                              ? {ButtonStates.pressing}
+                              : states,
+                      transparentWhenNone: true,
+                    );
+                  },
+                )
+              : null,
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(left: leftPadding),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Icon(
+                embedded ? FluentIcons.link : FluentIcons.add_link,
+                color: track.include
+                    ? FluentTheme.of(context).accentColor.lighter
+                    : FluentTheme.of(context).inactiveColor,
+                size: 16,
               ),
-            ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.fromLTRB(1, 0, 1, 2),
+                alignment: Alignment.center,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  border:
+                      Border.all(color: FluentTheme.of(context).activeColor),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  track.language.name,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text.rich(
+                  TextSpan(
+                      text: embedded
+                          ? track.uid
+                          : (track as AddedTrack).file.name,
+                      style: FluentTheme.of(context).typography.caption),
+                  softWrap: false,
+                  maxLines: 1,
+                  overflow: TextOverflow.fade,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(
-              embedded ? track.uid : (track as AddedTrack).file.name,
-              softWrap: false,
-              overflow: TextOverflow.fade,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
   // For Chapters and Attachments
-  TreeViewItem _extraTree(
+  Widget _extraNode(
     BuildContext context,
+    ShowNotifier notifier,
+    double leftPadding,
     String type,
     TrackProperties extra,
-    ShowNotifier sn,
   ) {
     final bool embedded = extra is EmbeddedTrack;
     final theme = FluentTheme.of(context);
@@ -684,44 +893,55 @@ class InfoPanel extends StatelessWidget {
         displayName = (extra as AddedTrack).file.name;
       }
     }
-    return TreeViewItem(
-      value: embedded ? extra.uid : (extra as AddedTrack).file.path,
-      collapsable: false,
-      backgroundColor: !embedded
-          ? ButtonState.resolveWith(
-              (states) {
-                return ButtonThemeData.uncheckedInputColor(
-                  theme,
-                  (states.isPressing || states.isNone)
-                      ? {ButtonStates.hovering}
-                      : states.isHovering
-                          ? {ButtonStates.pressing}
-                          : states,
-                  transparentWhenNone: true,
-                );
-              },
-            )
-          : null,
-      leading: Icon(
-        FluentIcons.link,
-        color: extra.include ? FluentTheme.of(context).accentColor : null,
-      ),
-      onInvoked: (item, reason) async {
-        if (reason == TreeViewItemInvokeReason.pressed) {
-          return await _extraDialog(context, type, sn, extra);
-        }
-      },
-      content: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: Text(
-              displayName,
-              softWrap: false,
-              overflow: TextOverflow.fade,
-            ),
+
+    return SizedBox(
+      height: 30,
+      child: HyperlinkButton(
+        onPressed: () async =>
+            await _extraDialog(context, notifier, type, extra),
+        style: theme.buttonTheme.hyperlinkButtonStyle?.copyWith(
+          backgroundColor: !embedded
+              ? ButtonState.resolveWith(
+                  (states) {
+                    return ButtonThemeData.uncheckedInputColor(
+                      theme,
+                      (states.isPressing || states.isNone)
+                          ? {ButtonStates.hovering}
+                          : states.isHovering
+                              ? {ButtonStates.pressing}
+                              : states,
+                      transparentWhenNone: true,
+                    );
+                  },
+                )
+              : null,
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(left: leftPadding),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Icon(
+                embedded ? FluentIcons.link : FluentIcons.add_link,
+                color: extra.include
+                    ? FluentTheme.of(context).accentColor.lighter
+                    : null,
+                size: 16,
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text.rich(
+                  TextSpan(
+                      text: displayName,
+                      style: FluentTheme.of(context).typography.caption),
+                  softWrap: false,
+                  maxLines: 1,
+                  overflow: TextOverflow.fade,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
