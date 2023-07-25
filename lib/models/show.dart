@@ -139,25 +139,38 @@ class Video extends TrackProperties {
       [...embeddedAttachments, ...addedAttachments];
 
   Future<void> addAudios(List<String> filePaths) async {
-    final files = filePaths.map((e) => File(e)).toList();
+    final files = filePaths
+        .map((e) => File(e))
+        .where((file) => AppData.audioFormats.contains(file.extension))
+        .toList();
     final tracks = files.map((e) => AddedTrack(file: e)).toList();
     addedAudios.addAll(tracks);
   }
 
   Future<void> addSubtitles(List<String> filePaths) async {
-    final files = filePaths.map((e) => File(e)).toList();
+    final files = filePaths
+        .map((e) => File(e))
+        .where((file) => AppData.subtitleFormats.contains(file.extension))
+        .toList();
     final tracks = files.map((e) => AddedTrack(file: e)).toList();
     addedSubtitles.addAll(tracks);
   }
 
   Future<void> addChapters(List<String> filePaths) async {
-    final files = filePaths.map((e) => File(e)).toList();
+    final files = filePaths
+        .map((e) => File(e))
+        .where((file) => AppData.chapterFormats.contains(file.extension))
+        .toList();
     final tracks = files.map((e) => AddedTrack(file: e)).toList();
     addedChapters.addAll(tracks);
   }
 
   Future<void> addAttachments(List<String> filePaths) async {
-    final files = filePaths.map((e) => File(e)).toList();
+    final files = filePaths
+        .map((e) => File(e))
+        .where((file) => [...AppData.fontFormats, ...AppData.imageFormats]
+            .contains(file.extension))
+        .toList();
     final tracks = files.map((e) => AddedTrack(file: e)).toList();
     addedAttachments.addAll(tracks);
   }

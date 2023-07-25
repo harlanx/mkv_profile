@@ -120,13 +120,17 @@ class InputPanel extends StatelessWidget {
             valueListenable: isDragging,
             builder: (context, dragging, _) {
               return Container(
-                padding: const EdgeInsets.all(5.0),
-                color: dragging
-                    ? FluentTheme.of(context)
-                        .resources
-                        .textFillColorDisabled
-                        .withOpacity(0.15)
-                    : null,
+                margin: const EdgeInsets.all(5.0),
+                decoration: ShapeDecoration(
+                  color: dragging
+                      ? FluentTheme.of(context)
+                          .resources
+                          .textFillColorDisabled
+                          .withOpacity(0.15)
+                      : null,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4.0)),
+                ),
                 child: Scrollbar(
                   controller: _controller,
                   thumbVisibility: true,
@@ -556,6 +560,7 @@ class _VideoNodeState extends State<VideoNode> {
   late final trackPadding = videoPadding + 16;
   final menuController = FlyoutController();
   final menuAttachKey = GlobalKey();
+  final _isDragging = ValueNotifier<bool>(false);
 
   @override
   void dispose() {
@@ -583,6 +588,22 @@ class _VideoNodeState extends State<VideoNode> {
         notifier.refresh();
       }
     });
+  }
+
+  Future<void> _addFiles(
+      ShowNotifier notifier, Video video, List<String> paths) async {
+    await video.addAudios(paths);
+    await video.addSubtitles(paths);
+    await video.addChapters(paths);
+    await video.addAttachments(paths);
+
+    for (final audio in video.addedAudios) {
+      await audio.loadInfo();
+    }
+    for (final subtitle in video.addedSubtitles) {
+      await subtitle.loadInfo();
+    }
+    notifier.refresh();
   }
 
   Future<void> _selectAudios(ShowNotifier notifier, Video video) async {
@@ -761,74 +782,99 @@ class _VideoNodeState extends State<VideoNode> {
           },
         );
       },
-      child: CustomExpander(
-        initiallyExpanded: expand,
-        animationDuration: Duration.zero,
-        headerHeight: 30,
-        levelPadding: videoPadding,
-        onStateChanged: (value) {
-          if (value) {
-            notifier.expandedNodes.add(widget.video.mainFile.path);
-          } else {
-            notifier.expandedNodes.remove(widget.video.mainFile.path);
-          }
+      child: DropTarget(
+        onDragEntered: (detail) => _isDragging.value = true,
+        onDragExited: (detail) => _isDragging.value = false,
+        onDragDone: (xfile) async {
+          final paths = xfile.files.map((e) => e.path).toList();
+          await _addFiles(notifier, widget.video, paths);
         },
-        header: FlyoutTarget(
-          controller: menuController,
-          key: menuAttachKey,
-          child: CustomHyperlinkButton(
-            onPressed: () async =>
-                await _videoTitleDialog(context, notifier, widget.video),
-            child: Row(
-              children: [
-                const Icon(FluentIcons.my_movies_t_v),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text.rich(
-                    TextSpan(
-                        text:
-                            '${widget.video.fileTitle}.${widget.video.mainFile.extension}',
-                        style: FluentTheme.of(context).typography.body),
-                    textAlign: TextAlign.start,
-                    softWrap: false,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+        child: ValueListenableBuilder(
+          valueListenable: _isDragging,
+          builder: (context, dragging, child) {
+            return Container(
+              decoration: ShapeDecoration(
+                color: dragging
+                    ? FluentTheme.of(context)
+                        .resources
+                        .textFillColorDisabled
+                        .withOpacity(0.15)
+                    : null,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4.0)),
+              ),
+              child: CustomExpander(
+                initiallyExpanded: expand,
+                animationDuration: Duration.zero,
+                headerHeight: 30,
+                levelPadding: videoPadding,
+                onStateChanged: (value) {
+                  if (value) {
+                    notifier.expandedNodes.add(widget.video.mainFile.path);
+                  } else {
+                    notifier.expandedNodes.remove(widget.video.mainFile.path);
+                  }
+                },
+                header: FlyoutTarget(
+                  controller: menuController,
+                  key: menuAttachKey,
+                  child: CustomHyperlinkButton(
+                    onPressed: () async => await _videoTitleDialog(
+                        context, notifier, widget.video),
+                    child: Row(
+                      children: [
+                        const Icon(FluentIcons.my_movies_t_v),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text.rich(
+                            TextSpan(
+                                text:
+                                    '${widget.video.fileTitle}.${widget.video.mainFile.extension}',
+                                style: FluentTheme.of(context).typography.body),
+                            textAlign: TextAlign.start,
+                            softWrap: false,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-        contentPadding: EdgeInsets.zero,
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Audio Nodes
-            if (widget.video.audios.isNotEmpty)
-              AudioNodes(
-                trackPadding: trackPadding,
-                video: widget.video,
+                contentPadding: EdgeInsets.zero,
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Audio Nodes
+                    if (widget.video.audios.isNotEmpty)
+                      AudioNodes(
+                        trackPadding: trackPadding,
+                        video: widget.video,
+                      ),
+                    // Subtitle Nodes
+                    if (widget.video.subtitles.isNotEmpty)
+                      SubtitleNodes(
+                        trackPadding: trackPadding,
+                        video: widget.video,
+                      ),
+                    if (widget.video.chapters.isNotEmpty)
+                      // Chapter Nodes
+                      ChapterNodes(
+                        trackPadding: trackPadding,
+                        video: widget.video,
+                      ),
+                    if (widget.video.attachments.isNotEmpty)
+                      // Attachment Nodes
+                      AttachmentNodes(
+                        trackPadding: trackPadding,
+                        video: widget.video,
+                      ),
+                  ],
+                ),
               ),
-            // Subtitle Nodes
-            if (widget.video.subtitles.isNotEmpty)
-              SubtitleNodes(
-                trackPadding: trackPadding,
-                video: widget.video,
-              ),
-            if (widget.video.chapters.isNotEmpty)
-              // Chapter Nodes
-              ChapterNodes(
-                trackPadding: trackPadding,
-                video: widget.video,
-              ),
-            if (widget.video.attachments.isNotEmpty)
-              // Attachment Nodes
-              AttachmentNodes(
-                trackPadding: trackPadding,
-                video: widget.video,
-              ),
-          ],
+            );
+          },
         ),
       ),
     );
