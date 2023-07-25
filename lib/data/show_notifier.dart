@@ -14,7 +14,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
     UserProfile profile,
   ) : super(show: show, profile: profile);
 
-  final Set<String> expandedTrees = {};
+  final Set<String> expandedNodes = {};
   final _memoizer = AsyncMemoizer();
 
   void refresh() => notifyListeners();
@@ -27,14 +27,11 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
           show is Movie ? [(show as Movie).video] : (show as Series).allVideos;
       for (var v in videos) {
         await v.loadInfo();
-        for (var embeddedTrack in [
-          ...v.embeddedAudios,
-          ...v.embeddedSubtitles
-        ]) {
-          await embeddedTrack.loadInfo();
+        for (final audio in v.audios) {
+          await audio.loadInfo();
         }
-        for (var addedTrack in [...v.addedAudios, ...v.addedSubtitles]) {
-          await addedTrack.loadInfo();
+        for (final subtitle in v.subtitles) {
+          await subtitle.loadInfo();
         }
       }
       MetadataScanner.unload();
@@ -181,11 +178,11 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
   }
 
   void addToExpanded(String path) {
-    expandedTrees.add(path);
+    expandedNodes.add(path);
   }
 
   void removeFromExpanded(String path) {
-    expandedTrees.remove(path);
+    expandedNodes.remove(path);
   }
 }
 
@@ -202,7 +199,7 @@ class ShowListNotifier extends ChangeNotifier {
       final List<ScanError> failedPaths = [];
       for (var path in paths) {
         if (path != null) {
-          if (await PathScanner.isDirectory(path)) {
+          if (await FileSystemEntity.isDirectory(path)) {
             try {
               if (!items.values.any((e) => e.show.directory.path == path)) {
                 final result = await PathScanner.scan(path);

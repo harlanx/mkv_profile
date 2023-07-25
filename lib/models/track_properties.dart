@@ -89,6 +89,8 @@ abstract class TrackProperties {
     ),
   };
 
+  Future<void> loadInfo() async {}
+
   /// Specified flag names according to the list [flags] declarations.
   static List<String> flagNames = [
     'enabled',

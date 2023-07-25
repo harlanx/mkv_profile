@@ -15,8 +15,8 @@
   "contentPreview": "Preview ng nilalaman",
   "show": "Palabas",
   "video": "Bidyo",
-  "audio": "Awdyo",
-  "audios": "Mga awdyo",
+  "audio": "Audio",
+  "audios": "Mga audio",
   "subtitle": "Subtitle",
   "subtitles": "Mga subtitle",
   "chapter": "Chapter",
@@ -116,7 +116,7 @@
   },
   "showTitleNote": "Ito ay mag a-apply sa pangalan ng folder ng palabas",
   "videoTitleNote": "Ito ay mag a-apply sa pangalan ng file ng bidyo at sa pangalan ng track nito",
-  "audioTitleNote": "Ito ay mag a-apply sa pangalan ng track ng awdyo",
+  "audioTitleNote": "Ito ay mag a-apply sa pangalan ng track ng audio",
   "subtitleTitleNote": "Ito ay mag a-apply sa pangalan ng track ng subtitle",
   "selectLanguageToInclude": "Piliin ang mga lengguwaheng isasama at pumili rin ng maaring gawing default",
   "languages": "Mga lengguwahe",
@@ -255,5 +255,13 @@
         "example": "Video"
       }
     }
-  }
+  },
+  "include": "Isama",
+  "removeChapters": "I-remove ang Chapters",
+  "removeAttachments": "I-remove ang Attachments",
+  "edit": "I-edit",
+  "addAudios": "Mag-add ng Audios",
+  "addSubtitles": "Mag-add ng Subtitles",
+  "addChapters": "Mag-add ng Chapters",
+  "addAttachments": "Mag-add ng Attachments"
 }

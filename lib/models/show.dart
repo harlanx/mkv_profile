@@ -1,3 +1,4 @@
+import 'package:async/async.dart';
 import 'package:path/path.dart' as path;
 
 import '../data/app_data.dart';
@@ -73,57 +74,121 @@ class Video extends TrackProperties {
   final List<AddedTrack> addedAttachments = [];
   bool removeChapters;
   bool removeAttachments;
+  final _memoizer = AsyncMemoizer();
 
+  @override
   Future<void> loadInfo() async {
-    info = await MetadataScanner.video(mainFile);
-    flags = info.videoInfo.first.flags;
+    return await _memoizer.runOnce(() async {
+      info = await MetadataScanner.video(mainFile);
+      flags = info.videoInfo.first.flags;
 
-    for (var audio in info.audioInfo) {
-      embeddedAudios.add(
-        EmbeddedTrack(
-          id: audio.id,
-          uid: audio.uid!,
-          info: audio,
-          title: audio.title,
-          include: true,
-        )
-          ..language = audio.language
-          ..flags = audio.flags,
-      );
-    }
-    for (var subtitle in info.textInfo) {
-      embeddedSubtitles.add(
-        EmbeddedTrack(
-          id: subtitle.id,
-          uid: subtitle.uid!,
-          info: subtitle,
-          title: subtitle.title,
-          include: true,
-        )
-          ..language = subtitle.language
-          ..flags = subtitle.flags,
-      );
-    }
-    for (var chapter in info.menuInfo) {
-      embeddedChapters.add(
-        EmbeddedTrack(
-          id: chapter.id,
-          uid: chapter.uid,
-          info: chapter,
-        ),
-      );
-    }
+      for (var audio in info.audioInfo) {
+        embeddedAudios.add(
+          EmbeddedTrack(
+            id: audio.id,
+            uid: audio.uid!,
+            info: audio,
+            title: audio.title,
+            include: true,
+          )
+            ..language = audio.language
+            ..flags = audio.flags,
+        );
+      }
+      for (var subtitle in info.textInfo) {
+        embeddedSubtitles.add(
+          EmbeddedTrack(
+            id: subtitle.id,
+            uid: subtitle.uid!,
+            info: subtitle,
+            title: subtitle.title,
+            include: true,
+          )
+            ..language = subtitle.language
+            ..flags = subtitle.flags,
+        );
+      }
+      for (var chapter in info.menuInfo) {
+        embeddedChapters.add(
+          EmbeddedTrack(
+            id: chapter.id,
+            uid: chapter.uid,
+            info: chapter,
+          ),
+        );
+      }
 
-    for (var attachment in info.attachmentInfo) {
-      embeddedAttachments.add(
-        EmbeddedTrack(
-          id: attachment.id,
-          uid: attachment.uid,
-          title: attachment.name,
-          info: attachment,
-        ),
-      );
-    }
+      for (var attachment in info.attachmentInfo) {
+        embeddedAttachments.add(
+          EmbeddedTrack(
+            id: attachment.id,
+            uid: attachment.uid,
+            title: attachment.name,
+            info: attachment,
+          ),
+        );
+      }
+    });
+  }
+
+  List<TrackProperties> get audios => [...embeddedAudios, ...addedAudios];
+  List<TrackProperties> get subtitles =>
+      [...embeddedSubtitles, ...addedSubtitles];
+  List<TrackProperties> get chapters => [...embeddedChapters, ...addedChapters];
+  List<TrackProperties> get attachments =>
+      [...embeddedAttachments, ...addedAttachments];
+
+  Future<void> addAudios(List<String> filePaths) async {
+    final files = filePaths
+        .map((e) => File(e))
+        .where((file) => AppData.audioFormats.contains(file.extension))
+        .toList();
+    final tracks = files.map((e) => AddedTrack(file: e)).toList();
+    addedAudios.addAll(tracks);
+  }
+
+  Future<void> addSubtitles(List<String> filePaths) async {
+    final files = filePaths
+        .map((e) => File(e))
+        .where((file) => AppData.subtitleFormats.contains(file.extension))
+        .toList();
+    final tracks = files.map((e) => AddedTrack(file: e)).toList();
+    addedSubtitles.addAll(tracks);
+  }
+
+  Future<void> addChapters(List<String> filePaths) async {
+    final files = filePaths
+        .map((e) => File(e))
+        .where((file) => AppData.chapterFormats.contains(file.extension))
+        .toList();
+    final tracks = files.map((e) => AddedTrack(file: e)).toList();
+    addedChapters.addAll(tracks);
+  }
+
+  Future<void> addAttachments(List<String> filePaths) async {
+    final files = filePaths
+        .map((e) => File(e))
+        .where((file) => [...AppData.fontFormats, ...AppData.imageFormats]
+            .contains(file.extension))
+        .toList();
+    final tracks = files.map((e) => AddedTrack(file: e)).toList();
+    addedAttachments.addAll(tracks);
+  }
+
+  void removeAudio(String path) {
+    addedAudios.removeWhere((audio) => audio.file.path == path);
+  }
+
+  void removeSubtitle(String path) {
+    addedSubtitles.removeWhere((sub) => sub.file.path == path);
+  }
+
+  void removeChapter(String path) {
+    addedChapters.removeWhere((chap) => chap.file.path == path);
+  }
+
+  void removeAttachment(String path) {
+    addedAttachments.removeWhere((attach) => attach.file.path == path);
   }
 
   /// Generates an mkvmerge command for the the video file
@@ -205,6 +270,7 @@ class EmbeddedTrack extends TrackProperties {
   final int id;
   final String uid;
   final dynamic info;
+  final _memoizer = AsyncMemoizer();
 
   /// Generates an mkvmerge command for the the embedded track
   List<String> get command {
@@ -221,14 +287,17 @@ class EmbeddedTrack extends TrackProperties {
     ];
   }
 
+  @override
   Future<void> loadInfo() async {
-    flags['default']!.value = false;
-    flags['original_language']!.value = await _isOriginalLanguage;
-    flags['forced']!.value = await _isForced;
-    flags['commentary']!.value = await _isCommentary;
-    flags['hearing_impaired']!.value = await _isHearingImpaired;
-    flags['visual_impaired']!.value = await _isVisualImpaired;
-    flags['text_description']!.value = await _isTextDescription;
+    return await _memoizer.runOnce(() async {
+      flags['default']!.value = false;
+      flags['original_language']!.value = await _isOriginalLanguage;
+      flags['forced']!.value = await _isForced;
+      flags['commentary']!.value = await _isCommentary;
+      flags['hearing_impaired']!.value = await _isHearingImpaired;
+      flags['visual_impaired']!.value = await _isVisualImpaired;
+      flags['text_description']!.value = await _isTextDescription;
+    });
   }
 
   Future<bool> get _isOriginalLanguage async {
@@ -308,21 +377,25 @@ class AddedTrack extends TrackProperties {
 
   final File file;
   dynamic info;
+  final _memoizer = AsyncMemoizer();
 
+  @override
   Future<void> loadInfo() async {
-    if (AppData.audioFormats.contains(file.extension)) {
-      info = await MetadataScanner.audio(file);
-    } else if (AppData.subtitleFormats.contains(file.extension)) {
-      info = await MetadataScanner.subtitle(file);
-    }
+    return await _memoizer.runOnce(() async {
+      if (AppData.audioFormats.contains(file.extension)) {
+        info = await MetadataScanner.audio(file);
+      } else if (AppData.subtitleFormats.contains(file.extension)) {
+        info = await MetadataScanner.subtitle(file);
+      }
 
-    language = await AppData.languageCodes.identifyByText(file.title);
-    flags['original_language']!.value = await _isOriginalLanguage;
-    flags['forced']!.value = await _isForced;
-    flags['commentary']!.value = await _isCommentary;
-    flags['hearing_impaired']!.value = await _isHearingImpaired;
-    flags['visual_impaired']!.value = await _isVisualImpaired;
-    flags['text_description']!.value = await _isTextDescription;
+      language = await AppData.languageCodes.identifyByText(file.title);
+      flags['original_language']!.value = await _isOriginalLanguage;
+      flags['forced']!.value = await _isForced;
+      flags['commentary']!.value = await _isCommentary;
+      flags['hearing_impaired']!.value = await _isHearingImpaired;
+      flags['visual_impaired']!.value = await _isVisualImpaired;
+      flags['text_description']!.value = await _isTextDescription;
+    });
   }
 
   Future<bool> get _isOriginalLanguage async {

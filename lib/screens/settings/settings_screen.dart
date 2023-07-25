@@ -499,17 +499,18 @@ class PersonalizationSection extends StatelessWidget {
                         ),
                       ],
                       if (kDebugMode) ...[
-                        const SizedBox(width: 6),
-                        Builder(
-                          builder: (context) {
-                            final color = HSLColor.fromColor(
-                                FluentTheme.of(context).accentColor);
-                            return Row(
-                              children: [
-                                Text(color.hue.toString()),
-                              ],
-                            );
-                          },
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Builder(
+                            builder: (context) {
+                              final color =
+                                  HSLColor.fromColor(appSettings.accentColor);
+                              return Text(
+                                'H:${color.hue.toStringAsFixed(2)} S:${color.saturation} L:${color.lightness.toStringAsFixed(2)}',
+                                maxLines: 1,
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ],

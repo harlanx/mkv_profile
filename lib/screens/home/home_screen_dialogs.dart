@@ -316,7 +316,7 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                       message: AppLocalizations.of(context).include_description,
                       child: mt.ChoiceChip(
                         avatar: const Icon(FluentIcons.link),
-                        label: const Text('Include'),
+                        label: Text(AppLocalizations.of(context).include),
                         selected: value,
                         selectedColor: FluentTheme.of(context).accentColor,
                         onSelected: (val) {
@@ -362,7 +362,8 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                           .remove_chapters_description,
                       child: mt.ChoiceChip(
                         avatar: const Icon(mt.Icons.label_off_rounded),
-                        label: const Text('Remove Chapters'),
+                        label:
+                            Text(AppLocalizations.of(context).removeChapters),
                         selected: value,
                         selectedColor: FluentTheme.of(context).accentColor,
                         onSelected: (val) {
@@ -380,7 +381,8 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                           .remove_attachments_description,
                       child: mt.ChoiceChip(
                         avatar: const Icon(mt.Icons.link_off_rounded),
-                        label: const Text('Remove Attachments'),
+                        label: Text(
+                            AppLocalizations.of(context).removeAttachments),
                         selected: value,
                         selectedColor: FluentTheme.of(context).accentColor,
                         onSelected: (val) {
@@ -581,8 +583,9 @@ class _TrackDialogState extends State<TrackDialog> {
                     return Tooltip(
                       message: AppLocalizations.of(context).include_description,
                       child: mt.ChoiceChip(
-                        avatar: const Icon(FluentIcons.link),
-                        label: const Text('Include'),
+                        avatar: Icon(
+                            embedded ? FluentIcons.link : FluentIcons.add_link),
+                        label: Text(AppLocalizations.of(context).include),
                         selected: value,
                         selectedColor: FluentTheme.of(context).accentColor,
                         onSelected: (val) {
@@ -865,8 +868,10 @@ class ExtraDialog extends StatelessWidget {
                           message:
                               AppLocalizations.of(context).include_description,
                           child: mt.ChoiceChip(
-                            avatar: const Icon(FluentIcons.link),
-                            label: const Text('Include'),
+                            avatar: Icon(embedded
+                                ? FluentIcons.link
+                                : FluentIcons.add_link),
+                            label: Text(AppLocalizations.of(context).include),
                             selected: value,
                             selectedColor: FluentTheme.of(context).accentColor,
                             onSelected: (val) {
