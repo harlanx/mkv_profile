@@ -78,8 +78,8 @@ class MkvTrackInfo {
 
   factory MkvTrackInfo.fromJson(Map<String, dynamic> json) {
     final props = json['properties'];
-    String? uid = props['uid'];
-    uid ??= json.hashCode.toString();
+    final uid = props['uid']?.toString() ?? json.hashCode.toString();
+
     return MkvTrackInfo(
       id: json['id'],
       uid: uid,
