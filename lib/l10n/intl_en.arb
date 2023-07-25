@@ -255,5 +255,13 @@
         "example": "Video"
       }
     }
-  }
+  },
+  "include": "Include",
+  "removeChapters": "Remove Chapters",
+  "removeAttachments": "Remove Attachments",
+  "edit": "Edit",
+  "addAudios": "Add Audios",
+  "addSubtitles": "Add Subtitles",
+  "addChapters": "Add Chapters",
+  "addAttachments": "Add Attachments"
 }

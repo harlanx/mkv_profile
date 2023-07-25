@@ -7,6 +7,7 @@ class CustomExpander extends StatefulWidget {
     this.leading,
     required this.header,
     required this.content,
+    this.levelPadding = 8.0,
     this.contentPadding = const EdgeInsets.all(16),
     this.icon,
     this.trailing,
@@ -43,6 +44,8 @@ class CustomExpander extends StatefulWidget {
   ///
   /// ![Expander Nested Content](https://docs.microsoft.com/en-us/windows/apps/design/controls/images/expander-nested.png)
   final Widget content;
+
+  final double levelPadding;
 
   final EdgeInsets contentPadding;
 
@@ -185,39 +188,14 @@ class CustomExpanderState extends State<CustomExpander>
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4.0)),
             ),
-            padding: const EdgeInsetsDirectional.only(start: 16.0),
             alignment: AlignmentDirectional.centerStart,
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              if (widget.leading != null)
-                Padding(
-                  padding: const EdgeInsetsDirectional.only(end: 10.0),
-                  child: widget.leading!,
-                ),
-              Expanded(child: widget.header),
-              if (widget.trailing != null)
-                Padding(
-                  padding: const EdgeInsetsDirectional.only(start: 20.0),
-                  child: widget.trailing!,
-                ),
               Padding(
-                padding: EdgeInsetsDirectional.only(
-                  start: widget.trailing != null ? 8.0 : 20.0,
-                  end: 8.0,
-                  top: 8.0,
-                  bottom: 8.0,
-                ),
+                padding: EdgeInsetsDirectional.only(start: widget.levelPadding),
                 child: FocusBorder(
                   focused: states.isFocused,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    decoration: BoxDecoration(
-                      color: ButtonThemeData.uncheckedInputColor(
-                        _theme,
-                        states,
-                        transparentWhenNone: true,
-                      ),
-                      borderRadius: BorderRadius.circular(4.0),
-                    ),
                     alignment: AlignmentDirectional.center,
                     child: widget.icon ??
                         RotationTransition(
@@ -240,9 +218,17 @@ class CustomExpanderState extends State<CustomExpander>
                                 ? const Offset(0, 0.1)
                                 : Offset.zero,
                             child: Icon(
-                              _isDown
-                                  ? FluentIcons.chevron_down
-                                  : FluentIcons.chevron_up,
+                              () {
+                                if (_isDown) {
+                                  return _isExpanded
+                                      ? FluentIcons.chevron_up
+                                      : FluentIcons.chevron_right;
+                                } else {
+                                  return _isExpanded
+                                      ? FluentIcons.chevron_down
+                                      : FluentIcons.chevron_right;
+                                }
+                              }(),
                               size: 8.0,
                             ),
                           ),
@@ -250,6 +236,17 @@ class CustomExpanderState extends State<CustomExpander>
                   ),
                 ),
               ),
+              if (widget.leading != null)
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 10.0),
+                  child: widget.leading!,
+                ),
+              Expanded(child: widget.header),
+              if (widget.trailing != null)
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(start: 20.0),
+                  child: widget.trailing!,
+                ),
             ]),
           );
         },
