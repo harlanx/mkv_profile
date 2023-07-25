@@ -3,12 +3,6 @@ import '../services/app_services.dart';
 import '../utilities/utilities.dart';
 
 class PathScanner {
-  FileSystemEntity entity = Directory.current;
-
-  static Future<bool> isDirectory(String path) async {
-    return await FileSystemEntity.isDirectory(path);
-  }
-
   static Future<GroupingResult> scan(String path) async {
     dynamic entityForAbsolutePath;
     if (path.isNotEmpty) {

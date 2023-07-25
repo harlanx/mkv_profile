@@ -225,27 +225,37 @@ class AppSettingsNotifier extends ChangeNotifier {
     // We'll just prefer SeedColorScheme since it providers more color options.
     final colorScheme = SeedColorScheme.fromSeeds(
       primaryKey: customAccent,
-      tones: FlexTones.material(
+      tones: FlexTones.vivid(
           WidgetsBinding.instance.platformDispatcher.platformBrightness),
     );
 
     final tones = FlexCorePalette.fromSeeds(
       primary: colorScheme.primary.value,
-    ).primary.asList;
-    final accentHue = HSLColor.fromColor(customAccent).hue;
-    final bool modify = ((accentHue >= 0 && accentHue <= 60) ||
-        accentHue >= 200 && accentHue <= 360);
-    final lighter = modify
-        ? Color(tones[6]).saturate(1).lighten(12)
-        : Color(tones[6]).lighten(30);
+    ).primary;
+    final lighter = HSLColor.fromColor(Color(tones.get(60)));
+    final isThemeDark = themeMode == ThemeMode.dark ||
+        (themeMode == ThemeMode.system &&
+            WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+                Brightness.dark);
+    final isLighterSpec = lighter.hue >= 39.0 && lighter.hue <= 194;
+    final higherSpecColor = HSLColor.fromColor(Color(tones.get(60)))
+        .withSaturation(1.0)
+        .withLightness(0.65);
+    final lowerSpecColor = HSLColor.fromColor(Color(tones.get(60)))
+        .withSaturation(1.0)
+        .withLightness(0.55);
+    final newLighter = (isThemeDark && isLighterSpec)
+        ? lowerSpecColor.toColor()
+        : higherSpecColor.toColor();
+
     return AccentColor.swatch({
-      'darkest': Color(tones[2]).brighten(2).saturate(1),
-      'darker': Color(tones[3]).lighten(5),
-      'dark': Color(tones[4]).lighten(5),
+      'darkest': Color(tones.get(10)),
+      'darker': Color(tones.get(20)),
+      'dark': Color(tones.get(40)),
       'normal': customAccent,
-      'light': Color(tones[7]).lighten(5),
-      'lighter': lighter,
-      'lightest': Color(tones[9]).saturate(1).lighten(12),
+      'light': Color(tones.get(50)),
+      'lighter': newLighter,
+      'lightest': Color(tones.get(70)),
     });
   }
 
