@@ -284,8 +284,11 @@ class InfoPanel extends StatelessWidget {
             ),
           );
         }
+
+        final notifier = context.read<ShowListNotifier>().items[id]!;
         return ChangeNotifierProvider.value(
-          value: context.watch<ShowListNotifier>().items[id]!,
+          key: ObjectKey(notifier),
+          value: notifier,
           builder: (context, child) {
             return const MainNode();
           },
