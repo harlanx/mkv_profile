@@ -389,6 +389,7 @@ class AddedTrack extends TrackProperties {
       }
 
       language = await AppData.languageCodes.identifyByText(file.title);
+      flags['enabled']!.value = true;
       flags['original_language']!.value = await _isOriginalLanguage;
       flags['forced']!.value = await _isForced;
       flags['commentary']!.value = await _isCommentary;
