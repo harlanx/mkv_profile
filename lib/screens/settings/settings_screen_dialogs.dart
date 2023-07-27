@@ -1,5 +1,8 @@
 import 'package:fluent_ui/fluent_ui.dart';
 
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:markdown/markdown.dart' as md;
+
 import '../../models/models.dart';
 import '../../utilities/utilities.dart';
 
@@ -88,17 +91,38 @@ class DeleteDialog extends StatelessWidget {
 
 class NewUpdateDialog extends StatelessWidget {
   const NewUpdateDialog(
-    this.version, {
+    this.response, {
     Key? key,
   }) : super(key: key);
 
-  final String version;
+  final Map<String, dynamic> response;
 
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
       title: Text(AppLocalizations.of(context).checkUpdate),
-      content: Text(AppLocalizations.of(context).newVersionAvailable(version)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        //shrinkWrap: true,
+        children: [
+          Text(AppLocalizations.of(context)
+              .newVersionAvailable(response['tag_name'])),
+          Flexible(
+            child: Markdown(
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              data: response['body'],
+              extensionSet: md.ExtensionSet(
+                md.ExtensionSet.gitHubWeb.blockSyntaxes,
+                [
+                  ...md.ExtensionSet.gitHubWeb.inlineSyntaxes,
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
       actions: [
         Button(
           child: Text(AppLocalizations.of(context).okay),

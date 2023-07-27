@@ -814,14 +814,15 @@ class _AboutTileState extends State<AboutTile> {
                         await http.get(url).then((response) async {
                           final List<dynamic> json = jsonDecode(response.body);
                           if (json.isNotEmpty) {
-                            final String latestVersion = json.first['tag_name'];
+                            final Map<String, dynamic> latestData = json.first;
+                            final String latestVersion =
+                                latestData['tag_name'].replaceAll('v', '');
                             if (Utilities.isNewVersionAvailable(
-                                packageInfo.version,
-                                latestVersion.replaceAll('v', ''))) {
+                                packageInfo.version, latestVersion)) {
                               await showDialog<bool>(
                                   context: context,
                                   builder: (context) {
-                                    return NewUpdateDialog(latestVersion);
+                                    return NewUpdateDialog(latestData);
                                   }).then((value) async {
                                 if (value ??= false) {
                                   final url = json.first['html_url'];
