@@ -93,7 +93,7 @@ abstract class TrackProperties {
 
   /// Specified flag names according to the list [flags] declarations.
   static List<String> flagNames = [
-    'enabled',
+    //'enabled', // Exclude Enabled since it can override default on playback.
     'default',
     'original_language',
     'forced',
