@@ -443,7 +443,7 @@ class _TrackDialogState extends State<TrackDialog> {
   late final String? initialTitle = widget.track.title;
   late final titleCtrl = TextEditingController(text: initialTitle);
   late LanguageCode language = widget.track.language;
-  late final initialLanguage = language.cleanName;
+  late final initialLanguage = language.fullCleanName;
   late final languageCtrl = TextEditingController(text: initialLanguage);
   final languageNode = FocusNode();
   late final include = ValueNotifier(widget.track.include);
@@ -524,6 +524,7 @@ class _TrackDialogState extends State<TrackDialog> {
                     label: code.fullCleanName,
                     child: Text(
                       code.fullCleanName,
+                      maxLines: 1,
                       softWrap: false,
                       overflow: TextOverflow.fade,
                     ),

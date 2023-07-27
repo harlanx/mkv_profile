@@ -111,7 +111,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         'HD',
         r'\b\d{4}\b', // Year
         r'Season.\d+|S.\d+|Season \d+|S \d+', // Season
-        r'Episode.\d+|E.\d+|Episode \d+|E \d+', // Episode
+        r'Episode.\d+|E.\d+|Episode \d+|E \d+|\b\d{2}\b', // Episode
         r'\d{3,4}p', //'1080p', '720p', '480p',
         r'x.\d{3}|x\d{3}', //'x.264', 'x.265', 'x264', 'x265',
         r'h.\d{3}|h\d{3}', //'h.264', //'h.265', 'h264', 'h265',

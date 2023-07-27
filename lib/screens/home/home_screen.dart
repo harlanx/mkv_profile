@@ -1663,15 +1663,22 @@ class _TrackNodeState extends State<TrackNode> {
                     height: double.infinity,
                     decoration: BoxDecoration(
                       border: Border.all(
-                          color: theme.accentColor
-                              .defaultBrushFor(theme.brightness)),
+                        color: widget.track.flags['default']!.value
+                            ? theme.accentColor
+                                .defaultBrushFor(theme.brightness)
+                            : FluentTheme.of(context).inactiveColor,
+                      ),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
                       widget.track.language.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w500,
+                        color: widget.track.flags['default']!.value
+                            ? theme.accentColor
+                                .defaultBrushFor(theme.brightness)
+                            : FluentTheme.of(context).inactiveColor,
                       ),
                     ),
                   ),
