@@ -115,7 +115,7 @@ class MkvAttachmentInfo {
     final props = json['properties'];
     return MkvAttachmentInfo(
       id: json['id'],
-      uid: props['uid'],
+      uid: props['uid'].toString(),
       name: json['file_name'],
       type: json['content_type'],
       size: json['size'],
