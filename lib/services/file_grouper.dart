@@ -105,7 +105,7 @@ class FileGrouper {
             'Season$season+|Season $season+|Season.$season+|S$season+|S.$season+|S $season+',
             caseSensitive: false);
         for (var v in pathData.videos) {
-          if (v.title.contains(seasonPattern)) {
+          if (v.path.contains(seasonPattern)) {
             final videoEpisode = await _fetchEpisode(v.title);
             final Set<File> relatedFiles = {};
             // Get files with same name as the video
@@ -129,7 +129,7 @@ class FileGrouper {
 
             // Get files using season number in path and episode number in file title
             for (var otherFile in pathData.otherFiles) {
-              final otherFileSeason = await _fetchSeason(otherFile.path);
+              final otherFileSeason = await _fetchSeason(otherFile.parent.path);
               final otherFileEpisode = await _fetchEpisode(otherFile.title);
               if (otherFileSeason != null && otherFileEpisode != null) {
                 if (seasonNumber == otherFileSeason &&
@@ -200,8 +200,9 @@ class FileGrouper {
   static Future<int?> _fetchEpisode(String text) async {
     int? result;
     // Extract the episode string
-    final seasonPattern =
-        RegExp(r'Episode.\d+|E.\d+|Episode \d+|E \d+', caseSensitive: false);
+    final seasonPattern = RegExp(
+        r'Episode.\d+|E.\d+|Episode \d+|E \d+|\b\d{2}\b',
+        caseSensitive: false);
     final seasonMatch = seasonPattern.stringMatch(text);
     if (seasonMatch != null) {
       // Extract the season number
