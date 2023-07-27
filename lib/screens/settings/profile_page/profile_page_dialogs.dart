@@ -82,7 +82,7 @@ class TextModifierDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      title: const Text('Text Modifier'),
+      title: Text(AppLocalizations.of(context).textModifier),
       content: ListView(
         shrinkWrap: true,
         children: [

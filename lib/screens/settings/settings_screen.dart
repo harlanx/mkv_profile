@@ -664,7 +664,8 @@ class MiscSection extends StatelessWidget {
                         ),
                       ),
                       Tooltip(
-                        message: 'Reset and use the default tool path',
+                        message:
+                            AppLocalizations.of(context).resetAndUseDefault,
                         child: IconButton(
                           icon: const Icon(FluentIcons.reset),
                           onPressed: () async {
@@ -753,7 +754,8 @@ class MiscSection extends StatelessWidget {
                         ),
                       ),
                       Tooltip(
-                        message: 'Reset and use the default tool path',
+                        message:
+                            AppLocalizations.of(context).resetAndUseDefault,
                         child: IconButton(
                           icon: const Icon(FluentIcons.reset),
                           onPressed: () async {
