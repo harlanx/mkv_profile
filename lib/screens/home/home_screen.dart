@@ -109,12 +109,12 @@ class InputPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<ShowListNotifier>(
-      builder: (context, shows, child) {
+      builder: (context, listNotifier, child) {
         return DropTarget(
           onDragEntered: (detail) => isDragging.value = true,
           onDragExited: (detail) => isDragging.value = false,
           onDragDone: (xfile) async {
-            await shows.add(xfile.files.map((e) => e.path).toList());
+            await listNotifier.add(xfile.files.map((e) => e.path).toList());
           },
           child: ValueListenableBuilder<bool>(
             valueListenable: isDragging,
@@ -150,13 +150,14 @@ class InputPanel extends StatelessWidget {
                         .copyWith(scrollbars: false),
                     child: ListView.builder(
                       controller: _controller,
-                      itemCount: shows.items.length,
-                      itemBuilder: (_, index) => InputTile(
-                        selectedID: selectedID,
-                        ctx: context,
-                        sln: shows,
-                        id: shows.items.entries.elementAt(index).key,
-                      ),
+                      itemCount: listNotifier.items.length,
+                      itemBuilder: (_, index) {
+                        final itemID = listNotifier.items.keys.elementAt(index);
+                        return InputTile(
+                          selectedID: selectedID,
+                          itemID: itemID,
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -173,90 +174,93 @@ class InputTile extends StatefulWidget {
   const InputTile({
     super.key,
     required this.selectedID,
-    required this.ctx,
-    required this.sln,
-    required this.id,
+    required this.itemID,
   });
 
   final ValueNotifier<int?> selectedID;
-  final BuildContext ctx;
-  final ShowListNotifier sln;
-  final int id;
+  final int itemID;
 
   @override
   State<InputTile> createState() => _InputTileState();
 }
 
 class _InputTileState extends State<InputTile> {
-  late final ShowNotifier sn = widget.sln.items[widget.id]!;
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(width: 1, color: Colors.grey),
-        ),
-      ),
-      child: FutureBuilder<void>(
-        future: sn.loadInfo(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            // Loading Animation
-            return const InputTileShimmer();
-          }
+    final listNotifier = context.watch<ShowListNotifier>();
+    return ChangeNotifierProvider.value(
+        key: ValueKey(widget.itemID),
+        value: listNotifier.items[widget.itemID]!,
+        builder: (context, child) {
+          final notifier = context.read<ShowNotifier>();
+          return Container(
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(width: 1, color: Colors.grey),
+              ),
+            ),
+            child: FutureBuilder<void>(
+              future: notifier.loadInfo(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  // Loading Animation
+                  return const InputTileShimmer();
+                }
 
-          return ValueListenableBuilder<int?>(
-            valueListenable: widget.selectedID,
-            builder: (context, value, _) {
-              return ListTile.selectable(
-                selected: widget.selectedID.value == widget.id,
-                selectionMode: ListTileSelectionMode.single,
-                leading: Container(
-                  height: 40,
-                  alignment: Alignment.center,
-                  child: Text(sn.show is Movie
-                      ? '(${AppLocalizations.of(context).movie})'
-                      : '(${AppLocalizations.of(context).series})'),
-                ),
-                title: Text(
-                  sn.show.directory.name,
-                  softWrap: false,
-                  style: const TextStyle(overflow: TextOverflow.fade),
-                ),
-                subtitle: Text(
-                  sn.show.directory.path,
-                  softWrap: false,
-                  style: const TextStyle(overflow: TextOverflow.fade),
-                ),
-                onPressed: () {
-                  if (widget.selectedID.value == null ||
-                      widget.selectedID.value != widget.id) {
-                    widget.selectedID.value = widget.id;
-                  } else {
-                    widget.selectedID.value = null;
-                  }
-                },
-                trailing: Container(
-                  height: 40,
-                  alignment: Alignment.center,
-                  child: Tooltip(
-                    message: AppLocalizations.of(context).remove,
-                    child: IconButton(
-                      icon: const Icon(FluentIcons.remove),
+                return ValueListenableBuilder<int?>(
+                  valueListenable: widget.selectedID,
+                  builder: (context, value, _) {
+                    return ListTile.selectable(
+                      selected: widget.selectedID.value == widget.itemID,
+                      selectionMode: ListTileSelectionMode.single,
+                      leading: Container(
+                        height: 40,
+                        alignment: Alignment.center,
+                        child: Text(notifier.show is Movie
+                            ? '(${AppLocalizations.of(context).movie})'
+                            : '(${AppLocalizations.of(context).series})'),
+                      ),
+                      title: Text(
+                        notifier.show.directory.name,
+                        softWrap: false,
+                        style: const TextStyle(overflow: TextOverflow.fade),
+                      ),
+                      subtitle: Text(
+                        notifier.show.directory.path,
+                        softWrap: false,
+                        style: const TextStyle(overflow: TextOverflow.fade),
+                      ),
                       onPressed: () {
-                        widget.sln.remove(widget.id);
-                        widget.selectedID.value = null;
+                        if (widget.selectedID.value == null ||
+                            widget.selectedID.value != widget.itemID) {
+                          widget.selectedID.value = widget.itemID;
+                        } else {
+                          widget.selectedID.value = null;
+                        }
                       },
-                    ),
-                  ),
-                ),
-              );
-            },
+                      trailing: Container(
+                        height: 40,
+                        alignment: Alignment.center,
+                        child: Tooltip(
+                          message: AppLocalizations.of(context).remove,
+                          child: IconButton(
+                            icon: const Icon(FluentIcons.remove),
+                            onPressed: () {
+                              if (widget.selectedID.value == widget.itemID) {
+                                widget.selectedID.value = null;
+                              }
+                              listNotifier.remove(widget.itemID);
+                            },
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           );
-        },
-      ),
-    );
+        });
   }
 }
 
