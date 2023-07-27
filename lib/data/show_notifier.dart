@@ -52,17 +52,14 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
   }
 
   void _previewTracks(Video video) {
-    _assignDefault([...video.embeddedAudios, ...video.addedAudios]);
-    _assignDefault([...video.embeddedSubtitles, ...video.addedSubtitles]);
+    _assignDefault(video.audios);
+    _assignDefault(video.subtitles);
     sortTracks();
-    for (var audio in [...video.embeddedAudios, ...video.addedAudios]) {
+    for (var audio in video.audios) {
       audio.title = TitleScanner.audio(audio, profile);
       audio.extraOptions = profile.audioExtraOptions;
     }
-    for (var subtitle in [
-      ...video.embeddedSubtitles,
-      ...video.addedSubtitles
-    ]) {
+    for (var subtitle in video.subtitles) {
       subtitle.title = TitleScanner.subtitle(subtitle, profile);
       subtitle.extraOptions = profile.subtitleExtraOptions;
     }
@@ -73,25 +70,38 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
   }
 
   void _assignDefault(List<TrackProperties> tracks) {
-    for (var track in tracks) {
+    List<TrackProperties> matches = [];
+    for (final flagOrder in profile.defaultFlagOrder) {
+      if (flagOrder == 'default') {
+        matches = tracks.where((track) {
+          final isDefaultLanguage =
+              track.language.iso6393 == profile.defaultLanguage;
+          final orderableFlags = track.flags.values.where((flag) {
+            return !['enabled', 'default'].contains(flag.definedKey);
+          }).toList();
+
+          return orderableFlags.every((flag) => flag.value == false) &&
+              isDefaultLanguage;
+        }).toList();
+      } else {
+        matches = tracks.where((track) {
+          final isDefaultLanguage =
+              track.language.iso6393 == profile.defaultLanguage;
+
+          return track.flags[flagOrder]!.value && isDefaultLanguage;
+        }).toList();
+      }
+      if (matches.isEmpty) {
+        continue;
+      } else {
+        break;
+      }
+    }
+    for (final track in tracks) {
       if (profile.languages.contains(track.language.iso6393)) {
         track.include = true;
-        final orderableFlags =
-            track.flags.values.where((e) => e.name != 'default').toList();
-
-        if (track.language.iso6393 == profile.defaultLanguage) {
-          for (String flagOrder in profile.defaultFlagOrder) {
-            if (flagOrder == 'default' &&
-                orderableFlags.every((flag) => flag.value == false)) {
-              track.flags['default']!.value = true;
-            } else {
-              if (track.flags[flagOrder]!.value) {
-                track.flags['default']!.value = true;
-              } else {
-                track.flags['default']!.value = false;
-              }
-            }
-          }
+        if (matches.contains(track)) {
+          track.flags['default']!.value = true;
         } else {
           track.flags['default']!.value = false;
         }
