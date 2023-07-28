@@ -58,6 +58,9 @@ class OutputsScreenState extends State<OutputsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+
     return ScaffoldPage(
       header: CommandBarCard(
         child: Row(
@@ -69,7 +72,7 @@ class OutputsScreenState extends State<OutputsScreen>
                 primaryItems: [
                   CommandBarButton(
                     icon: const Icon(FluentIcons.delete),
-                    label: Text(AppLocalizations.of(context).remove),
+                    label: Text(l10n.remove),
                     onPressed: outputs.selected.isEmpty
                         ? null
                         : () {
@@ -96,7 +99,7 @@ class OutputsScreenState extends State<OutputsScreen>
               direction: Axis.horizontal,
               style: DividerThemeData(
                 decoration: BoxDecoration(
-                  color: FluentTheme.of(context).cardColor,
+                  color: theme.cardColor,
                 ),
               ),
             );
@@ -145,7 +148,7 @@ class OutputsScreenState extends State<OutputsScreen>
               margin: const EdgeInsets.all(5.0),
               padding: const EdgeInsets.all(5.0),
               decoration: BoxDecoration(
-                color: FluentTheme.of(context).micaBackgroundColor,
+                color: theme.micaBackgroundColor,
                 borderRadius: BorderRadius.circular(5),
               ),
               child: Scrollbar(
@@ -185,11 +188,12 @@ class OutputsScreenState extends State<OutputsScreen>
       _manager.checkedRows.map<int>((e) => e.cells.values.first.value).toSet();
 
   void fetchData() {
+    final l10n = AppLocalizations.of(context);
     _manager.removeAllRows();
     _manager.removeColumns(_manager.columns);
     _manager.insertColumns(0, [
       PlutoColumn(
-        title: AppLocalizations.of(context).info,
+        title: l10n.info,
         field: 'info',
         type: PlutoColumnType.number(),
         readOnly: true,
@@ -203,6 +207,8 @@ class OutputsScreenState extends State<OutputsScreen>
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           final output = outputs.items[id]!;
+          final theme = FluentTheme.of(context);
+
           return Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -225,10 +231,9 @@ class OutputsScreenState extends State<OutputsScreen>
                       },
                   ),
                   maxLines: 1,
-                  style:
-                      FluentTheme.of(context).typography.bodyStrong?.copyWith(
-                            color: Colors.blue,
-                          ),
+                  style: theme.typography.bodyStrong?.copyWith(
+                    color: Colors.blue,
+                  ),
                 ),
               ),
             ],
@@ -236,7 +241,7 @@ class OutputsScreenState extends State<OutputsScreen>
         },
       ),
       PlutoColumn(
-        title: AppLocalizations.of(context).profile,
+        title: l10n.profile,
         field: 'profile',
         type: PlutoColumnType.number(),
         readOnly: true,
@@ -253,7 +258,7 @@ class OutputsScreenState extends State<OutputsScreen>
         },
       ),
       PlutoColumn(
-        title: AppLocalizations.of(context).date,
+        title: l10n.date,
         field: 'date',
         type: PlutoColumnType.number(),
         readOnly: true,
@@ -271,7 +276,7 @@ class OutputsScreenState extends State<OutputsScreen>
         },
       ),
       PlutoColumn(
-        title: AppLocalizations.of(context).duration,
+        title: l10n.duration,
         field: 'duration',
         type: PlutoColumnType.number(),
         readOnly: true,
@@ -288,7 +293,7 @@ class OutputsScreenState extends State<OutputsScreen>
         },
       ),
       PlutoColumn(
-        title: AppLocalizations.of(context).status,
+        title: l10n.status,
         field: 'status',
         type: PlutoColumnType.number(),
         readOnly: true,
@@ -301,8 +306,7 @@ class OutputsScreenState extends State<OutputsScreen>
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           final output = outputs.items[id]!;
-          return Text(AppLocalizations.of(context)
-              .taskStatus(output.info.taskStatus.name));
+          return Text(l10n.taskStatus(output.info.taskStatus.name));
         },
       ),
     ]);
@@ -329,17 +333,18 @@ class OutputsScreenState extends State<OutputsScreen>
   PlutoGridConfiguration _plutoConfig(
       BuildContext context, ThemeMode themeMode) {
     final accent = context.read<AppSettingsNotifier>().accentColor;
+    final theme = FluentTheme.of(context);
+
     if (themeMode == ThemeMode.dark ||
         (themeMode == ThemeMode.system &&
             WidgetsBinding
                 .instance.platformDispatcher.platformBrightness.isDark)) {
       return PlutoGridConfiguration.dark(
         style: PlutoGridStyleConfig.dark(
-          rowColor: FluentTheme.of(context).cardColor.withOpacity(0.1),
+          rowColor: theme.cardColor.withOpacity(0.1),
           activatedColor: accent.dark.withOpacity(0.5),
           activatedBorderColor: accent.light,
-          gridBackgroundColor:
-              FluentTheme.of(context).micaBackgroundColor.withOpacity(0.15),
+          gridBackgroundColor: theme.micaBackgroundColor.withOpacity(0.15),
           gridBorderColor: Colors.transparent,
         ),
       );
@@ -347,11 +352,10 @@ class OutputsScreenState extends State<OutputsScreen>
 
     return PlutoGridConfiguration(
       style: PlutoGridStyleConfig(
-        rowColor: FluentTheme.of(context).cardColor.withOpacity(0.1),
+        rowColor: theme.cardColor.withOpacity(0.1),
         activatedColor: accent.light.withOpacity(0.5),
         activatedBorderColor: accent.dark,
-        gridBackgroundColor:
-            FluentTheme.of(context).micaBackgroundColor.withOpacity(0.15),
+        gridBackgroundColor: theme.micaBackgroundColor.withOpacity(0.15),
         gridBorderColor: Colors.transparent,
       ),
     );

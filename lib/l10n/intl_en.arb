@@ -183,9 +183,9 @@
   },
   "profileName": "Profile name",
   "nameCannotBeEmpty": "Name cannot be empty",
-  "textModifier": "Text modifier",
+  "textModifier": "Text Modifier",
   "replacementHint": "Replacement. Regex is allowed. (Single entry)",
-  "replaceablesHint": "Replaceables. Regex is allowed. (Entry per line).\nRecommended to put Regex entries at the end",
+  "replaceablesHint": "Replaceables. Regex is allowed. (Entry per line).\nRecommended to put longer text and longer regex pattern at the start of the list",
   "caseSensitivityHint": "Enable case sensitivity for the specified texts.",
   "nonIso6392Hint": "Indicates Non ISO 639-2 Language Codes. Players that do not support ISO 639-3\nLanguage Codes will display different language name such as 'und' (Undetermined)",
   "unsavedChanges": "Unsaved changes",
@@ -263,5 +263,6 @@
   "addAudios": "Add Audios",
   "addSubtitles": "Add Subtitles",
   "addChapters": "Add Chapters",
-  "addAttachments": "Add Attachments"
+  "addAttachments": "Add Attachments",
+  "resetAndUseDefault": "Reset and use the default tool path"
 }

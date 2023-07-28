@@ -50,6 +50,9 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+
     return WillPopScope(
       onWillPop: () async => await _onWillPop(context),
       child: NavigationView(
@@ -71,12 +74,12 @@ class ProfilePage extends StatelessWidget {
                       primaryItems: [
                         CommandBarButton(
                           icon: const Icon(FluentIcons.save),
-                          label: Text(AppLocalizations.of(context).save),
+                          label: Text(l10n.save),
                           onPressed: () => _saveChanges(context),
                         ),
                         CommandBarButton(
                           icon: const Icon(FluentIcons.cancel),
-                          label: Text(AppLocalizations.of(context).cancel),
+                          label: Text(l10n.cancel),
                           onPressed: () => Navigator.maybePop(context),
                         ),
                       ],
@@ -90,7 +93,7 @@ class ProfilePage extends StatelessWidget {
                         children: [
                           Text(
                             profile.name,
-                            style: FluentTheme.of(context).typography.title,
+                            style: theme.typography.title,
                           ),
                           const SizedBox(width: 6),
                           IconButton(
@@ -101,8 +104,7 @@ class ProfilePage extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Expander(
-                        header: Text(
-                            AppLocalizations.of(context).titleTemplate('Show')),
+                        header: Text(l10n.titleTemplate('Show')),
                         trailing: Text(editProfile.showTitleFormat),
                         content: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,27 +117,19 @@ class ProfilePage extends StatelessWidget {
                             ),
                             const SizedBox(height: 10),
                             InfoLabel(
-                              label: AppLocalizations.of(context)
-                                  .availableVariables('Show'),
-                              labelStyle:
-                                  FluentTheme.of(context).typography.bodyStrong,
+                              label: l10n.availableVariables('Show'),
+                              labelStyle: theme.typography.bodyStrong,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text.rich(
                                     TextSpan(
-                                      text:
-                                          '${AppLocalizations.of(context).note}: ',
-                                      style: FluentTheme.of(context)
-                                          .typography
-                                          .bodyStrong,
+                                      text: '${l10n.note}: ',
+                                      style: theme.typography.bodyStrong,
                                       children: [
                                         TextSpan(
-                                          text: AppLocalizations.of(context)
-                                              .showTitleNote,
-                                          style: FluentTheme.of(context)
-                                              .typography
-                                              .body,
+                                          text: l10n.showTitleNote,
+                                          style: theme.typography.body,
                                         ),
                                       ],
                                     ),
@@ -157,10 +151,7 @@ class ProfilePage extends StatelessWidget {
                                               displayInfoBar(context,
                                                   builder: (context, close) {
                                                 return InfoBar(
-                                                  title: Text(
-                                                      AppLocalizations.of(
-                                                              context)
-                                                          .copiedHint),
+                                                  title: Text(l10n.copiedHint),
                                                   action: IconButton(
                                                     icon: const Icon(
                                                         FluentIcons.clear),
@@ -183,8 +174,7 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Expander(
-                        header: Text(AppLocalizations.of(context)
-                            .titleTemplate('Video')),
+                        header: Text(l10n.titleTemplate('Video')),
                         trailing: Text(editProfile.videoTitleFormat),
                         content: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,27 +187,19 @@ class ProfilePage extends StatelessWidget {
                             ),
                             const SizedBox(height: 10),
                             InfoLabel(
-                              label: AppLocalizations.of(context)
-                                  .availableVariables('Video'),
-                              labelStyle:
-                                  FluentTheme.of(context).typography.bodyStrong,
+                              label: l10n.availableVariables('Video'),
+                              labelStyle: theme.typography.bodyStrong,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text.rich(
                                     TextSpan(
-                                      text:
-                                          '${AppLocalizations.of(context).note}: ',
-                                      style: FluentTheme.of(context)
-                                          .typography
-                                          .bodyStrong,
+                                      text: '${l10n.note}: ',
+                                      style: theme.typography.bodyStrong,
                                       children: [
                                         TextSpan(
-                                          text: AppLocalizations.of(context)
-                                              .videoTitleNote,
-                                          style: FluentTheme.of(context)
-                                              .typography
-                                              .body,
+                                          text: l10n.videoTitleNote,
+                                          style: theme.typography.body,
                                         ),
                                       ],
                                     ),
@@ -239,10 +221,7 @@ class ProfilePage extends StatelessWidget {
                                               displayInfoBar(context,
                                                   builder: (context, close) {
                                                 return InfoBar(
-                                                  title: Text(
-                                                      AppLocalizations.of(
-                                                              context)
-                                                          .copiedHint),
+                                                  title: Text(l10n.copiedHint),
                                                   action: IconButton(
                                                     icon: const Icon(
                                                         FluentIcons.clear),
@@ -265,8 +244,7 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Expander(
-                        header: Text(AppLocalizations.of(context)
-                            .titleTemplate('Audio')),
+                        header: Text(l10n.titleTemplate('Audio')),
                         trailing: Text(editProfile.audioTitleFormat),
                         content: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -279,27 +257,19 @@ class ProfilePage extends StatelessWidget {
                             ),
                             const SizedBox(height: 10),
                             InfoLabel(
-                              label: AppLocalizations.of(context)
-                                  .availableVariables('Audio'),
-                              labelStyle:
-                                  FluentTheme.of(context).typography.bodyStrong,
+                              label: l10n.availableVariables('Audio'),
+                              labelStyle: theme.typography.bodyStrong,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text.rich(
                                     TextSpan(
-                                      text:
-                                          '${AppLocalizations.of(context).note}: ',
-                                      style: FluentTheme.of(context)
-                                          .typography
-                                          .bodyStrong,
+                                      text: '${l10n.note}: ',
+                                      style: theme.typography.bodyStrong,
                                       children: [
                                         TextSpan(
-                                          text: AppLocalizations.of(context)
-                                              .audioTitleNote,
-                                          style: FluentTheme.of(context)
-                                              .typography
-                                              .body,
+                                          text: l10n.audioTitleNote,
+                                          style: theme.typography.body,
                                         ),
                                       ],
                                     ),
@@ -321,10 +291,7 @@ class ProfilePage extends StatelessWidget {
                                               displayInfoBar(context,
                                                   builder: (context, close) {
                                                 return InfoBar(
-                                                  title: Text(
-                                                      AppLocalizations.of(
-                                                              context)
-                                                          .copiedHint),
+                                                  title: Text(l10n.copiedHint),
                                                   action: IconButton(
                                                     icon: const Icon(
                                                         FluentIcons.clear),
@@ -347,8 +314,7 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Expander(
-                        header: Text(AppLocalizations.of(context)
-                            .titleTemplate('Subtitle')),
+                        header: Text(l10n.titleTemplate('Subtitle')),
                         trailing: Text(editProfile.subtitleTitleFormat),
                         content: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -361,27 +327,19 @@ class ProfilePage extends StatelessWidget {
                             ),
                             const SizedBox(height: 10),
                             InfoLabel(
-                              label: AppLocalizations.of(context)
-                                  .availableVariables('Subtitle'),
-                              labelStyle:
-                                  FluentTheme.of(context).typography.bodyStrong,
+                              label: l10n.availableVariables('Subtitle'),
+                              labelStyle: theme.typography.bodyStrong,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text.rich(
                                     TextSpan(
-                                      text:
-                                          '${AppLocalizations.of(context).note}: ',
-                                      style: FluentTheme.of(context)
-                                          .typography
-                                          .bodyStrong,
+                                      text: '${l10n.note}: ',
+                                      style: theme.typography.bodyStrong,
                                       children: [
                                         TextSpan(
-                                          text: AppLocalizations.of(context)
-                                              .subtitleTitleNote,
-                                          style: FluentTheme.of(context)
-                                              .typography
-                                              .body,
+                                          text: l10n.subtitleTitleNote,
+                                          style: theme.typography.body,
                                         ),
                                       ],
                                     ),
@@ -403,10 +361,7 @@ class ProfilePage extends StatelessWidget {
                                               displayInfoBar(context,
                                                   builder: (context, close) {
                                                 return InfoBar(
-                                                  title: Text(
-                                                      AppLocalizations.of(
-                                                              context)
-                                                          .copiedHint),
+                                                  title: Text(l10n.copiedHint),
                                                   action: IconButton(
                                                     icon: const Icon(
                                                         FluentIcons.clear),
@@ -429,8 +384,7 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Expander(
-                        header: Text(AppLocalizations.of(context)
-                            .trackExtraOptions('Video')),
+                        header: Text(l10n.trackExtraOptions('Video')),
                         trailing: Text(
                           editProfile.videoExtraOptions,
                           maxLines: 1,
@@ -448,21 +402,18 @@ class ProfilePage extends StatelessWidget {
                             const SizedBox(height: 10),
                             Text.rich(
                               TextSpan(
-                                text: AppLocalizations.of(context).extraOptions,
+                                text: l10n.extraOptions,
                                 children: [
                                   WidgetSpan(
                                     child: Tooltip(
-                                      message:
-                                          'MKVMerge ${AppLocalizations.of(context).documentation}',
+                                      message: 'MKVMerge ${l10n.documentation}',
                                       child: RichText(
                                         text: TextSpan(
                                           text: ' [?]',
-                                          style: FluentTheme.of(context)
-                                              .typography
-                                              .bodyStrong
+                                          style: theme.typography.bodyStrong
                                               ?.copyWith(
-                                                color: Colors.blue,
-                                              ),
+                                            color: Colors.blue,
+                                          ),
                                           recognizer: TapGestureRecognizer()
                                             ..onTap = () async {
                                               const url =
@@ -477,20 +428,17 @@ class ProfilePage extends StatelessWidget {
                                     ),
                                   ),
                                   TextSpan(
-                                    text:
-                                        ': ${AppLocalizations.of(context).extraOptionsHint}',
+                                    text: ': ${l10n.extraOptionsHint}',
                                   ),
                                 ],
                               ),
-                              style:
-                                  FluentTheme.of(context).typography.bodyStrong,
+                              style: theme.typography.bodyStrong,
                             ),
                           ],
                         ),
                       ),
                       Expander(
-                        header: Text(AppLocalizations.of(context)
-                            .trackExtraOptions('Audio')),
+                        header: Text(l10n.trackExtraOptions('Audio')),
                         trailing: Text(
                           editProfile.audioExtraOptions,
                           maxLines: 1,
@@ -508,21 +456,18 @@ class ProfilePage extends StatelessWidget {
                             const SizedBox(height: 10),
                             Text.rich(
                               TextSpan(
-                                text: AppLocalizations.of(context).extraOptions,
+                                text: l10n.extraOptions,
                                 children: [
                                   WidgetSpan(
                                     child: Tooltip(
-                                      message:
-                                          'MKVMerge ${AppLocalizations.of(context).documentation}',
+                                      message: 'MKVMerge ${l10n.documentation}',
                                       child: RichText(
                                         text: TextSpan(
                                           text: ' [?]',
-                                          style: FluentTheme.of(context)
-                                              .typography
-                                              .bodyStrong
+                                          style: theme.typography.bodyStrong
                                               ?.copyWith(
-                                                color: Colors.blue,
-                                              ),
+                                            color: Colors.blue,
+                                          ),
                                           recognizer: TapGestureRecognizer()
                                             ..onTap = () async {
                                               const url =
@@ -537,20 +482,17 @@ class ProfilePage extends StatelessWidget {
                                     ),
                                   ),
                                   TextSpan(
-                                    text:
-                                        ': ${AppLocalizations.of(context).extraOptionsHint}',
+                                    text: ': ${l10n.extraOptionsHint}',
                                   ),
                                 ],
                               ),
-                              style:
-                                  FluentTheme.of(context).typography.bodyStrong,
+                              style: theme.typography.bodyStrong,
                             ),
                           ],
                         ),
                       ),
                       Expander(
-                        header: Text(AppLocalizations.of(context)
-                            .trackExtraOptions('Subtitle')),
+                        header: Text(l10n.trackExtraOptions('Subtitle')),
                         trailing: Text(
                           editProfile.subtitleExtraOptions,
                           maxLines: 1,
@@ -568,21 +510,18 @@ class ProfilePage extends StatelessWidget {
                             const SizedBox(height: 10),
                             Text.rich(
                               TextSpan(
-                                text: AppLocalizations.of(context).extraOptions,
+                                text: l10n.extraOptions,
                                 children: [
                                   WidgetSpan(
                                     child: Tooltip(
-                                      message:
-                                          'MKVMerge ${AppLocalizations.of(context).documentation}',
+                                      message: 'MKVMerge ${l10n.documentation}',
                                       child: RichText(
                                         text: TextSpan(
                                           text: ' [?]',
-                                          style: FluentTheme.of(context)
-                                              .typography
-                                              .bodyStrong
+                                          style: theme.typography.bodyStrong
                                               ?.copyWith(
-                                                color: Colors.blue,
-                                              ),
+                                            color: Colors.blue,
+                                          ),
                                           recognizer: TapGestureRecognizer()
                                             ..onTap = () async {
                                               const url =
@@ -597,20 +536,17 @@ class ProfilePage extends StatelessWidget {
                                     ),
                                   ),
                                   TextSpan(
-                                    text:
-                                        ': ${AppLocalizations.of(context).extraOptionsHint}',
+                                    text: ': ${l10n.extraOptionsHint}',
                                   ),
                                 ],
                               ),
-                              style:
-                                  FluentTheme.of(context).typography.bodyStrong,
+                              style: theme.typography.bodyStrong,
                             ),
                           ],
                         ),
                       ),
                       Expander(
-                        header: Text(AppLocalizations.of(context)
-                            .trackExtraOptions('Attachment')),
+                        header: Text(l10n.trackExtraOptions('Attachment')),
                         trailing: Text(
                           editProfile.attachmentExtraOptions,
                           maxLines: 1,
@@ -629,21 +565,18 @@ class ProfilePage extends StatelessWidget {
                             const SizedBox(height: 10),
                             Text.rich(
                               TextSpan(
-                                text: AppLocalizations.of(context).extraOptions,
+                                text: l10n.extraOptions,
                                 children: [
                                   WidgetSpan(
                                     child: Tooltip(
-                                      message:
-                                          'MKVMerge ${AppLocalizations.of(context).documentation}',
+                                      message: 'MKVMerge ${l10n.documentation}',
                                       child: RichText(
                                         text: TextSpan(
                                           text: ' [?]',
-                                          style: FluentTheme.of(context)
-                                              .typography
-                                              .bodyStrong
+                                          style: theme.typography.bodyStrong
                                               ?.copyWith(
-                                                color: Colors.blue,
-                                              ),
+                                            color: Colors.blue,
+                                          ),
                                           recognizer: TapGestureRecognizer()
                                             ..onTap = () async {
                                               const url =
@@ -658,20 +591,17 @@ class ProfilePage extends StatelessWidget {
                                     ),
                                   ),
                                   TextSpan(
-                                    text:
-                                        ': ${AppLocalizations.of(context).extraOptionsHint}',
+                                    text: ': ${l10n.extraOptionsHint}',
                                   ),
                                 ],
                               ),
-                              style:
-                                  FluentTheme.of(context).typography.bodyStrong,
+                              style: theme.typography.bodyStrong,
                             ),
                           ],
                         ),
                       ),
                       Expander(
-                        header: Text(AppLocalizations.of(context)
-                            .selectLanguageToInclude),
+                        header: Text(l10n.selectLanguageToInclude),
                         trailing: Visibility(
                           visible: profile.defaultLanguage.isNotEmpty,
                           child: Text(profile.defaultLanguage.isNotEmpty
@@ -690,8 +620,7 @@ class ProfilePage extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(
-                                      ' ${AppLocalizations.of(context).languages}: '),
+                                  Text(' ${l10n.languages}: '),
                                   Flexible(
                                     child: AutoSuggestBox<LanguageCode>(
                                       key: const Key('Search Languages'),
@@ -721,8 +650,7 @@ class ProfilePage extends StatelessWidget {
                               ),
                               Flexible(
                                 child: InfoLabel(
-                                  label:
-                                      ' ${AppLocalizations.of(context).selectedLanguages}: ',
+                                  label: ' ${l10n.selectedLanguages}: ',
                                   child: ReorderableListView.builder(
                                     shrinkWrap: true,
                                     buildDefaultDragHandles: false,
@@ -744,7 +672,7 @@ class ProfilePage extends StatelessWidget {
                                         key: ValueKey(code),
                                         index: index,
                                         child: FluentTheme(
-                                          data: FluentTheme.of(context),
+                                          data: theme,
                                           child: ListTile(
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
@@ -779,9 +707,7 @@ class ProfilePage extends StatelessWidget {
                                                   if (code.warn) ...[
                                                     Tooltip(
                                                       message:
-                                                          AppLocalizations.of(
-                                                                  context)
-                                                              .nonIso6392Hint,
+                                                          l10n.nonIso6392Hint,
                                                       child: const Icon(
                                                           FluentIcons.warning),
                                                     ),
@@ -805,8 +731,7 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Expander(
-                        header: Text(AppLocalizations.of(context)
-                            .selectTrackFlagsAndReorder),
+                        header: Text(l10n.selectTrackFlagsAndReorder),
                         content: ConstrainedBox(
                           constraints: const BoxConstraints(maxHeight: 500),
                           child: Column(
@@ -817,8 +742,7 @@ class ProfilePage extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(
-                                      ' ${AppLocalizations.of(context).flags}: '),
+                                  Text(' ${l10n.flags}: '),
                                   Flexible(
                                     child: AutoSuggestBox<String>(
                                       key: const Key('Search Flags'),
@@ -844,8 +768,7 @@ class ProfilePage extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              Text(
-                                  ' ${AppLocalizations.of(context).selectedFlags}: '),
+                              Text(' ${l10n.selectedFlags}: '),
                               Flexible(
                                 child: ReorderableListView.builder(
                                   shrinkWrap: true,
@@ -863,7 +786,7 @@ class ProfilePage extends StatelessWidget {
                                       key: ValueKey(flag),
                                       index: index,
                                       child: FluentTheme(
-                                        data: FluentTheme.of(context),
+                                        data: theme,
                                         child: ListTile(
                                           shape: RoundedRectangleBorder(
                                               borderRadius:
@@ -893,11 +816,11 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Expander(
-                        header: Text(AppLocalizations.of(context).replaceTexts),
+                        header: Text(l10n.replaceTexts),
                         trailing: FilledButton(
                           onPressed: () => _textModifierDialog(context,
                               UserProfile.defaultModifiers.first, true),
-                          child: Text(AppLocalizations.of(context).add),
+                          child: Text(l10n.add),
                         ),
                         content: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -915,9 +838,8 @@ class ProfilePage extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   subtitle: Text(
-                                    AppLocalizations.of(context)
-                                        .replacementPreview(
-                                            e.replacementPreview),
+                                    l10n.replacementPreview(
+                                        e.replacementPreview),
                                     maxLines: 1,
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,
@@ -945,8 +867,7 @@ class ProfilePage extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Checkbox(
-                        content: Text(
-                            AppLocalizations.of(context).useFolderNameAsSource),
+                        content: Text(l10n.useFolderNameAsSource),
                         checked: editProfile.useFolderName,
                         onChanged: (value) =>
                             editProfile.update(useFolderName: value),
@@ -963,17 +884,19 @@ class ProfilePage extends StatelessWidget {
   }
 
   Future<bool> _onWillPop(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+
     if (editProfile == sourceProfile) {
       return true;
     }
     final shouldPop = await showDialog<bool>(
       context: context,
       builder: (context) => ContentDialog(
-        title: Text(AppLocalizations.of(context).unsavedChanges),
-        content: Text(AppLocalizations.of(context).unsavedChangesHint),
+        title: Text(l10n.unsavedChanges),
+        content: Text(l10n.unsavedChangesHint),
         actions: [
           FilledButton(
-            child: Text(AppLocalizations.of(context).save),
+            child: Text(l10n.save),
             onPressed: () {
               // Close dialog
               Navigator.pop(context, false);
@@ -983,11 +906,11 @@ class ProfilePage extends StatelessWidget {
             },
           ),
           Button(
-            child: Text(AppLocalizations.of(context).discard),
+            child: Text(l10n.discard),
             onPressed: () => Navigator.pop(context, true),
           ),
           Button(
-            child: Text(AppLocalizations.of(context).cancel),
+            child: Text(l10n.cancel),
             onPressed: () => Navigator.pop(context, false),
           ),
         ],

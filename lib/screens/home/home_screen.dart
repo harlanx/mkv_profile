@@ -34,6 +34,9 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildBody(BuildContext context) {
     final showList = context.watch<ShowListNotifier>();
+    final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+
     if (showList.items.isEmpty) {
       return DropTarget(
         enable: showList.items.isEmpty,
@@ -48,14 +51,11 @@ class HomeScreen extends StatelessWidget {
             return Container(
               padding: const EdgeInsets.all(5.0),
               color: dragging
-                  ? FluentTheme.of(context)
-                      .resources
-                      .textFillColorDisabled
-                      .withOpacity(0.15)
+                  ? theme.resources.textFillColorDisabled.withOpacity(0.15)
                   : null,
               child: Center(
                 child: Text(
-                  AppLocalizations.of(context).dropFoldersHere,
+                  l10n.dropFoldersHere,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -78,7 +78,7 @@ class HomeScreen extends StatelessWidget {
             direction: Axis.vertical,
             style: DividerThemeData(
               decoration: BoxDecoration(
-                color: FluentTheme.of(context).cardColor,
+                color: theme.cardColor,
               ),
             ),
           );
@@ -108,6 +108,8 @@ class InputPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = FluentTheme.of(context);
+
     return Consumer<ShowListNotifier>(
       builder: (context, listNotifier, child) {
         return DropTarget(
@@ -123,10 +125,7 @@ class InputPanel extends StatelessWidget {
                 margin: const EdgeInsets.all(5.0),
                 decoration: ShapeDecoration(
                   color: dragging
-                      ? FluentTheme.of(context)
-                          .resources
-                          .textFillColorDisabled
-                          .withOpacity(0.15)
+                      ? theme.resources.textFillColorDisabled.withOpacity(0.15)
                       : null,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4.0)),
@@ -188,6 +187,8 @@ class _InputTileState extends State<InputTile> {
   @override
   Widget build(BuildContext context) {
     final listNotifier = context.watch<ShowListNotifier>();
+    final l10n = AppLocalizations.of(context);
+
     return ChangeNotifierProvider.value(
         key: ValueKey(widget.itemID),
         value: listNotifier.items[widget.itemID]!,
@@ -217,8 +218,8 @@ class _InputTileState extends State<InputTile> {
                         height: 40,
                         alignment: Alignment.center,
                         child: Text(notifier.show is Movie
-                            ? '(${AppLocalizations.of(context).movie})'
-                            : '(${AppLocalizations.of(context).series})'),
+                            ? '(${l10n.movie})'
+                            : '(${l10n.series})'),
                       ),
                       title: Text(
                         notifier.show.directory.name,
@@ -242,7 +243,7 @@ class _InputTileState extends State<InputTile> {
                         height: 40,
                         alignment: Alignment.center,
                         child: Tooltip(
-                          message: AppLocalizations.of(context).remove,
+                          message: l10n.remove,
                           child: IconButton(
                             icon: const Icon(FluentIcons.remove),
                             onPressed: () {
@@ -274,13 +275,15 @@ class InfoPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return ValueListenableBuilder(
       valueListenable: selectedID,
       builder: (context, id, child) {
         if (id == null) {
           return Center(
             child: Text(
-              AppLocalizations.of(context).selectFromList,
+              l10n.selectFromList,
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -341,6 +344,7 @@ class _MainNodeState extends State<MainNode> {
     final notifier = context.watch<ShowNotifier>();
     final isMovie = notifier.show is Movie;
     final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return ListView(
       padding: const EdgeInsets.all(8),
@@ -368,7 +372,7 @@ class _MainNodeState extends State<MainNode> {
                   items: [
                     MenuFlyoutItem(
                       leading: const Icon(FluentIcons.edit),
-                      text: Text(AppLocalizations.of(context).edit),
+                      text: Text(l10n.edit),
                       onPressed: () async {
                         Flyout.of(context).close();
                         await _folderTitleDialog(context, notifier);
@@ -394,7 +398,7 @@ class _MainNodeState extends State<MainNode> {
                     child: Text.rich(
                       TextSpan(
                           text: notifier.show.title,
-                          style: FluentTheme.of(context).typography.body),
+                          style: theme.typography.body),
                       softWrap: false,
                       maxLines: 1,
                       overflow: TextOverflow.fade,
@@ -464,6 +468,7 @@ class _SeasonNodeState extends State<SeasonNode> {
     final notifier = context.watch<ShowNotifier>();
     final expand = notifier.expandedNodes.any((value) => value == expandKey);
     final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return GestureDetector(
       onSecondaryTapUp: (details) async {
@@ -487,7 +492,7 @@ class _SeasonNodeState extends State<SeasonNode> {
               items: [
                 MenuFlyoutItem(
                   leading: const Icon(FluentIcons.edit),
-                  text: Text(AppLocalizations.of(context).edit),
+                  text: Text(l10n.edit),
                   onPressed: () async {
                     Flyout.of(context).close();
                     await _folderTitleDialog(context, notifier);
@@ -523,7 +528,7 @@ class _SeasonNodeState extends State<SeasonNode> {
                 Text.rich(
                   TextSpan(
                       text: widget.season.folderTitle,
-                      style: FluentTheme.of(context).typography.body),
+                      style: theme.typography.body),
                   softWrap: false,
                   maxLines: 1,
                   textAlign: TextAlign.start,
@@ -686,6 +691,7 @@ class _VideoNodeState extends State<VideoNode> {
     final expand = notifier.expandedNodes
         .any((value) => value == widget.video.mainFile.path);
     final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return GestureDetector(
       onSecondaryTapUp: (details) async {
@@ -710,7 +716,7 @@ class _VideoNodeState extends State<VideoNode> {
                 if (widget.video.audios.isEmpty)
                   MenuFlyoutItem(
                     leading: const Icon(FluentIcons.volume3),
-                    text: Text(AppLocalizations.of(context).addAudios),
+                    text: Text(l10n.addAudios),
                     onPressed: () async {
                       Flyout.of(context).close();
                       await _selectAudios(notifier, widget.video);
@@ -719,7 +725,7 @@ class _VideoNodeState extends State<VideoNode> {
                 if (widget.video.subtitles.isEmpty)
                   MenuFlyoutItem(
                     leading: const Icon(FluentIcons.cc),
-                    text: Text(AppLocalizations.of(context).addSubtitles),
+                    text: Text(l10n.addSubtitles),
                     onPressed: () async {
                       Flyout.of(context).close();
                       await _selectSubtitles(notifier, widget.video);
@@ -728,7 +734,7 @@ class _VideoNodeState extends State<VideoNode> {
                 if (widget.video.chapters.isEmpty)
                   MenuFlyoutItem(
                     leading: const Icon(FluentIcons.double_bookmark),
-                    text: Text(AppLocalizations.of(context).addChapters),
+                    text: Text(l10n.addChapters),
                     onPressed: () async {
                       Flyout.of(context).close();
                       await _selectChapters(notifier, widget.video);
@@ -737,7 +743,7 @@ class _VideoNodeState extends State<VideoNode> {
                 if (widget.video.attachments.isEmpty)
                   MenuFlyoutItem(
                     leading: const Icon(FluentIcons.attach),
-                    text: Text(AppLocalizations.of(context).addAttachments),
+                    text: Text(l10n.addAttachments),
                     onPressed: () async {
                       Flyout.of(context).close();
                       await _selectAttachments(notifier, widget.video);
@@ -745,7 +751,7 @@ class _VideoNodeState extends State<VideoNode> {
                   ),
                 MenuFlyoutItem(
                   leading: const Icon(FluentIcons.edit),
-                  text: Text(AppLocalizations.of(context).edit),
+                  text: Text(l10n.edit),
                   onPressed: () async {
                     Flyout.of(context).close();
                     await _videoTitleDialog(context, notifier, widget.video);
@@ -769,7 +775,7 @@ class _VideoNodeState extends State<VideoNode> {
                             color: flagEntry.value.value
                                 ? theme.accentColor
                                     .defaultBrushFor(theme.brightness)
-                                : FluentTheme.of(context).inactiveColor,
+                                : theme.inactiveColor,
                           ),
                           text: Text(flagEntry.value.name),
                           onPressed: () {
@@ -802,10 +808,7 @@ class _VideoNodeState extends State<VideoNode> {
             return Container(
               decoration: ShapeDecoration(
                 color: dragging
-                    ? FluentTheme.of(context)
-                        .resources
-                        .textFillColorDisabled
-                        .withOpacity(0.15)
+                    ? theme.resources.textFillColorDisabled.withOpacity(0.15)
                     : null,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4.0)),
@@ -837,7 +840,7 @@ class _VideoNodeState extends State<VideoNode> {
                             TextSpan(
                                 text:
                                     '${widget.video.fileTitle}.${widget.video.mainFile.extension}',
-                                style: FluentTheme.of(context).typography.body),
+                                style: theme.typography.body),
                             textAlign: TextAlign.start,
                             softWrap: false,
                             maxLines: 1,
@@ -935,6 +938,8 @@ class _AudioNodesState extends State<AudioNodes> {
     final notifier = context.watch<ShowNotifier>();
     final expand = notifier.expandedNodes.any((value) => value == expandKey);
     final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+
     return GestureDetector(
       onSecondaryTapUp: (details) async {
         final targetContext = menuAttachKey.currentContext;
@@ -957,7 +962,7 @@ class _AudioNodesState extends State<AudioNodes> {
               items: [
                 MenuFlyoutItem(
                   leading: const Icon(FluentIcons.volume3),
-                  text: Text(AppLocalizations.of(context).addAudios),
+                  text: Text(l10n.addAudios),
                   onPressed: () async {
                     Flyout.of(context).close();
                     await _selectAudios(notifier, widget.video);
@@ -967,7 +972,7 @@ class _AudioNodesState extends State<AudioNodes> {
                   const MenuFlyoutSeparator(),
                   MenuFlyoutItem(
                     leading: const Icon(FluentIcons.delete),
-                    text: Text(AppLocalizations.of(context).removeAll),
+                    text: Text(l10n.removeAll),
                     onPressed: () {
                       Flyout.of(context).close();
                       widget.video.addedAudios.clear();
@@ -1004,9 +1009,7 @@ class _AudioNodesState extends State<AudioNodes> {
               ),
               const SizedBox(width: 8),
               Text.rich(
-                TextSpan(
-                    text: AppLocalizations.of(context).audios,
-                    style: FluentTheme.of(context).typography.body),
+                TextSpan(text: l10n.audios, style: theme.typography.body),
                 softWrap: false,
                 maxLines: 1,
                 overflow: TextOverflow.fade,
@@ -1023,7 +1026,7 @@ class _AudioNodesState extends State<AudioNodes> {
               TrackNode(
                 trackPadding: widget.trackPadding,
                 video: widget.video,
-                type: AppLocalizations.of(context).audio,
+                type: l10n.audio,
                 track: audio,
               ),
           ],
@@ -1080,6 +1083,7 @@ class _SubtitleNodesState extends State<SubtitleNodes> {
     final notifier = context.watch<ShowNotifier>();
     final expand = notifier.expandedNodes.any((value) => value == expandKey);
     final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return GestureDetector(
       onSecondaryTapUp: (details) async {
@@ -1103,7 +1107,7 @@ class _SubtitleNodesState extends State<SubtitleNodes> {
               items: [
                 MenuFlyoutItem(
                   leading: const Icon(FluentIcons.cc),
-                  text: Text(AppLocalizations.of(context).addSubtitles),
+                  text: Text(l10n.addSubtitles),
                   onPressed: () async {
                     Flyout.of(context).close();
                     await _selectSubtitles(notifier, widget.video);
@@ -1113,7 +1117,7 @@ class _SubtitleNodesState extends State<SubtitleNodes> {
                   const MenuFlyoutSeparator(),
                   MenuFlyoutItem(
                     leading: const Icon(FluentIcons.delete),
-                    text: Text(AppLocalizations.of(context).removeAll),
+                    text: Text(l10n.removeAll),
                     onPressed: () {
                       Flyout.of(context).close();
                       widget.video.addedSubtitles.clear();
@@ -1150,9 +1154,7 @@ class _SubtitleNodesState extends State<SubtitleNodes> {
               ),
               const SizedBox(width: 8),
               Text.rich(
-                TextSpan(
-                    text: AppLocalizations.of(context).subtitles,
-                    style: FluentTheme.of(context).typography.body),
+                TextSpan(text: l10n.subtitles, style: theme.typography.body),
                 softWrap: false,
                 maxLines: 1,
                 overflow: TextOverflow.fade,
@@ -1169,7 +1171,7 @@ class _SubtitleNodesState extends State<SubtitleNodes> {
               TrackNode(
                 trackPadding: widget.trackPadding,
                 video: widget.video,
-                type: AppLocalizations.of(context).subtitle,
+                type: l10n.subtitle,
                 track: subtitle,
               ),
           ],
@@ -1223,6 +1225,7 @@ class _ChapterNodesState extends State<ChapterNodes> {
     final notifier = context.watch<ShowNotifier>();
     final expand = notifier.expandedNodes.any((value) => value == expandKey);
     final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return GestureDetector(
       onSecondaryTapUp: (details) async {
@@ -1246,7 +1249,7 @@ class _ChapterNodesState extends State<ChapterNodes> {
               items: [
                 MenuFlyoutItem(
                   leading: const Icon(FluentIcons.double_bookmark),
-                  text: Text(AppLocalizations.of(context).addChapters),
+                  text: Text(l10n.addChapters),
                   onPressed: () async {
                     Flyout.of(context).close();
                     await _selectChapters(notifier, widget.video);
@@ -1256,7 +1259,7 @@ class _ChapterNodesState extends State<ChapterNodes> {
                   const MenuFlyoutSeparator(),
                   MenuFlyoutItem(
                     leading: const Icon(FluentIcons.delete),
-                    text: Text(AppLocalizations.of(context).removeAll),
+                    text: Text(l10n.removeAll),
                     onPressed: () {
                       Flyout.of(context).close();
                       widget.video.addedChapters.clear();
@@ -1293,9 +1296,7 @@ class _ChapterNodesState extends State<ChapterNodes> {
               ),
               const SizedBox(width: 8),
               Text.rich(
-                TextSpan(
-                    text: AppLocalizations.of(context).chapters,
-                    style: FluentTheme.of(context).typography.body),
+                TextSpan(text: l10n.chapters, style: theme.typography.body),
                 softWrap: false,
                 maxLines: 1,
                 overflow: TextOverflow.fade,
@@ -1312,7 +1313,7 @@ class _ChapterNodesState extends State<ChapterNodes> {
               ExtraNode(
                 trackPadding: widget.trackPadding,
                 video: widget.video,
-                type: AppLocalizations.of(context).chapter,
+                type: l10n.chapter,
                 extra: chapter,
               ),
           ],
@@ -1367,6 +1368,8 @@ class _AttachmentNodesState extends State<AttachmentNodes> {
     final notifier = context.watch<ShowNotifier>();
     final expand = notifier.expandedNodes.any((value) => value == expandKey);
     final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+
     return GestureDetector(
       onSecondaryTapUp: (details) async {
         final targetContext = menuAttachKey.currentContext;
@@ -1389,7 +1392,7 @@ class _AttachmentNodesState extends State<AttachmentNodes> {
               items: [
                 MenuFlyoutItem(
                   leading: const Icon(FluentIcons.double_bookmark),
-                  text: Text(AppLocalizations.of(context).addAttachments),
+                  text: Text(l10n.addAttachments),
                   onPressed: () async {
                     Flyout.of(context).close();
                     await _selectAttachments(notifier, widget.video);
@@ -1399,7 +1402,7 @@ class _AttachmentNodesState extends State<AttachmentNodes> {
                   const MenuFlyoutSeparator(),
                   MenuFlyoutItem(
                     leading: const Icon(FluentIcons.attach),
-                    text: Text(AppLocalizations.of(context).removeAll),
+                    text: Text(l10n.removeAll),
                     onPressed: () {
                       Flyout.of(context).close();
                       widget.video.addedAttachments.clear();
@@ -1436,9 +1439,7 @@ class _AttachmentNodesState extends State<AttachmentNodes> {
               ),
               const SizedBox(width: 8),
               Text.rich(
-                TextSpan(
-                    text: AppLocalizations.of(context).attachments,
-                    style: FluentTheme.of(context).typography.body),
+                TextSpan(text: l10n.attachments, style: theme.typography.body),
                 softWrap: false,
                 maxLines: 1,
                 overflow: TextOverflow.fade,
@@ -1455,7 +1456,7 @@ class _AttachmentNodesState extends State<AttachmentNodes> {
               ExtraNode(
                 trackPadding: widget.trackPadding,
                 video: widget.video,
-                type: AppLocalizations.of(context).attachment,
+                type: l10n.attachment,
                 extra: attachment,
               ),
           ],
@@ -1518,6 +1519,8 @@ class _TrackNodeState extends State<TrackNode> {
   Widget build(BuildContext context) {
     final notifier = context.watch<ShowNotifier>();
     final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+
     return GestureDetector(
       onSecondaryTapUp: (details) async {
         final targetContext = menuAttachKey.currentContext;
@@ -1543,9 +1546,9 @@ class _TrackNodeState extends State<TrackNode> {
                     embedded ? FluentIcons.link : FluentIcons.add_link,
                     color: widget.track.include
                         ? theme.accentColor.defaultBrushFor(theme.brightness)
-                        : FluentTheme.of(context).inactiveColor,
+                        : theme.inactiveColor,
                   ),
-                  text: Text(AppLocalizations.of(context).include),
+                  text: Text(l10n.include),
                   onPressed: () {
                     Flyout.of(context).close();
                     widget.track.update(include: !widget.track.include);
@@ -1554,7 +1557,7 @@ class _TrackNodeState extends State<TrackNode> {
                 ),
                 MenuFlyoutItem(
                   leading: const Icon(FluentIcons.edit),
-                  text: Text(AppLocalizations.of(context).edit),
+                  text: Text(l10n.edit),
                   onPressed: () async {
                     Flyout.of(context).close();
                     await _trackDialog(
@@ -1579,7 +1582,7 @@ class _TrackNodeState extends State<TrackNode> {
                             color: flagEntry.value.value
                                 ? theme.accentColor
                                     .defaultBrushFor(theme.brightness)
-                                : FluentTheme.of(context).inactiveColor,
+                                : theme.inactiveColor,
                           ),
                           text: Text(flagEntry.value.name),
                           onPressed: () {
@@ -1598,15 +1601,14 @@ class _TrackNodeState extends State<TrackNode> {
                   const MenuFlyoutSeparator(),
                   MenuFlyoutItem(
                     leading: const Icon(FluentIcons.delete),
-                    text: Text(AppLocalizations.of(context).remove),
+                    text: Text(l10n.remove),
                     onPressed: () {
                       Flyout.of(context).close();
-                      if (widget.type == AppLocalizations.of(context).audio) {
+                      if (widget.type == l10n.audio) {
                         widget.video.removeAudio(
                             (widget.track as AddedTrack).file.path);
                       }
-                      if (widget.type ==
-                          AppLocalizations.of(context).subtitle) {
+                      if (widget.type == l10n.subtitle) {
                         widget.video.removeSubtitle(
                             (widget.track as AddedTrack).file.path);
                       }
@@ -1653,7 +1655,7 @@ class _TrackNodeState extends State<TrackNode> {
                     embedded ? FluentIcons.link : FluentIcons.add_link,
                     color: widget.track.include
                         ? theme.accentColor.defaultBrushFor(theme.brightness)
-                        : FluentTheme.of(context).inactiveColor,
+                        : theme.inactiveColor,
                     size: 16,
                   ),
                   const SizedBox(width: 8),
@@ -1666,7 +1668,7 @@ class _TrackNodeState extends State<TrackNode> {
                         color: widget.track.flags['default']!.value
                             ? theme.accentColor
                                 .defaultBrushFor(theme.brightness)
-                            : FluentTheme.of(context).inactiveColor,
+                            : theme.inactiveColor,
                       ),
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -1678,7 +1680,7 @@ class _TrackNodeState extends State<TrackNode> {
                         color: widget.track.flags['default']!.value
                             ? theme.accentColor
                                 .defaultBrushFor(theme.brightness)
-                            : FluentTheme.of(context).inactiveColor,
+                            : theme.inactiveColor,
                       ),
                     ),
                   ),
@@ -1689,7 +1691,7 @@ class _TrackNodeState extends State<TrackNode> {
                           text: embedded
                               ? (widget.track as EmbeddedTrack).uid
                               : (widget.track as AddedTrack).file.name,
-                          style: FluentTheme.of(context).typography.caption),
+                          style: theme.typography.caption),
                       softWrap: false,
                       maxLines: 1,
                       overflow: TextOverflow.fade,
@@ -1754,14 +1756,15 @@ class _ExtraNodeState extends State<ExtraNode> {
   @override
   Widget build(BuildContext context) {
     final notifier = context.watch<ShowNotifier>();
-    final bool isChapter = widget.type == AppLocalizations.of(context).chapter;
     final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final isChapter = widget.type == l10n.chapter;
 
     String displayName = '';
     if (isChapter && embedded) {
       final embedChap = widget.extra as EmbeddedTrack;
       displayName =
-          '${embedChap.uid} (${AppLocalizations.of(context).entries}: ${(embedChap.info as MenuInfo).chapters.length})';
+          '${embedChap.uid} (${l10n.entries}: ${(embedChap.info as MenuInfo).chapters.length})';
     } else if (!isChapter && embedded) {
       final embedAttach = widget.extra as EmbeddedTrack;
       displayName =
@@ -1796,9 +1799,9 @@ class _ExtraNodeState extends State<ExtraNode> {
                     embedded ? FluentIcons.link : FluentIcons.add_link,
                     color: widget.extra.include
                         ? theme.accentColor.defaultBrushFor(theme.brightness)
-                        : FluentTheme.of(context).inactiveColor,
+                        : theme.inactiveColor,
                   ),
-                  text: Text(AppLocalizations.of(context).include),
+                  text: Text(l10n.include),
                   onPressed: () {
                     Flyout.of(context).close();
                     widget.extra.update(include: !widget.extra.include);
@@ -1807,7 +1810,7 @@ class _ExtraNodeState extends State<ExtraNode> {
                 ),
                 MenuFlyoutItem(
                   leading: const Icon(FluentIcons.edit),
-                  text: Text(AppLocalizations.of(context).edit),
+                  text: Text(l10n.edit),
                   onPressed: () async {
                     Flyout.of(context).close();
                     await _extraDialog(
@@ -1818,15 +1821,14 @@ class _ExtraNodeState extends State<ExtraNode> {
                   const MenuFlyoutSeparator(),
                   MenuFlyoutItem(
                     leading: const Icon(FluentIcons.delete),
-                    text: Text(AppLocalizations.of(context).remove),
+                    text: Text(l10n.remove),
                     onPressed: () {
                       Flyout.of(context).close();
-                      if (widget.type == AppLocalizations.of(context).chapter) {
+                      if (widget.type == l10n.chapter) {
                         widget.video.removeChapter(
                             (widget.extra as AddedTrack).file.path);
                       }
-                      if (widget.type ==
-                          AppLocalizations.of(context).attachment) {
+                      if (widget.type == l10n.attachment) {
                         widget.video.removeAttachment(
                             (widget.extra as AddedTrack).file.path);
                       }
@@ -1873,15 +1875,14 @@ class _ExtraNodeState extends State<ExtraNode> {
                     embedded ? FluentIcons.link : FluentIcons.add_link,
                     color: widget.extra.include
                         ? theme.accentColor.defaultBrushFor(theme.brightness)
-                        : FluentTheme.of(context).inactiveColor,
+                        : theme.inactiveColor,
                     size: 16,
                   ),
                   const SizedBox(width: 8),
                   Flexible(
                     child: Text.rich(
                       TextSpan(
-                          text: displayName,
-                          style: FluentTheme.of(context).typography.caption),
+                          text: displayName, style: theme.typography.caption),
                       softWrap: false,
                       maxLines: 1,
                       overflow: TextOverflow.fade,

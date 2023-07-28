@@ -51,6 +51,8 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return ScaffoldPage(
       header: CommandBarCard(
         child: Row(
@@ -62,7 +64,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
                 primaryItems: [
                   CommandBarButton(
                       icon: const Icon(FluentIcons.combine),
-                      label: Text(AppLocalizations.of(context).startTasks),
+                      label: Text(l10n.startTasks),
                       onPressed: _enableButtons
                           ? () {
                               ShowMerger.start(tasks);
@@ -70,7 +72,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
                           : null),
                   CommandBarButton(
                     icon: const Icon(FluentIcons.delete),
-                    label: Text(AppLocalizations.of(context).remove),
+                    label: Text(l10n.remove),
                     onPressed: _enableButtons
                         ? () {
                             tasks.remove(_selectedIds);
@@ -81,7 +83,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
                   if (tasks.active)
                     CommandBarButton(
                       icon: const Icon(FluentIcons.cancel),
-                      label: Text(AppLocalizations.of(context).cancel),
+                      label: Text(l10n.cancel),
                       onPressed: () async {
                         await ShowMerger.process?.operation.cancel();
                       },
@@ -131,12 +133,14 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
       _manager.checkedRows.map<int>((e) => e.cells.values.first.value).toSet();
 
   void fetchData() {
+    final l10n = AppLocalizations.of(context);
+
     _manager.removeAllRows();
     _manager.removeColumns(_manager.columns);
     // Column Headers
     _manager.insertColumns(0, [
       PlutoColumn(
-        title: AppLocalizations.of(context).show,
+        title: l10n.show,
         field: 'show',
         type: PlutoColumnType.number(),
         readOnly: true,
@@ -159,7 +163,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         },
       ),
       PlutoColumn(
-        title: AppLocalizations.of(context).profile,
+        title: l10n.profile,
         field: 'profile',
         type: PlutoColumnType.number(),
         readOnly: true,
@@ -176,7 +180,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         },
       ),
       PlutoColumn(
-        title: AppLocalizations.of(context).progess,
+        title: l10n.progess,
         field: 'progress',
         width: 100,
         type: PlutoColumnType.number(),
@@ -233,28 +237,28 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
   PlutoGridConfiguration _plutoConfig(
       BuildContext context, ThemeMode themeMode) {
     final accent = context.read<AppSettingsNotifier>().accentColor;
+    final theme = FluentTheme.of(context);
+
     if (themeMode == ThemeMode.dark ||
         (themeMode == ThemeMode.system &&
             WidgetsBinding
                 .instance.platformDispatcher.platformBrightness.isDark)) {
       return PlutoGridConfiguration.dark(
         style: PlutoGridStyleConfig.dark(
-          rowColor: FluentTheme.of(context).cardColor.withOpacity(0.1),
+          rowColor: theme.cardColor.withOpacity(0.1),
           activatedColor: accent.dark.withOpacity(0.5),
           activatedBorderColor: accent.light,
-          gridBackgroundColor:
-              FluentTheme.of(context).micaBackgroundColor.withOpacity(0.15),
+          gridBackgroundColor: theme.micaBackgroundColor.withOpacity(0.15),
           gridBorderColor: Colors.transparent,
         ),
       );
     }
     return PlutoGridConfiguration(
       style: PlutoGridStyleConfig(
-        rowColor: FluentTheme.of(context).cardColor.withOpacity(0.1),
+        rowColor: theme.cardColor.withOpacity(0.1),
         activatedColor: accent.light.withOpacity(0.5),
         activatedBorderColor: accent.dark,
-        gridBackgroundColor:
-            FluentTheme.of(context).micaBackgroundColor.withOpacity(0.15),
+        gridBackgroundColor: theme.micaBackgroundColor.withOpacity(0.15),
         gridBorderColor: Colors.transparent,
       ),
     );

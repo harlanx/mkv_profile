@@ -18,26 +18,29 @@ class ToolNotExistDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+
     return ContentDialog(
-      title: Text(AppLocalizations.of(context).requirements),
+      title: Text(l10n.requirements),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '${AppLocalizations.of(context).missingTools}: $toolName',
-            style: FluentTheme.of(context).typography.bodyLarge,
+            '${l10n.missingTools}: $toolName',
+            style: theme.typography.bodyLarge,
           ),
           const SizedBox(height: 6),
           Text(
             info,
-            style: FluentTheme.of(context).typography.body,
+            style: theme.typography.body,
           ),
         ],
       ),
       actions: [
         FilledButton(
-          child: Text(AppLocalizations.of(context).okay),
+          child: Text(l10n.okay),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -57,8 +60,11 @@ class ParserResultDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+
     return ContentDialog(
-      title: Text(AppLocalizations.of(context).scanResult),
+      title: Text(l10n.scanResult),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,25 +72,22 @@ class ParserResultDialog extends StatelessWidget {
           for (var failedPath in failedPaths)
             Text.rich(
               TextSpan(
-                text: '${AppLocalizations.of(context).folder}: ',
+                text: '${l10n.folder}: ',
                 children: [
                   TextSpan(
                     text: '${failedPath.path}\n',
-                    style: FluentTheme.of(context).typography.body?.copyWith(
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
-                        ),
+                    style: theme.typography.body?.copyWith(
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
+                    ),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        launchUrl(Uri.parse(
-                            '${AppLocalizations.of(context).file}:${failedPath.path}'));
+                        launchUrl(Uri.parse('${l10n.file}:${failedPath.path}'));
                       },
                   ),
                   TextSpan(
                     text: failedPath.reason,
-                    style: FluentTheme.of(context)
-                        .typography
-                        .body
+                    style: theme.typography.body
                         ?.copyWith(color: Colors.errorSecondaryColor),
                   ),
                 ],
@@ -94,7 +97,7 @@ class ParserResultDialog extends StatelessWidget {
       ),
       actions: [
         FilledButton(
-          child: Text(AppLocalizations.of(context).okay),
+          child: Text(l10n.okay),
           onPressed: () {
             Navigator.of(context).pop();
           },

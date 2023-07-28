@@ -183,9 +183,9 @@
   },
   "profileName": "Pangalan ng profile",
   "nameCannotBeEmpty": "Hindi maaaring blangko ang pangalan",
-  "textModifier": "Text modifier",
+  "textModifier": "Text Modifier",
   "replacementHint": "Ang ipapalit. Maaaring gumamit ng Regex. (Isa lamang)",
-  "replaceablesHint": "Mga maaring palitan. Maaring gumamit ng Regex. (Isa lang sa bawat line). Nire-rekomendang ilagay ang mga Regex entry sa dulo",
+  "replaceablesHint": "Mga maaring palitan. Maaring gumamit ng Regex. (Isa lamang sa bawat line). Nire-rekomendang ilagay ang mahahabang text and regex pattern sa umpisa ng listahan",
   "caseSensitivityHint": "I-enable ang case sensitivity para sa mga inilagay na texts",
   "nonIso6392Hint": "Nag i-indika ng hindi 639-2 Language Codes. Ang mga player na hindi sumu-suporta sa ISO 639-3\nLanguage Codes ay mag di-display ng ibang pangalan ng lengguwahe katulad ng 'und' (Undetermined)",
   "unsavedChanges": "Hindi pa na-save",
@@ -263,5 +263,6 @@
   "addAudios": "Mag-add ng Audios",
   "addSubtitles": "Mag-add ng Subtitles",
   "addChapters": "Mag-add ng Chapters",
-  "addAttachments": "Mag-add ng Attachments"
+  "addAttachments": "Mag-add ng Attachments",
+  "resetAndUseDefault": "I-reset at gamiting ang default path ng tool"
 }
