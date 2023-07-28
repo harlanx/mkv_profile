@@ -50,6 +50,7 @@ jobs:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                 tag_name: v${{env.APP_VERSION}}
+                generate_release_notes: true
                 files: |
                   build/windows/runner/Release/mkv_profile-${{env.APP_VERSION}}-windows.zip
                   build/windows/runner/Release/mkv_profile-${{env.APP_VERSION}}-windows.msix
