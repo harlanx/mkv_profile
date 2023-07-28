@@ -38,7 +38,7 @@ jobs:
                 Compress-Archive -Path "build\windows\runner\Release\*" -DestinationPath $outputPath
             - name: Create msix installer
               run: |
-                flutter pub run msix:create `
+                dart run msix:create `
                 --certificate-password=${{ secrets.CERTIFICATE_PASSWORD }} `
                 --certificate-path=${{ github.workspace }}/keys/CERTIFICATE.pfx `
                 --output-path=build/windows/runner/Release `
