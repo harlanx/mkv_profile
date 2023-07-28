@@ -38,18 +38,18 @@ jobs:
                 Compress-Archive -Path "build\windows\runner\Release\*" -DestinationPath $outputPath
             - name: Create msix installer
               run: |
-                flutter pub run msix:create `
+                dart run msix:create `
                 --certificate-password=${{ secrets.CERTIFICATE_PASSWORD }} `
                 --certificate-path=${{ github.workspace }}/keys/CERTIFICATE.pfx `
-                --output-path=build/windows/runner/Release
-            - name: Rename generated default file name of msix installer
-              run: ren build/windows/runner/Release/mkv_profile.msix mkv_profile-${{env.APP_VERSION}}-windows.msix
+                --output-path=build/windows/runner/Release `
+                --output-name=mkv_profile-${{env.APP_VERSION}}-windows
             - name: Upload to Github release
               uses: softprops/action-gh-release@v1
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                 tag_name: v${{env.APP_VERSION}}
+                generate_release_notes: true
                 files: |
                   build/windows/runner/Release/mkv_profile-${{env.APP_VERSION}}-windows.zip
                   build/windows/runner/Release/mkv_profile-${{env.APP_VERSION}}-windows.msix
