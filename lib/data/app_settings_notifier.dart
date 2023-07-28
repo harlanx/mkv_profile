@@ -165,6 +165,7 @@ class AppSettingsNotifier extends ChangeNotifier {
 
   Future<void> setWindowEffect(
       BuildContext context, WindowsFluentEffect effect) async {
+    final theme = FluentTheme.of(context);
     windowEffect = effect;
     notifyListeners();
     await Window.setEffect(
@@ -173,9 +174,9 @@ class AppSettingsNotifier extends ChangeNotifier {
         WindowEffect.solid,
         WindowEffect.acrylic,
       ].contains(effect.value)
-          ? FluentTheme.of(context).micaBackgroundColor.withOpacity(0.05)
+          ? theme.micaBackgroundColor.withOpacity(0.05)
           : Colors.transparent,
-      dark: FluentTheme.of(context).brightness.isDark,
+      dark: theme.brightness.isDark,
     );
   }
 

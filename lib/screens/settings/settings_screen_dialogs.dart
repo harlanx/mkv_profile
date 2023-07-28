@@ -17,15 +17,17 @@ class CreateProfileDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return ContentDialog(
-      title: Text(AppLocalizations.of(context).createNewProfile),
+      title: Text(l10n.createNewProfile),
       content: ValueListenableBuilder<int>(
         valueListenable: selected,
         builder: (context, value, _) {
           return Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('${AppLocalizations.of(context).template}: '),
+              Text('${l10n.template}: '),
               ComboBox<int>(
                 value: value,
                 onChanged: (choice) {
@@ -46,11 +48,11 @@ class CreateProfileDialog extends StatelessWidget {
       ),
       actions: [
         Button(
-          child: Text(AppLocalizations.of(context).cancel),
+          child: Text(l10n.cancel),
           onPressed: () => Navigator.pop(context),
         ),
         FilledButton(
-          child: Text(AppLocalizations.of(context).continueStr),
+          child: Text(l10n.continueStr),
           onPressed: () {
             Navigator.pop(context, selected.value);
           },
@@ -72,16 +74,18 @@ class DeleteDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return ContentDialog(
-      title: Text(AppLocalizations.of(context).deleteItem(title)),
-      content: Text(AppLocalizations.of(context).deleteItemConfirmation(item)),
+      title: Text(l10n.deleteItem(title)),
+      content: Text(l10n.deleteItemConfirmation(item)),
       actions: [
         Button(
-          child: Text(AppLocalizations.of(context).cancel),
+          child: Text(l10n.cancel),
           onPressed: () => Navigator.pop(context, false),
         ),
         FilledButton(
-          child: Text(AppLocalizations.of(context).yes),
+          child: Text(l10n.yes),
           onPressed: () => Navigator.pop(context, true),
         ),
       ],
@@ -99,15 +103,16 @@ class NewUpdateDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return ContentDialog(
-      title: Text(AppLocalizations.of(context).checkUpdate),
+      title: Text(l10n.checkUpdate),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         //shrinkWrap: true,
         children: [
-          Text(AppLocalizations.of(context)
-              .newVersionAvailable(response['tag_name'])),
+          Text(l10n.newVersionAvailable(response['tag_name'])),
           Flexible(
             child: Markdown(
               padding: EdgeInsets.zero,
@@ -125,11 +130,11 @@ class NewUpdateDialog extends StatelessWidget {
       ),
       actions: [
         Button(
-          child: Text(AppLocalizations.of(context).okay),
+          child: Text(l10n.okay),
           onPressed: () => Navigator.pop(context, false),
         ),
         FilledButton(
-          child: Text(AppLocalizations.of(context).download),
+          child: Text(l10n.download),
           onPressed: () => Navigator.pop(context, true),
         ),
       ],

@@ -19,25 +19,27 @@ class FolderTitleDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+
     return ContentDialog(
       constraints: const BoxConstraints(maxWidth: 600),
-      title: Text(AppLocalizations.of(context).folder),
+      title: Text(l10n.folder),
       content: ListView(
         shrinkWrap: true,
         padding: const EdgeInsets.symmetric(horizontal: 12),
         children: [
           SelectableText.rich(
             TextSpan(
-              text: '${AppLocalizations.of(context).source}:\n',
+              text: '${l10n.source}:\n',
               children: [
                 TextSpan(
                   text: season != null
                       ? show.title
                       : show.directory.name.noBreakHyphen,
-                  style:
-                      FluentTheme.of(context).typography.bodyStrong?.copyWith(
-                            color: season != null ? null : Colors.blue,
-                          ),
+                  style: theme.typography.bodyStrong?.copyWith(
+                    color: season != null ? null : Colors.blue,
+                  ),
                   recognizer: season != null
                       ? null
                       : (TapGestureRecognizer()
@@ -53,17 +55,17 @@ class FolderTitleDialog extends StatelessWidget {
                 ),
               ],
             ),
-            style: FluentTheme.of(context).typography.bodyStrong,
+            style: theme.typography.bodyStrong,
           ),
           Text(
-            '${AppLocalizations.of(context).folderTitle}:',
-            style: FluentTheme.of(context).typography.bodyStrong,
+            '${l10n.folderTitle}:',
+            style: theme.typography.bodyStrong,
           ),
           Form(
             key: _formKey,
             child: TextFormBox(
               controller: _titleCtrl,
-              style: FluentTheme.of(context).typography.body,
+              style: theme.typography.body,
               maxLines: 1,
               inputFormatters: [
                 FilteringTextInputFormatter.singleLineFormatter,
@@ -71,12 +73,10 @@ class FolderTitleDialog extends StatelessWidget {
               validator: (value) {
                 if (value != null) {
                   if (value.isEmpty) {
-                    return AppLocalizations.of(context).itemNameCantBeEmpty(
-                        AppLocalizations.of(context).folder);
+                    return l10n.itemNameCantBeEmpty(l10n.folder);
                   }
                   if (!value.isValidFileName) {
-                    return AppLocalizations.of(context).itemNameContainInvalid(
-                        AppLocalizations.of(context).folder);
+                    return l10n.itemNameContainInvalid(l10n.folder);
                   }
                 }
                 return null;
@@ -87,11 +87,11 @@ class FolderTitleDialog extends StatelessWidget {
       ),
       actions: [
         Button(
-          child: Text(AppLocalizations.of(context).cancel),
+          child: Text(l10n.cancel),
           onPressed: () => Navigator.pop(context, false),
         ),
         FilledButton(
-          child: Text(AppLocalizations.of(context).save),
+          child: Text(l10n.save),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               if (season == null) {
@@ -150,14 +150,17 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+
     return ContentDialog(
       constraints: const BoxConstraints(maxWidth: 600),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(AppLocalizations.of(context).video),
+          Text(l10n.video),
           Tooltip(
-            message: AppLocalizations.of(context).copyCommandHint,
+            message: l10n.copyCommandHint,
             child: IconButton(
               icon: const Icon(FluentIcons.text_document_settings),
               onPressed: () async {
@@ -166,7 +169,7 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                     .then((_) {
                   displayInfoBar(context, builder: (context, close) {
                     return InfoBar(
-                      title: Text(AppLocalizations.of(context).copiedHint),
+                      title: Text(l10n.copiedHint),
                       action: IconButton(
                         icon: const Icon(FluentIcons.clear),
                         onPressed: close,
@@ -186,14 +189,12 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
         children: [
           SelectableText.rich(
             TextSpan(
-              text: '${AppLocalizations.of(context).source}:\n',
+              text: '${l10n.source}:\n',
               children: [
                 TextSpan(
                   text: widget.v.mainFile.name.noBreakHyphen,
-                  style: FluentTheme.of(context)
-                      .typography
-                      .bodyStrong
-                      ?.copyWith(color: Colors.blue),
+                  style:
+                      theme.typography.bodyStrong?.copyWith(color: Colors.blue),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () async {
                       await widget.v.mainFile.revealInExplorer();
@@ -201,16 +202,16 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                 ),
               ],
             ),
-            style: FluentTheme.of(context).typography.bodyStrong,
+            style: theme.typography.bodyStrong,
           ),
           InfoLabel(
-            label: '${AppLocalizations.of(context).outputFileTitle}:',
-            labelStyle: FluentTheme.of(context).typography.bodyStrong,
+            label: '${l10n.outputFileTitle}:',
+            labelStyle: theme.typography.bodyStrong,
             child: Form(
               key: _formKey,
               child: TextFormBox(
                 controller: fileTitleCtrl,
-                style: FluentTheme.of(context).typography.body,
+                style: theme.typography.body,
                 maxLines: 1,
                 inputFormatters: [
                   FilteringTextInputFormatter.singleLineFormatter,
@@ -218,13 +219,10 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                 validator: (value) {
                   if (value != null) {
                     if (value.isEmpty) {
-                      return AppLocalizations.of(context).itemNameCantBeEmpty(
-                          AppLocalizations.of(context).file);
+                      return l10n.itemNameCantBeEmpty(l10n.file);
                     }
                     if (!value.isValidFileName) {
-                      return AppLocalizations.of(context)
-                          .itemNameContainInvalid(
-                              AppLocalizations.of(context).file);
+                      return l10n.itemNameContainInvalid(l10n.file);
                     }
                   }
                   return null;
@@ -233,13 +231,13 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
             ),
           ),
           InfoLabel(
-            label: '${AppLocalizations.of(context).trackTitle}:',
-            labelStyle: FluentTheme.of(context).typography.bodyStrong,
+            label: '${l10n.trackTitle}:',
+            labelStyle: theme.typography.bodyStrong,
             child: TextBox(controller: trackTitleCtrl),
           ),
           InfoLabel(
-            label: '${AppLocalizations.of(context).language}:',
-            labelStyle: FluentTheme.of(context).typography.bodyStrong,
+            label: '${l10n.language}:',
+            labelStyle: theme.typography.bodyStrong,
             child: AutoSuggestBox<LanguageCode>(
               controller: languageCtrl,
               focusNode: languageNode,
@@ -267,21 +265,17 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
           const SizedBox(height: 10),
           Text.rich(
             TextSpan(
-              text: AppLocalizations.of(context).extraOptions,
+              text: l10n.extraOptions,
               children: [
                 WidgetSpan(
                   child: Tooltip(
-                    message:
-                        'MKVMerge ${AppLocalizations.of(context).documentation}',
+                    message: 'MKVMerge ${l10n.documentation}',
                     child: RichText(
                       text: TextSpan(
                         text: ' [?]',
-                        style: FluentTheme.of(context)
-                            .typography
-                            .bodyStrong
-                            ?.copyWith(
-                              color: Colors.blue,
-                            ),
+                        style: theme.typography.bodyStrong?.copyWith(
+                          color: Colors.blue,
+                        ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () async {
                             const url =
@@ -294,11 +288,10 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                     ),
                   ),
                 ),
-                TextSpan(
-                    text: ': ${AppLocalizations.of(context).extraOptionsHint}'),
+                TextSpan(text: ': ${l10n.extraOptionsHint}'),
               ],
             ),
-            style: FluentTheme.of(context).typography.bodyStrong,
+            style: theme.typography.bodyStrong,
           ),
           TextBox(controller: extraCtrl),
           const SizedBox(height: 10),
@@ -313,12 +306,12 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                   valueListenable: include,
                   builder: (context, value, child) {
                     return Tooltip(
-                      message: AppLocalizations.of(context).include_description,
+                      message: l10n.include_description,
                       child: mt.ChoiceChip(
                         avatar: const Icon(FluentIcons.link),
-                        label: Text(AppLocalizations.of(context).include),
+                        label: Text(l10n.include),
                         selected: value,
-                        selectedColor: FluentTheme.of(context).accentColor,
+                        selectedColor: theme.accentColor,
                         onSelected: (val) {
                           include.value = val;
                         },
@@ -331,8 +324,8 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                     valueListenable: flagEntry.value,
                     builder: (context, value, child) {
                       return Tooltip(
-                        message: AppLocalizations.of(context)
-                            .flag_descriptions(flagEntry.key.definedKey),
+                        message:
+                            l10n.flag_descriptions(flagEntry.key.definedKey),
                         child: mt.ChoiceChip(
                           avatar: Icon(
                             IconData(
@@ -344,7 +337,7 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                           ),
                           label: Text(flagEntry.key.name),
                           selected: value,
-                          selectedColor: FluentTheme.of(context).accentColor,
+                          selectedColor: theme.accentColor,
                           onSelected: (val) {
                             flagEntry.value.value = val;
                             flagEntry.key.value = val;
@@ -358,14 +351,12 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                   valueListenable: removeChapters,
                   builder: (context, value, child) {
                     return Tooltip(
-                      message: AppLocalizations.of(context)
-                          .remove_chapters_description,
+                      message: l10n.remove_chapters_description,
                       child: mt.ChoiceChip(
                         avatar: const Icon(mt.Icons.label_off_rounded),
-                        label:
-                            Text(AppLocalizations.of(context).removeChapters),
+                        label: Text(l10n.removeChapters),
                         selected: value,
-                        selectedColor: FluentTheme.of(context).accentColor,
+                        selectedColor: theme.accentColor,
                         onSelected: (val) {
                           removeChapters.value = val;
                         },
@@ -377,14 +368,12 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                   valueListenable: removeAttachments,
                   builder: (context, value, child) {
                     return Tooltip(
-                      message: AppLocalizations.of(context)
-                          .remove_attachments_description,
+                      message: l10n.remove_attachments_description,
                       child: mt.ChoiceChip(
                         avatar: const Icon(mt.Icons.link_off_rounded),
-                        label: Text(
-                            AppLocalizations.of(context).removeAttachments),
+                        label: Text(l10n.removeAttachments),
                         selected: value,
-                        selectedColor: FluentTheme.of(context).accentColor,
+                        selectedColor: theme.accentColor,
                         onSelected: (val) {
                           removeAttachments.value = val;
                         },
@@ -399,11 +388,11 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
       ),
       actions: [
         Button(
-          child: Text(AppLocalizations.of(context).cancel),
+          child: Text(l10n.cancel),
           onPressed: () => Navigator.pop(context, false),
         ),
         FilledButton(
-          child: Text(AppLocalizations.of(context).save),
+          child: Text(l10n.save),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               widget.v.fileTitle = fileTitleCtrl.text;
@@ -464,6 +453,9 @@ class _TrackDialogState extends State<TrackDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+
     return ContentDialog(
       constraints: const BoxConstraints(maxWidth: 600),
       title: Text(widget.trackType),
@@ -474,7 +466,7 @@ class _TrackDialogState extends State<TrackDialog> {
           Text.rich(
             TextSpan(
               text:
-                  '${AppLocalizations.of(context).source} (${embedded ? AppLocalizations.of(context).embedded : AppLocalizations.of(context).file}):\n',
+                  '${l10n.source} (${embedded ? l10n.embedded : l10n.file}):\n',
               children: [
                 TextSpan(
                   text: embedded
@@ -483,10 +475,9 @@ class _TrackDialogState extends State<TrackDialog> {
                           (widget.track as EmbeddedTrack).sourceTitle ?? ''
                         ].join('\n')
                       : (widget.track as AddedTrack).file.name.noBreakHyphen,
-                  style:
-                      FluentTheme.of(context).typography.bodyStrong?.copyWith(
-                            color: embedded ? null : Colors.blue,
-                          ),
+                  style: theme.typography.bodyStrong?.copyWith(
+                    color: embedded ? null : Colors.blue,
+                  ),
                   recognizer: embedded
                       ? null
                       : (TapGestureRecognizer()
@@ -498,16 +489,16 @@ class _TrackDialogState extends State<TrackDialog> {
                 ),
               ],
             ),
-            style: FluentTheme.of(context).typography.bodyStrong,
+            style: theme.typography.bodyStrong,
           ),
           InfoLabel(
-            label: '${AppLocalizations.of(context).trackTitle}:',
-            labelStyle: FluentTheme.of(context).typography.bodyStrong,
+            label: '${l10n.trackTitle}:',
+            labelStyle: theme.typography.bodyStrong,
             child: TextBox(controller: titleCtrl),
           ),
           InfoLabel(
-            label: '${AppLocalizations.of(context).language}:',
-            labelStyle: FluentTheme.of(context).typography.bodyStrong,
+            label: '${l10n.language}:',
+            labelStyle: theme.typography.bodyStrong,
             child: AutoSuggestBox<LanguageCode>(
               controller: languageCtrl,
               focusNode: languageNode,
@@ -536,21 +527,17 @@ class _TrackDialogState extends State<TrackDialog> {
           const SizedBox(height: 10),
           Text.rich(
             TextSpan(
-              text: AppLocalizations.of(context).extraOptions,
+              text: l10n.extraOptions,
               children: [
                 WidgetSpan(
                   child: Tooltip(
-                    message:
-                        'MKVMerge ${AppLocalizations.of(context).documentation}',
+                    message: 'MKVMerge ${l10n.documentation}',
                     child: RichText(
                       text: TextSpan(
                         text: ' [?]',
-                        style: FluentTheme.of(context)
-                            .typography
-                            .bodyStrong
-                            ?.copyWith(
-                              color: Colors.blue,
-                            ),
+                        style: theme.typography.bodyStrong?.copyWith(
+                          color: Colors.blue,
+                        ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () async {
                             const url =
@@ -563,11 +550,10 @@ class _TrackDialogState extends State<TrackDialog> {
                     ),
                   ),
                 ),
-                TextSpan(
-                    text: ': ${AppLocalizations.of(context).extraOptionsHint}'),
+                TextSpan(text: ': ${l10n.extraOptionsHint}'),
               ],
             ),
-            style: FluentTheme.of(context).typography.bodyStrong,
+            style: theme.typography.bodyStrong,
           ),
           TextBox(controller: extraCtrl),
           const SizedBox(height: 10),
@@ -582,13 +568,13 @@ class _TrackDialogState extends State<TrackDialog> {
                   valueListenable: include,
                   builder: (context, value, child) {
                     return Tooltip(
-                      message: AppLocalizations.of(context).include_description,
+                      message: l10n.include_description,
                       child: mt.ChoiceChip(
                         avatar: Icon(
                             embedded ? FluentIcons.link : FluentIcons.add_link),
-                        label: Text(AppLocalizations.of(context).include),
+                        label: Text(l10n.include),
                         selected: value,
-                        selectedColor: FluentTheme.of(context).accentColor,
+                        selectedColor: theme.accentColor,
                         onSelected: (val) {
                           include.value = val;
                         },
@@ -601,8 +587,8 @@ class _TrackDialogState extends State<TrackDialog> {
                     valueListenable: flagEntry.value,
                     builder: (context, value, child) {
                       return Tooltip(
-                        message: AppLocalizations.of(context)
-                            .flag_descriptions(flagEntry.key.definedKey),
+                        message:
+                            l10n.flag_descriptions(flagEntry.key.definedKey),
                         child: mt.ChoiceChip(
                           avatar: Icon(
                             IconData(
@@ -614,7 +600,7 @@ class _TrackDialogState extends State<TrackDialog> {
                           ),
                           label: Text(flagEntry.key.name),
                           selected: value,
-                          selectedColor: FluentTheme.of(context).accentColor,
+                          selectedColor: theme.accentColor,
                           onSelected: (val) {
                             flagEntry.value.value = val;
                             flagEntry.key.value = val;
@@ -631,11 +617,11 @@ class _TrackDialogState extends State<TrackDialog> {
       ),
       actions: [
         Button(
-          child: Text(AppLocalizations.of(context).cancel),
+          child: Text(l10n.cancel),
           onPressed: () => Navigator.pop(context, false),
         ),
         FilledButton(
-          child: Text(AppLocalizations.of(context).save),
+          child: Text(l10n.save),
           onPressed: () {
             widget.track.update(
               title: titleCtrl.text,
@@ -660,8 +646,6 @@ class ExtraDialog extends StatelessWidget {
   final String trackType;
   final TrackProperties track;
   late final bool embedded = track is EmbeddedTrack;
-  late final bool isChapter = trackType ==
-      AppLocalizations.of(AppData.mainNavigatorKey.currentContext!).chapter;
   late final include = ValueNotifier(track.include);
   late final extraCtrl = TextEditingController(text: track.extraOptions);
   late final _mainCtrl = ScrollController(),
@@ -669,6 +653,10 @@ class ExtraDialog extends StatelessWidget {
       _horizontal = ScrollController();
 
   List<Widget> children(BuildContext context) {
+    final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final isChapter = trackType == l10n.chapter;
+
     if (isChapter) {
       if (embedded) {
         final info = ((track as EmbeddedTrack).info as MenuInfo);
@@ -684,14 +672,14 @@ class ExtraDialog extends StatelessWidget {
                 children: [
                   TableCell(
                       child: Text(
-                    AppLocalizations.of(context).timeStamp,
-                    style: FluentTheme.of(context).typography.bodyStrong,
+                    l10n.timeStamp,
+                    style: theme.typography.bodyStrong,
                   )),
                   const TableCell(child: SizedBox.shrink()),
                   TableCell(
                       child: Text(
-                    AppLocalizations.of(context).name,
-                    style: FluentTheme.of(context).typography.bodyStrong,
+                    l10n.name,
+                    style: theme.typography.bodyStrong,
                   )),
                 ],
               ),
@@ -736,23 +724,25 @@ class ExtraDialog extends StatelessWidget {
     if (embedded) {
       final info = ((track as EmbeddedTrack).info as AttachmentInfo);
       return [
-        Text('${AppLocalizations.of(context).name}: ${info.name}'),
-        Text('${AppLocalizations.of(context).type}: ${info.type}'),
-        Text(
-            '${AppLocalizations.of(context).size}: ${info.size.formatByteSize()}'),
+        Text('${l10n.name}: ${info.name}'),
+        Text('${l10n.type}: ${info.type}'),
+        Text('${l10n.size}: ${info.size.formatByteSize()}'),
       ];
     }
     final fileInfo = (track as AddedTrack).file;
     return [
-      Text('${AppLocalizations.of(context).name}: ${fileInfo.name}'),
-      Text('${AppLocalizations.of(context).type}: ${fileInfo.extension}'),
-      Text(
-          '${AppLocalizations.of(context).size}: ${fileInfo.lengthSync().formatByteSize()}'),
+      Text('${l10n.name}: ${fileInfo.name}'),
+      Text('${l10n.type}: ${fileInfo.extension}'),
+      Text('${l10n.size}: ${fileInfo.lengthSync().formatByteSize()}'),
     ];
   }
 
   @override
-  mt.Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
+    final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final isChapter = trackType == l10n.chapter;
+
     return ContentDialog(
       constraints: const BoxConstraints(maxWidth: 600),
       title: Text(trackType),
@@ -765,16 +755,15 @@ class ExtraDialog extends StatelessWidget {
             Text.rich(
               TextSpan(
                 text:
-                    '${AppLocalizations.of(context).source} (${embedded ? AppLocalizations.of(context).embedded : AppLocalizations.of(context).file}):\n',
+                    '${l10n.source} (${embedded ? l10n.embedded : l10n.file}):\n',
                 children: [
                   TextSpan(
                     text: embedded
                         ? (track as EmbeddedTrack).uid
                         : (track as AddedTrack).file.name.noBreakHyphen,
-                    style:
-                        FluentTheme.of(context).typography.bodyStrong?.copyWith(
-                              color: embedded ? null : Colors.blue,
-                            ),
+                    style: theme.typography.bodyStrong?.copyWith(
+                      color: embedded ? null : Colors.blue,
+                    ),
                     recognizer: embedded
                         ? null
                         : (TapGestureRecognizer()
@@ -784,15 +773,15 @@ class ExtraDialog extends StatelessWidget {
                   ),
                 ],
               ),
-              style: FluentTheme.of(context).typography.bodyStrong,
+              style: theme.typography.bodyStrong,
             ),
             Expander(
-              header: Text(AppLocalizations.of(context).contentPreview),
+              header: Text(l10n.contentPreview),
               headerHeight: 32,
               content: Container(
                 decoration: isChapter && !embedded
                     ? BoxDecoration(
-                        color: FluentTheme.of(context).micaBackgroundColor,
+                        color: theme.micaBackgroundColor,
                         borderRadius: BorderRadius.circular(5),
                       )
                     : null,
@@ -821,21 +810,17 @@ class ExtraDialog extends StatelessWidget {
               const SizedBox(height: 10),
               Text.rich(
                 TextSpan(
-                  text: AppLocalizations.of(context).extraOptions,
+                  text: l10n.extraOptions,
                   children: [
                     WidgetSpan(
                       child: Tooltip(
-                        message:
-                            'MKVMerge ${AppLocalizations.of(context).documentation}',
+                        message: 'MKVMerge ${l10n.documentation}',
                         child: RichText(
                           text: TextSpan(
                             text: ' [?]',
-                            style: FluentTheme.of(context)
-                                .typography
-                                .bodyStrong
-                                ?.copyWith(
-                                  color: embedded ? null : Colors.blue,
-                                ),
+                            style: theme.typography.bodyStrong?.copyWith(
+                              color: embedded ? null : Colors.blue,
+                            ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () async {
                                 const url =
@@ -851,7 +836,7 @@ class ExtraDialog extends StatelessWidget {
                     const TextSpan(text: ':'),
                   ],
                 ),
-                style: FluentTheme.of(context).typography.bodyStrong,
+                style: theme.typography.bodyStrong,
               ),
               TextBox(controller: extraCtrl),
               const SizedBox(height: 10),
@@ -866,15 +851,14 @@ class ExtraDialog extends StatelessWidget {
                       valueListenable: include,
                       builder: (context, value, child) {
                         return Tooltip(
-                          message:
-                              AppLocalizations.of(context).include_description,
+                          message: l10n.include_description,
                           child: mt.ChoiceChip(
                             avatar: Icon(embedded
                                 ? FluentIcons.link
                                 : FluentIcons.add_link),
-                            label: Text(AppLocalizations.of(context).include),
+                            label: Text(l10n.include),
                             selected: value,
-                            selectedColor: FluentTheme.of(context).accentColor,
+                            selectedColor: theme.accentColor,
                             onSelected: (val) {
                               include.value = val;
                             },
@@ -892,16 +876,16 @@ class ExtraDialog extends StatelessWidget {
       actions: [
         if (embedded) ...[
           Button(
-            child: Text(AppLocalizations.of(context).okay),
+            child: Text(l10n.okay),
             onPressed: () => Navigator.pop(context, false),
           ),
         ] else ...[
           Button(
-            child: Text(AppLocalizations.of(context).cancel),
+            child: Text(l10n.cancel),
             onPressed: () => Navigator.pop(context, false),
           ),
           FilledButton(
-            child: Text(AppLocalizations.of(context).save),
+            child: Text(l10n.save),
             onPressed: () {
               track.update(
                 include: include.value,

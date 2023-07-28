@@ -25,10 +25,12 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return ScaffoldPage.scrollable(
       key: const PageStorageKey('Settings'),
       padding: const EdgeInsets.symmetric(horizontal: 25),
-      header: PageHeader(title: Text(AppLocalizations.of(context).settings)),
+      header: PageHeader(title: Text(l10n.settings)),
       children: const [
         PreferencesSection(),
         PersonalizationSection(),
@@ -45,8 +47,11 @@ class PreferencesSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final appSettings = context.watch<AppSettingsNotifier>();
     final profiles = context.watch<UserProfilesNotifier>();
+    final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+
     return InfoLabel(
-      label: AppLocalizations.of(context).preferences,
+      label: l10n.preferences,
       labelStyle: const TextStyle(
         fontWeight: FontWeight.w600,
         fontSize: 20,
@@ -67,8 +72,8 @@ class PreferencesSection extends StatelessWidget {
                   const Icon(FluentIcons.fabric_folder_search),
                   const SizedBox(width: 6),
                   Text(
-                    AppLocalizations.of(context).directoryScanLimit,
-                    style: FluentTheme.of(context).typography.body,
+                    l10n.directoryScanLimit,
+                    style: theme.typography.body,
                   ),
                   const Spacer(),
                   ConstrainedBox(
@@ -101,22 +106,18 @@ class PreferencesSection extends StatelessWidget {
                   const SizedBox(width: 6),
                   Text.rich(
                     TextSpan(
-                      text: '${AppLocalizations.of(context).maxActiveProcess} ',
+                      text: '${l10n.maxActiveProcess} ',
                       children: [
                         WidgetSpan(
                           child: Tooltip(
-                            message: AppLocalizations.of(context)
-                                .maxActiveProcessHint,
+                            message: l10n.maxActiveProcessHint,
                             child: RichText(
                               text: TextSpan(
                                 text: '[?]',
-                                style: FluentTheme.of(context)
-                                    .typography
-                                    .bodyStrong
-                                    ?.copyWith(
-                                      color: Colors.blue,
-                                      fontSize: 12,
-                                    ),
+                                style: theme.typography.bodyStrong?.copyWith(
+                                  color: Colors.blue,
+                                  fontSize: 12,
+                                ),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () async {
                                     const url =
@@ -131,7 +132,7 @@ class PreferencesSection extends StatelessWidget {
                         ),
                       ],
                     ),
-                    style: FluentTheme.of(context).typography.body,
+                    style: theme.typography.body,
                   ),
                   const Spacer(),
                   ConstrainedBox(
@@ -155,7 +156,7 @@ class PreferencesSection extends StatelessWidget {
             ),
             Expander(
               leading: const Icon(FluentIcons.boards),
-              header: Text(AppLocalizations.of(context).profiles),
+              header: Text(l10n.profiles),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -165,7 +166,7 @@ class PreferencesSection extends StatelessWidget {
                       children: [
                         const Icon(FluentIcons.chevron_up_end6),
                         const SizedBox(width: 8),
-                        Text(AppLocalizations.of(context).import),
+                        Text(l10n.import),
                       ],
                     ),
                     onPressed: () async {
@@ -193,7 +194,7 @@ class PreferencesSection extends StatelessWidget {
                             extensions: ['json'],
                           ),
                         ],
-                        confirmButtonText: AppLocalizations.of(context).save,
+                        confirmButtonText: l10n.save,
                       );
                       if (output != null) {
                         final outputPath = '${output.path}.json';
@@ -205,7 +206,7 @@ class PreferencesSection extends StatelessWidget {
                       children: [
                         const Icon(FluentIcons.chevron_down_end6),
                         const SizedBox(width: 8),
-                        Text(AppLocalizations.of(context).export),
+                        Text(l10n.export),
                       ],
                     ),
                   ),
@@ -216,7 +217,7 @@ class PreferencesSection extends StatelessWidget {
                       children: [
                         const Icon(FluentIcons.circle_addition_solid),
                         const SizedBox(width: 8),
-                        Text(AppLocalizations.of(context).create),
+                        Text(l10n.create),
                       ],
                     ),
                     onPressed: () async {
@@ -284,9 +285,7 @@ class PreferencesSection extends StatelessWidget {
                                             context: context,
                                             builder: (context) {
                                               return DeleteDialog(
-                                                  AppLocalizations.of(context)
-                                                      .profile,
-                                                  p.name);
+                                                  l10n.profile, p.name);
                                             }).then(
                                           (value) {
                                             if (value ?? false) {
@@ -326,8 +325,11 @@ class PersonalizationSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appSettings = context.watch<AppSettingsNotifier>();
+    final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+
     return InfoLabel(
-      label: AppLocalizations.of(context).personalization,
+      label: l10n.personalization,
       labelStyle: const TextStyle(
         fontWeight: FontWeight.w600,
         fontSize: 20,
@@ -348,8 +350,8 @@ class PersonalizationSection extends StatelessWidget {
                   const Icon(FluentIcons.globe),
                   const SizedBox(width: 6),
                   Text(
-                    AppLocalizations.of(context).language,
-                    style: FluentTheme.of(context).typography.body,
+                    l10n.language,
+                    style: theme.typography.body,
                   ),
                   const Spacer(),
                   ComboBox<String>(
@@ -361,17 +363,12 @@ class PersonalizationSection extends StatelessWidget {
                           child: RichText(
                             text: TextSpan(
                               text: locale.flagEmoji,
-                              style: FluentTheme.of(context)
-                                  .typography
-                                  .body
-                                  ?.copyWith(
-                                      fontFamily: 'NotoColorEmojiWindows'),
+                              style: theme.typography.body?.copyWith(
+                                  fontFamily: 'NotoColorEmojiWindows'),
                               children: [
                                 TextSpan(
                                   text: ' ${locale.name}',
-                                  style: FluentTheme.of(context)
-                                      .typography
-                                      .bodyStrong,
+                                  style: theme.typography.bodyStrong,
                                 ),
                               ],
                             ),
@@ -392,7 +389,7 @@ class PersonalizationSection extends StatelessWidget {
             ),
             Expander(
               leading: const Icon(FluentIcons.circle_half_full),
-              header: Text(AppLocalizations.of(context).theme),
+              header: Text(l10n.theme),
               trailing: Text(
                 appSettings.themeMode.name.titleCased,
               ),
@@ -427,7 +424,7 @@ class PersonalizationSection extends StatelessWidget {
             ),
             Expander(
               leading: const Icon(FluentIcons.format_painter),
-              header: Text(AppLocalizations.of(context).windowEffect),
+              header: Text(l10n.windowEffect),
               trailing: Text(appSettings.windowEffect.name.titleCased),
               content: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -452,9 +449,9 @@ class PersonalizationSection extends StatelessWidget {
             ),
             Expander(
               leading: const Icon(FluentIcons.color),
-              header: Text(AppLocalizations.of(context).accent),
+              header: Text(l10n.accent),
               trailing: Card(
-                backgroundColor: FluentTheme.of(context).accentColor,
+                backgroundColor: theme.accentColor,
                 child: const SizedBox(
                   height: 4,
                   width: 4,
@@ -468,8 +465,8 @@ class PersonalizationSection extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '${AppLocalizations.of(context).mode}: ',
-                        style: FluentTheme.of(context).typography.bodyStrong,
+                        '${l10n.mode}: ',
+                        style: theme.typography.bodyStrong,
                       ),
                       ComboBox<AccentMode>(
                         value: appSettings.accentMode,
@@ -488,10 +485,7 @@ class PersonalizationSection extends StatelessWidget {
                         },
                       ),
                       const SizedBox(width: 6),
-                      for (var color in FluentTheme.of(context)
-                          .accentColor
-                          .swatch
-                          .entries) ...[
+                      for (var color in theme.accentColor.swatch.entries) ...[
                         Container(
                           height: 20,
                           width: 20,
@@ -563,9 +557,11 @@ class MiscSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appSettings = context.watch<AppSettingsNotifier>();
+    final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return InfoLabel(
-      label: AppLocalizations.of(context).misc,
+      label: l10n.misc,
       labelStyle: const TextStyle(
         fontWeight: FontWeight.w600,
         fontSize: 20,
@@ -578,25 +574,21 @@ class MiscSection extends StatelessWidget {
           children: [
             Expander(
               leading: const Icon(FluentIcons.packages),
-              header: Text(AppLocalizations.of(context).tools),
+              header: Text(l10n.tools),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text.rich(
                     TextSpan(
-                      text:
-                          '${AppLocalizations.of(context).toolLocation('MediaInfo')}: ',
+                      text: '${l10n.toolLocation('MediaInfo')}: ',
                       children: [
                         TextSpan(
-                          text: '[${AppLocalizations.of(context).download}]',
-                          style: FluentTheme.of(context)
-                              .typography
-                              .bodyStrong
-                              ?.copyWith(
-                                color: Colors.blue,
-                                fontSize: 12,
-                              ),
+                          text: '[${l10n.download}]',
+                          style: theme.typography.bodyStrong?.copyWith(
+                            color: Colors.blue,
+                            fontSize: 12,
+                          ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () async {
                               const url = AppData.mediainfoURL;
@@ -619,10 +611,8 @@ class MiscSection extends StatelessWidget {
                             padding: const EdgeInsets.only(left: 8.0),
                             child: Tooltip(
                               message: AppData.mediaInfoLoaded
-                                  ? AppLocalizations.of(context)
-                                      .toolFound('MediaInfo')
-                                  : AppLocalizations.of(context)
-                                      .toolNotFound('MediaInfo'),
+                                  ? l10n.toolFound('MediaInfo')
+                                  : l10n.toolNotFound('MediaInfo'),
                               child: Icon(
                                 AppData.mediaInfoLoaded
                                     ? FluentIcons.check_mark
@@ -632,10 +622,8 @@ class MiscSection extends StatelessWidget {
                           ),
                           suffix: Tooltip(
                             message: MetadataScanner.active
-                                ? AppLocalizations.of(context)
-                                    .toolCannotChange('MediaInfo')
-                                : AppLocalizations.of(context)
-                                    .toolBrowse('MediaInfo'),
+                                ? l10n.toolCannotChange('MediaInfo')
+                                : l10n.toolBrowse('MediaInfo'),
                             child: IconButton(
                               icon: const Icon(
                                   FluentIcons.open_folder_horizontal),
@@ -664,8 +652,7 @@ class MiscSection extends StatelessWidget {
                         ),
                       ),
                       Tooltip(
-                        message:
-                            AppLocalizations.of(context).resetAndUseDefault,
+                        message: l10n.resetAndUseDefault,
                         child: IconButton(
                           icon: const Icon(FluentIcons.reset),
                           onPressed: () async {
@@ -678,14 +665,11 @@ class MiscSection extends StatelessWidget {
                   ),
                   Text.rich(
                     TextSpan(
-                      text:
-                          '${AppLocalizations.of(context).toolLocation('MKVMerge')}: ',
+                      text: '${l10n.toolLocation('MKVMerge')}: ',
                       children: [
                         TextSpan(
-                          text: '[${AppLocalizations.of(context).download}]',
-                          style: FluentTheme.of(context)
-                              .typography
-                              .bodyStrong
+                          text: '[${l10n.download}]',
+                          style: theme.typography.bodyStrong
                               ?.copyWith(color: Colors.blue, fontSize: 12),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () async {
@@ -709,10 +693,8 @@ class MiscSection extends StatelessWidget {
                             padding: const EdgeInsets.only(left: 8.0),
                             child: Tooltip(
                               message: AppData.mkvMergeLoaded
-                                  ? AppLocalizations.of(context)
-                                      .toolFound('MKVMerge')
-                                  : AppLocalizations.of(context)
-                                      .toolNotFound('MKVMerge'),
+                                  ? l10n.toolFound('MKVMerge')
+                                  : l10n.toolNotFound('MKVMerge'),
                               child: Icon(
                                 AppData.mkvMergeLoaded
                                     ? FluentIcons.check_mark
@@ -722,10 +704,8 @@ class MiscSection extends StatelessWidget {
                           ),
                           suffix: Tooltip(
                             message: ShowMerger.active
-                                ? AppLocalizations.of(context)
-                                    .toolCannotChange('MKVMerge')
-                                : AppLocalizations.of(context)
-                                    .toolBrowse('MKVMerge'),
+                                ? l10n.toolCannotChange('MKVMerge')
+                                : l10n.toolBrowse('MKVMerge'),
                             child: IconButton(
                               icon: const Icon(
                                   FluentIcons.open_folder_horizontal),
@@ -754,8 +734,7 @@ class MiscSection extends StatelessWidget {
                         ),
                       ),
                       Tooltip(
-                        message:
-                            AppLocalizations.of(context).resetAndUseDefault,
+                        message: l10n.resetAndUseDefault,
                         child: IconButton(
                           icon: const Icon(FluentIcons.reset),
                           onPressed: () async {
@@ -800,9 +779,12 @@ class _AboutTileState extends State<AboutTile> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+
     return Expander(
       leading: const Icon(FluentIcons.info),
-      header: Text(AppLocalizations.of(context).about),
+      header: Text(l10n.about),
       trailing: ValueListenableBuilder<bool>(
           valueListenable: isCheckingUpdate,
           builder: (context, value, child) {
@@ -837,8 +819,7 @@ class _AboutTileState extends State<AboutTile> {
                               await displayInfoBar(context,
                                   builder: (context, close) {
                                 return InfoBar(
-                                  title: Text(AppLocalizations.of(context)
-                                      .youAreUsingLatestVersion),
+                                  title: Text(l10n.youAreUsingLatestVersion),
                                   action: IconButton(
                                     icon: const Icon(FluentIcons.clear),
                                     onPressed: close,
@@ -859,15 +840,15 @@ class _AboutTileState extends State<AboutTile> {
                   ...[
                     if (value)
                       SizedBox(
-                        height: FluentTheme.of(context).iconTheme.size,
-                        width: FluentTheme.of(context).iconTheme.size,
+                        height: theme.iconTheme.size,
+                        width: theme.iconTheme.size,
                         child: const ProgressRing(),
                       )
                     else
                       const Icon(FluentIcons.history)
                   ],
                   const SizedBox(width: 8),
-                  Text(AppLocalizations.of(context).checkUpdate),
+                  Text(l10n.checkUpdate),
                 ],
               ),
             );
@@ -882,46 +863,46 @@ class _AboutTileState extends State<AboutTile> {
                 children: [
                   Text.rich(
                     TextSpan(
-                      text: '${AppLocalizations.of(context).appName}: ',
+                      text: '${l10n.appName}: ',
                       children: [
                         TextSpan(
                           text: packageInfo.appName,
-                          style: FluentTheme.of(context).typography.body,
+                          style: theme.typography.body,
                         ),
                       ],
                     ),
-                    style: FluentTheme.of(context).typography.bodyStrong,
+                    style: theme.typography.bodyStrong,
                   ),
                   Text.rich(
                     TextSpan(
-                      text: '${AppLocalizations.of(context).version}: ',
+                      text: '${l10n.version}: ',
                       children: [
                         TextSpan(
                           text: packageInfo.version,
-                          style: FluentTheme.of(context).typography.body,
+                          style: theme.typography.body,
                         ),
                       ],
                     ),
-                    style: FluentTheme.of(context).typography.bodyStrong,
+                    style: theme.typography.bodyStrong,
                   ),
                   Text.rich(
                     TextSpan(
-                      text: '${AppLocalizations.of(context).build}: ',
+                      text: '${l10n.build}: ',
                       children: [
                         TextSpan(
                           text: packageInfo.buildNumber.toString(),
-                          style: FluentTheme.of(context).typography.body,
+                          style: theme.typography.body,
                         ),
                       ],
                     ),
-                    style: FluentTheme.of(context).typography.bodyStrong,
+                    style: theme.typography.bodyStrong,
                   ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         'GitHub: ',
-                        style: FluentTheme.of(context).typography.bodyStrong,
+                        style: theme.typography.bodyStrong,
                       ),
                       MouseRegion(
                         cursor: SystemMouseCursors.click,
@@ -945,8 +926,8 @@ class _AboutTileState extends State<AboutTile> {
                     child: Divider(),
                   ),
                   Text(
-                    AppLocalizations.of(context).appDescription,
-                    style: FluentTheme.of(context).typography.body,
+                    l10n.appDescription,
+                    style: theme.typography.body,
                   ),
                 ],
               );

@@ -16,6 +16,7 @@ class HomeScreenMenuBar extends StatelessWidget {
     final shows = context.read<ShowListNotifier>();
     final tasks = context.read<TaskListNotifier>();
     final profiles = context.read<UserProfilesNotifier>();
+    final l10n = AppLocalizations.of(context);
 
     return CommandBarCard(
       child: ValueListenableBuilder<int?>(
@@ -30,12 +31,12 @@ class HomeScreenMenuBar extends StatelessWidget {
                   primaryItems: [
                     CommandBarButton(
                       icon: const Icon(FluentIcons.fabric_new_folder),
-                      label: Text(AppLocalizations.of(context).addFolder),
+                      label: Text(l10n.addFolder),
                       onPressed: () async => await _openFolder(context),
                     ),
                     CommandBarButton(
                       icon: const Icon(FluentIcons.delete),
-                      label: Text(AppLocalizations.of(context).removeAll),
+                      label: Text(l10n.removeAll),
                       onPressed: shows.items.isEmpty
                           ? null
                           : () {
@@ -45,7 +46,7 @@ class HomeScreenMenuBar extends StatelessWidget {
                     ),
                     CommandBarButton(
                       icon: const Icon(FluentIcons.build_queue_new),
-                      label: Text(AppLocalizations.of(context).addToQueue),
+                      label: Text(l10n.addToQueue),
                       onPressed: selectedID.value != null
                           ? () => tasks.add(shows.items[selectedID.value]!)
                           : null,
@@ -68,8 +69,7 @@ class HomeScreenMenuBar extends StatelessWidget {
                                 children: [
                                   const Icon(FluentIcons.boards),
                                   const SizedBox(width: 6),
-                                  Text(
-                                      '${AppLocalizations.of(context).profiles}:'),
+                                  Text('${l10n.profiles}:'),
                                 ],
                               ),
                               value: show.profile,

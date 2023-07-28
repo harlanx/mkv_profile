@@ -13,6 +13,9 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = FluentTheme.of(context);
+    final l10n = AppLocalizations.of(context);
+
     return Selector<PageNotifier, int>(
       selector: (context, page) => page.current,
       builder: (context, currentPage, child) {
@@ -27,13 +30,13 @@ class MainScreen extends StatelessWidget {
               PaneItem(
                 key: const Key('/home'),
                 icon: const Icon(FluentIcons.home),
-                title: Text(AppLocalizations.of(context).home),
+                title: Text(l10n.home),
                 body: HomeScreen(),
               ),
               PaneItem(
                 key: const Key('/tasks'),
                 icon: const Icon(FluentIcons.build_queue),
-                title: Text(AppLocalizations.of(context).tasks),
+                title: Text(l10n.tasks),
                 infoBadge: Selector<TaskListNotifier, Map<int, TaskNotifier>>(
                   selector: (context, tasks) => tasks.items,
                   shouldRebuild: (previous, next) => true,
@@ -42,7 +45,7 @@ class MainScreen extends StatelessWidget {
                       return const SizedBox.shrink();
                     } else {
                       return InfoBadge(
-                        color: FluentTheme.of(context).accentColor,
+                        color: theme.accentColor,
                         source: Text('${items.length}'),
                       );
                     }
@@ -55,7 +58,7 @@ class MainScreen extends StatelessWidget {
               PaneItem(
                 key: const Key('/outputs'),
                 icon: const Icon(FluentIcons.task_list),
-                title: Text(AppLocalizations.of(context).outputs),
+                title: Text(l10n.outputs),
                 body: OutputsScreen(
                   key: AppData.outputStateKey,
                 ),
@@ -66,7 +69,7 @@ class MainScreen extends StatelessWidget {
               PaneItem(
                 key: const Key('/settings'),
                 icon: const Icon(FluentIcons.settings),
-                title: Text(AppLocalizations.of(context).settings),
+                title: Text(l10n.settings),
                 body: const SettingsScreen(),
               ),
               if (foundation.kDebugMode) ...[

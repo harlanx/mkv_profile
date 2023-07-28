@@ -7,9 +7,11 @@ class InputTileShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = FluentTheme.of(context);
+
     return Shimmer.fromColors(
-      baseColor: FluentTheme.of(context).resources.textFillColorDisabled,
-      highlightColor: FluentTheme.of(context).activeColor,
+      baseColor: theme.resources.textFillColorDisabled,
+      highlightColor: theme.activeColor,
       child: ListTile(
         leading: SizedBox(
           height: 40,
@@ -18,7 +20,7 @@ class InputTileShimmer extends StatelessWidget {
               height: 16,
               width: 35,
               decoration: BoxDecoration(
-                color: FluentTheme.of(context).resources.textFillColorDisabled,
+                color: theme.resources.textFillColorDisabled,
                 borderRadius: BorderRadius.circular(5),
               ),
             ),
@@ -29,7 +31,7 @@ class InputTileShimmer extends StatelessWidget {
           height: 16,
           width: 150,
           decoration: BoxDecoration(
-            color: FluentTheme.of(context).resources.textFillColorDisabled,
+            color: theme.resources.textFillColorDisabled,
             borderRadius: BorderRadius.circular(5),
           ),
         ),
@@ -38,7 +40,7 @@ class InputTileShimmer extends StatelessWidget {
           height: 12,
           width: 180,
           decoration: BoxDecoration(
-            color: FluentTheme.of(context).resources.textFillColorDisabled,
+            color: theme.resources.textFillColorDisabled,
             borderRadius: BorderRadius.circular(5),
           ),
         ),
@@ -49,7 +51,7 @@ class InputTileShimmer extends StatelessWidget {
               height: 8,
               width: 25,
               decoration: BoxDecoration(
-                color: FluentTheme.of(context).resources.textFillColorDisabled,
+                color: theme.resources.textFillColorDisabled,
                 borderRadius: BorderRadius.circular(5),
               ),
             ),
@@ -68,9 +70,10 @@ class TrackShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = FluentTheme.of(context);
+
     return Shimmer.fromColors(
-      baseColor: FluentTheme.of(context).resources.textFillColorDisabled,
-      highlightColor: FluentTheme.of(context).activeColor,
+      baseColor: theme.resources.textFillColorDisabled,
+      highlightColor: theme.activeColor,
       child: Container(
         padding: EdgeInsets.only(left: itemPadding),
         height: 30,
@@ -83,7 +86,7 @@ class TrackShimmer extends StatelessWidget {
               height: 14,
               width: 14,
               decoration: BoxDecoration(
-                color: FluentTheme.of(context).resources.textFillColorDisabled,
+                color: theme.resources.textFillColorDisabled,
                 borderRadius: BorderRadius.circular(5),
               ),
             ),
@@ -92,7 +95,7 @@ class TrackShimmer extends StatelessWidget {
               height: 15,
               width: 30,
               decoration: BoxDecoration(
-                color: FluentTheme.of(context).resources.textFillColorDisabled,
+                color: theme.resources.textFillColorDisabled,
                 borderRadius: BorderRadius.circular(5),
               ),
             ),
@@ -101,7 +104,7 @@ class TrackShimmer extends StatelessWidget {
               height: 15,
               width: 200,
               decoration: BoxDecoration(
-                color: FluentTheme.of(context).resources.textFillColorDisabled,
+                color: theme.resources.textFillColorDisabled,
                 borderRadius: BorderRadius.circular(5),
               ),
             ),

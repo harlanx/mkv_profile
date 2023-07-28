@@ -15,14 +15,16 @@ class NameDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return ContentDialog(
-      title: Text(AppLocalizations.of(context).profileName),
+      title: Text(l10n.profileName),
       content: TextFormBox(
         key: nameForm,
         controller: controller,
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return AppLocalizations.of(context).nameCannotBeEmpty;
+            return l10n.nameCannotBeEmpty;
           }
           return null;
         },
@@ -34,11 +36,11 @@ class NameDialog extends StatelessWidget {
       ),
       actions: [
         Button(
-          child: Text(AppLocalizations.of(context).cancel),
+          child: Text(l10n.cancel),
           onPressed: () => Navigator.pop(context),
         ),
         FilledButton(
-          child: Text(AppLocalizations.of(context).save),
+          child: Text(l10n.save),
           onPressed: () {
             if (nameForm.currentState!.validate()) {
               Navigator.pop(context, controller.text);
@@ -81,24 +83,25 @@ class TextModifierDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return ContentDialog(
-      title: Text(AppLocalizations.of(context).textModifier),
+      title: Text(l10n.textModifier),
       content: ListView(
         shrinkWrap: true,
         children: [
-          Text(AppLocalizations.of(context).replacementHint),
+          Text(l10n.replacementHint),
           TextBox(
             controller: replacementCtrl,
             maxLines: 1,
           ),
           const SizedBox(height: 10),
-          Text(AppLocalizations.of(context).replaceablesHint),
+          Text(l10n.replaceablesHint),
           ValueListenableBuilder(
               valueListenable: caseSensitive,
               builder: (context, value, _) {
                 return Checkbox(
-                  content:
-                      Text(AppLocalizations.of(context).caseSensitivityHint),
+                  content: Text(l10n.caseSensitivityHint),
                   checked: value,
                   onChanged: (val) {
                     if (val != null) {
@@ -115,11 +118,11 @@ class TextModifierDialog extends StatelessWidget {
       ),
       actions: [
         Button(
-          child: Text(AppLocalizations.of(context).cancel),
+          child: Text(l10n.cancel),
           onPressed: () => Navigator.pop(context),
         ),
         FilledButton(
-          child: Text(AppLocalizations.of(context).save),
+          child: Text(l10n.save),
           onPressed: () {
             if (isNew) {
               profile.addModifier(
