@@ -13,20 +13,19 @@ import '../utilities/utilities.dart';
 void main() async {
   // flutter bindings
   WidgetsFlutterBinding.ensureInitialized();
+  // this app
+  await AppData.init();
   // system_theme
   await SystemTheme.accentColor.load();
   // flutter_acrylic
   await Window.initialize();
   await Window.hideWindowControls();
   // window_manager
-  await WindowManager.instance.ensureInitialized();
-  // this app
-  await AppData.init();
+  await windowManager.ensureInitialized();
 
   final windowOptions = WindowOptions(
-    fullScreen: AppData.appSettings.isMaximized,
-    size: AppData.appSettings.windowSize,
     minimumSize: const Size(800, 500),
+    size: AppData.appSettings.windowSize,
     titleBarStyle: TitleBarStyle.hidden,
     windowButtonVisibility: false,
     center: true,
@@ -38,7 +37,10 @@ void main() async {
   // ignore: unawaited_futures
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.setPreventClose(true);
-    await windowManager.show();
+    if (AppData.appSettings.isMaximized) {
+      await windowManager.maximize();
+    }
+
     // Handles default title bar theme changes at startup
     // await windowManager.setBrightness(
     //   SystemTheme.isDarkMode ? Brightness.dark : Brightness.light,
@@ -82,6 +84,25 @@ class _MyAppState extends State<MyApp>
       await AppData.save();
       await windowManager.destroy();
     }
+    super.onWindowClose();
+  }
+
+  @override
+  void onWindowResize() async {
+    AppData.appSettings.windowSize = await windowManager.getSize();
+    super.onWindowResize();
+  }
+
+  @override
+  void onWindowMaximize() {
+    super.onWindowMaximize();
+    AppData.appSettings.isMaximized = true;
+  }
+
+  @override
+  void onWindowUnmaximize() {
+    super.onWindowUnmaximize();
+    AppData.appSettings.isMaximized = false;
   }
 
   @override
