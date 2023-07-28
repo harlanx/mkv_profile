@@ -13,7 +13,6 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = FluentTheme.of(context);
     final l10n = AppLocalizations.of(context);
 
     return Selector<PageNotifier, int>(
@@ -41,6 +40,7 @@ class MainScreen extends StatelessWidget {
                   selector: (context, tasks) => tasks.items,
                   shouldRebuild: (previous, next) => true,
                   builder: (context, items, _) {
+                    final theme = FluentTheme.of(context);
                     if (items.isEmpty) {
                       return const SizedBox.shrink();
                     } else {
