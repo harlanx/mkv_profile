@@ -203,7 +203,7 @@
       }
     }
   },
-  "replacementPreview": "{replacement, select, remove_string {Remove text} replace_with_whitespace {Replace with whitespace} other {replacement}}",
+  "replacementPreview": "{replacement, select, remove_string {Remove text} replace_with_whitespace {Replace with whitespace} other {{replacement}}}",
   "@replacementPreview": {
     "description": "Replacement preview by replacement",
     "placeholders": {
