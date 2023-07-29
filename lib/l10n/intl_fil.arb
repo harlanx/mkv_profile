@@ -203,7 +203,7 @@
       }
     }
   },
-  "replacementPreview": "{replacement, select, remove_string {Tanggalin ang text} replace_with_whitespace {Palitan ng whitespace} other {replacement}}",
+  "replacementPreview": "{replacement, select, remove_string {Tanggalin ang text} replace_with_whitespace {Palitan ng whitespace} other {{replacement}}}",
   "@replacementPreview": {
     "description": "Replacement preview by replacement",
     "placeholders": {

@@ -66,7 +66,7 @@ class TextModifierDialog extends StatelessWidget {
         caseSensitive: false,
       );
     } else {
-      editModifier = sourceModifier.copyWith();
+      editModifier = sourceModifier;
     }
   }
 
