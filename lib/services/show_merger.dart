@@ -192,34 +192,36 @@ class ShowMerger {
       }
 
       debugPrint('Processing Item:${video.fileTitle}');
-      await _processVideo(
-        video,
-        folder,
-        tln,
-        tn,
-        result,
-        videoPercents,
-        videoStatuses,
-        mainCompleter,
-      ).then((_) {
-        runningProcesses--;
+      unawaited(
+        _processVideo(
+          video,
+          folder,
+          tln,
+          tn,
+          result,
+          videoPercents,
+          videoStatuses,
+          mainCompleter,
+        ).then((_) {
+          runningProcesses--;
 
-        if (queue.isNotEmpty) {
-          final completer = queue.removeFirst();
-          completer.complete();
-        }
-        if (tn.completed == tn.total) {
-          // Process completed, fulfill the completer with the info
-          if (videoStatuses.values
-              .every((status) => status == TaskStatus.completed)) {
-            result.taskStatus = TaskStatus.completed;
-          } else {
-            result.taskStatus = TaskStatus.error;
+          if (queue.isNotEmpty) {
+            final completer = queue.removeFirst();
+            completer.complete();
           }
+          if (tn.completed == tn.total) {
+            // Process completed, fulfill the completer with the info
+            if (videoStatuses.values
+                .every((status) => status == TaskStatus.completed)) {
+              result.taskStatus = TaskStatus.completed;
+            } else {
+              result.taskStatus = TaskStatus.error;
+            }
 
-          mainCompleter.complete(result);
-        }
-      });
+            mainCompleter.complete(result);
+          }
+        }),
+      );
 
       runningProcesses++;
     }
