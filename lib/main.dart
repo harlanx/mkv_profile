@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 
@@ -34,18 +35,19 @@ void main() async {
   );
 
   // Causes app frame freeze on hot reload or hot restart so don't await this one.
-  // ignore: unawaited_futures
-  windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.setPreventClose(true);
-    if (AppData.appSettings.isMaximized) {
-      await windowManager.maximize();
-    }
+  unawaited(
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.setPreventClose(true);
+      if (AppData.appSettings.isMaximized) {
+        await windowManager.maximize();
+      }
 
-    // Handles default title bar theme changes at startup
-    // await windowManager.setBrightness(
-    //   SystemTheme.isDarkMode ? Brightness.dark : Brightness.light,
-    // );
-  });
+      // Handles default title bar theme changes at startup
+      // await windowManager.setBrightness(
+      //   SystemTheme.isDarkMode ? Brightness.dark : Brightness.light,
+      // );
+    }),
+  );
   // Disables any printing in production.
   if (kReleaseMode) {
     debugPrint = (String? message, {int? wrapWidth}) {};

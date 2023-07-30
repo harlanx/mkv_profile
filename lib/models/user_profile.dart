@@ -82,6 +82,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
       id: 0,
       replaceables: [
         'GalaxyRG',
+        'GalaxyTV',
         'Infinity',
         'Complete',
         'Subbed',
@@ -92,6 +93,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         'ION265',
         'ION10',
         'XEBEC',
+        'PCOK',
         'BDRip',
         'Dolby',
         'Atmos',
