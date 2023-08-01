@@ -506,8 +506,7 @@ class _SeasonNodeState extends State<SeasonNode> {
       child: CustomExpander(
         initiallyExpanded: expand,
         animationDuration: Duration.zero,
-        headerHeight: 30,
-        levelPadding: 0.0,
+        headerPadding: EdgeInsetsDirectional.zero,
         onStateChanged: (value) {
           if (value) {
             notifier.expandedNodes.add(expandKey);
@@ -816,8 +815,7 @@ class _VideoNodeState extends State<VideoNode> {
               child: CustomExpander(
                 initiallyExpanded: expand,
                 animationDuration: Duration.zero,
-                headerHeight: 30,
-                levelPadding: videoPadding,
+                headerPadding: EdgeInsetsDirectional.only(start: videoPadding),
                 onStateChanged: (value) {
                   if (value) {
                     notifier.expandedNodes.add(widget.video.mainFile.path);
@@ -988,8 +986,7 @@ class _AudioNodesState extends State<AudioNodes> {
       child: CustomExpander(
         initiallyExpanded: expand,
         animationDuration: Duration.zero,
-        headerHeight: 30,
-        levelPadding: widget.trackPadding,
+        headerPadding: EdgeInsetsDirectional.only(start: widget.trackPadding),
         onStateChanged: (value) {
           if (value) {
             notifier.expandedNodes.add(expandKey);
@@ -1133,8 +1130,7 @@ class _SubtitleNodesState extends State<SubtitleNodes> {
       child: CustomExpander(
         initiallyExpanded: expand,
         animationDuration: Duration.zero,
-        headerHeight: 30,
-        levelPadding: widget.trackPadding,
+        headerPadding: EdgeInsetsDirectional.only(start: widget.trackPadding),
         onStateChanged: (value) {
           if (value) {
             notifier.expandedNodes.add(expandKey);
@@ -1275,8 +1271,7 @@ class _ChapterNodesState extends State<ChapterNodes> {
       child: CustomExpander(
         initiallyExpanded: expand,
         animationDuration: Duration.zero,
-        headerHeight: 30,
-        levelPadding: widget.trackPadding,
+        headerPadding: EdgeInsetsDirectional.only(start: widget.trackPadding),
         onStateChanged: (value) {
           if (value) {
             notifier.expandedNodes.add(expandKey);
@@ -1418,8 +1413,7 @@ class _AttachmentNodesState extends State<AttachmentNodes> {
       child: CustomExpander(
         initiallyExpanded: expand,
         animationDuration: Duration.zero,
-        headerHeight: 30,
-        levelPadding: widget.trackPadding,
+        headerPadding: EdgeInsetsDirectional.only(start: widget.trackPadding),
         onStateChanged: (value) {
           if (value) {
             notifier.expandedNodes.add(expandKey);

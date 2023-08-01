@@ -777,7 +777,6 @@ class ExtraDialog extends StatelessWidget {
             ),
             Expander(
               header: Text(l10n.contentPreview),
-              headerHeight: 32,
               content: Container(
                 decoration: isChapter && !embedded
                     ? BoxDecoration(

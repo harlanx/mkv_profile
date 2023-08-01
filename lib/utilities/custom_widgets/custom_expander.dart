@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/foundation.dart';
 
 class CustomExpander extends StatefulWidget {
   /// Creates a fluent-styled expander.
@@ -7,8 +8,6 @@ class CustomExpander extends StatefulWidget {
     this.leading,
     required this.header,
     required this.content,
-    this.levelPadding = 8.0,
-    this.contentPadding = const EdgeInsets.all(16),
     this.icon,
     this.trailing,
     this.animationCurve,
@@ -16,10 +15,12 @@ class CustomExpander extends StatefulWidget {
     this.direction = ExpanderDirection.down,
     this.initiallyExpanded = false,
     this.onStateChanged,
-    this.headerHeight = 48.0,
+    this.headerPadding = const EdgeInsetsDirectional.only(start: 8.0),
     this.headerBackgroundColor,
-    this.contentBackgroundColor,
     this.headerShape,
+    this.contentBackgroundColor,
+    this.contentPadding = const EdgeInsets.all(16.0),
+    this.contentShape,
   });
 
   /// The leading widget.
@@ -45,19 +46,16 @@ class CustomExpander extends StatefulWidget {
   /// ![Expander Nested Content](https://docs.microsoft.com/en-us/windows/apps/design/controls/images/expander-nested.png)
   final Widget content;
 
-  final double levelPadding;
-
-  final EdgeInsets contentPadding;
-
-  /// The icon of the toggle button.
+  /// The expander icon. If null, defaults to a chevron down or up, depending on
+  /// the direction.
   final Widget? icon;
 
   /// The trailing widget. It's positioned at the right of [header]
-  /// and at the left of [icon].
+  /// and before [icon].
   ///
   /// See also:
   ///
-  ///  * [ToggleSwitch]
+  ///  * [ToggleSwitch], used to toggle a setting between two states
   final Widget? trailing;
 
   /// The expand-collapse animation duration.
@@ -70,29 +68,68 @@ class CustomExpander extends StatefulWidget {
   /// If null, defaults to [FluentThemeData.animationCurve]
   final Curve? animationCurve;
 
-  /// The expand direction. Defaults to [ExpanderDirection.down]
+  /// The expand direction.
+  ///
+  /// Defaults to [ExpanderDirection.down]
   final ExpanderDirection direction;
 
-  /// Whether the [CustomExpander] is initially expanded. Defaults to `false`
+  /// Whether the [Expander] is initially expanded.
+  ///
+  /// Defaults to `false`
   final bool initiallyExpanded;
 
-  /// A callback called when the current state is changed. `true` when
-  /// open and `false` when closed.
-  final ValueChanged<bool>? onStateChanged;
-
-  /// The height of the header.
+  /// A callback called when the current state is changed.
   ///
-  /// Defaults to 48.0
-  final double headerHeight;
+  /// `true` when open and `false` when closed.
+  final ValueChanged<bool>? onStateChanged;
 
   /// The background color of the header.
   final ButtonState<Color>? headerBackgroundColor;
 
-  /// The content color of the header
+  /// The shape of the header.
+  ///
+  /// Use the `open` property to determine whether the expander is open or not.
+  final ExpanderShapeBuilder? headerShape;
+
+  final EdgeInsetsGeometry? headerPadding;
+
+  /// The content color of the content.
   final Color? contentBackgroundColor;
 
-  /// The shape of the header
-  final ShapeBuilder? headerShape;
+  /// The padding of the content.
+  final EdgeInsetsGeometry? contentPadding;
+
+  /// The shape of the content
+  ///
+  /// Use the `open` property to determine whether the expander is open or not.
+  final ExpanderShapeBuilder? contentShape;
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty<Duration>(
+        'animationDuration',
+        animationDuration,
+      ))
+      ..add(DiagnosticsProperty<Curve>('animationCurve', animationCurve))
+      ..add(DiagnosticsProperty<ExpanderDirection>(
+        'direction',
+        direction,
+        defaultValue: ExpanderDirection.down,
+      ))
+      ..add(DiagnosticsProperty<bool>(
+        'initiallyExpanded',
+        initiallyExpanded,
+        defaultValue: false,
+      ))
+      ..add(ColorProperty('contentBackgroundColor', contentBackgroundColor))
+      ..add(DiagnosticsProperty<EdgeInsetsGeometry>(
+        'contentPadding',
+        contentPadding,
+        defaultValue: const EdgeInsets.all(16.0),
+      ));
+  }
 
   @override
   State<CustomExpander> createState() => CustomExpanderState();
@@ -168,30 +205,19 @@ class CustomExpanderState extends State<CustomExpander>
         hitTestBehavior: HitTestBehavior.deferToChild,
         builder: (context, states) {
           return Container(
-            height: widget.headerHeight,
+            constraints: const BoxConstraints(minHeight: 30.0),
             decoration: ShapeDecoration(
-              color: () {
-                if (widget.headerBackgroundColor != null) {
-                  return widget.headerBackgroundColor!.resolve(states);
-                } else {
-                  if (states.isDisabled) {
-                    return theme.resources.subtleFillColorDisabled;
-                  } else if (states.isPressing) {
-                    return theme.resources.subtleFillColorTertiary;
-                  } else if (states.isHovering) {
-                    return theme.resources.subtleFillColorSecondary;
-                  } else {
-                    return theme.resources.subtleFillColorTransparent;
-                  }
-                }
-              }(),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4.0)),
+              color: widget.headerBackgroundColor?.resolve(states) ??
+                  theme.resources.subtleFillColorTransparent,
+              shape: widget.headerShape?.call(_isExpanded) ??
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6.0),
+                  ),
             ),
             alignment: AlignmentDirectional.centerStart,
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Padding(
-                padding: EdgeInsetsDirectional.only(start: widget.levelPadding),
+              Container(
+                padding: widget.headerPadding,
                 child: FocusBorder(
                   focused: states.isFocused,
                   child: Container(
@@ -263,11 +289,14 @@ class CustomExpanderState extends State<CustomExpander>
         child: Container(
           width: double.infinity,
           padding: widget.contentPadding,
-          decoration: BoxDecoration(
+          decoration: ShapeDecoration(
+            shape: widget.contentShape?.call(_isExpanded) ??
+                const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(6.0), bottom: Radius.circular(6.0)),
+                ),
             color: widget.contentBackgroundColor ??
                 theme.resources.cardBackgroundFillColorSecondary,
-            borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(4.0), bottom: Radius.circular(4.0)),
           ),
           child: widget.content,
         ),
