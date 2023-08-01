@@ -299,6 +299,7 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
             color: Colors.transparent,
             child: Wrap(
               direction: Axis.horizontal,
+              crossAxisAlignment: WrapCrossAlignment.center,
               runSpacing: 6,
               spacing: 6,
               children: [
@@ -347,40 +348,54 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                     },
                   ),
                 ],
-                ValueListenableBuilder<bool>(
-                  valueListenable: removeChapters,
-                  builder: (context, value, child) {
-                    return Tooltip(
-                      message: l10n.remove_chapters_description,
-                      child: mt.ChoiceChip(
-                        avatar: const Icon(mt.Icons.label_off_rounded),
-                        label: Text(l10n.removeChapters),
-                        selected: value,
-                        selectedColor: theme.accentColor,
-                        onSelected: (val) {
-                          removeChapters.value = val;
-                        },
+                if (widget.v.embeddedChapters.isNotEmpty ||
+                    widget.v.embeddedAttachments.isNotEmpty) ...[
+                  Divider(
+                    direction: Axis.vertical,
+                    size: 15,
+                    style: theme.dividerTheme.merge(
+                      const DividerThemeData(
+                        verticalMargin: EdgeInsets.symmetric(vertical: 3),
                       ),
-                    );
-                  },
-                ),
-                ValueListenableBuilder<bool>(
-                  valueListenable: removeAttachments,
-                  builder: (context, value, child) {
-                    return Tooltip(
-                      message: l10n.remove_attachments_description,
-                      child: mt.ChoiceChip(
-                        avatar: const Icon(mt.Icons.link_off_rounded),
-                        label: Text(l10n.removeAttachments),
-                        selected: value,
-                        selectedColor: theme.accentColor,
-                        onSelected: (val) {
-                          removeAttachments.value = val;
-                        },
-                      ),
-                    );
-                  },
-                ),
+                    ),
+                  ),
+                  if (widget.v.embeddedChapters.isNotEmpty)
+                    ValueListenableBuilder<bool>(
+                      valueListenable: removeChapters,
+                      builder: (context, value, child) {
+                        return Tooltip(
+                          message: l10n.remove_chapters_description,
+                          child: mt.ChoiceChip(
+                            avatar: const Icon(mt.Icons.label_off_rounded),
+                            label: Text(l10n.removeChapters),
+                            selected: value,
+                            selectedColor: theme.accentColor,
+                            onSelected: (val) {
+                              removeChapters.value = val;
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  if (widget.v.embeddedAttachments.isNotEmpty)
+                    ValueListenableBuilder<bool>(
+                      valueListenable: removeAttachments,
+                      builder: (context, value, child) {
+                        return Tooltip(
+                          message: l10n.remove_attachments_description,
+                          child: mt.ChoiceChip(
+                            avatar: const Icon(mt.Icons.link_off_rounded),
+                            label: Text(l10n.removeAttachments),
+                            selected: value,
+                            selectedColor: theme.accentColor,
+                            onSelected: (val) {
+                              removeAttachments.value = val;
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                ],
               ],
             ),
           ),
