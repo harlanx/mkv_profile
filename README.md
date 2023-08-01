@@ -25,7 +25,7 @@ Automatically manage and mux series or movie files to the common conventions use
 1. Run mkv_profile.exe to launch app
 
 - **Installer (MSIX)**
-    - Note: Requires Certificate Installation
+    - Note: Requires Certificate Installation (first time only or if previously removed)
 1. Head to the downloaded msix file
 1. Right click and select properties
 1. From the properties dialog, select Digital Signatures tab
@@ -39,7 +39,7 @@ Automatically manage and mux series or movie files to the common conventions use
 
 ## Available Profile Configurations
 - Show (Movie / Series) Title Formats
-    - ***Example:*** %show_title%% (year)%
+    - ***Example:*** `%show_title%% (year)%`
 
     |Data|Variable|
     |:-|:-|
@@ -52,7 +52,7 @@ Automatically manage and mux series or movie files to the common conventions use
     |Width|`%width%`|
     |Year|`%year%`|
 - Video Title Formats
-    - ***Example:*** %show_title%% - Sseason_number%%Eepisode_number%% - episode_title%
+    - ***Example:*** `%show_title%% - Sseason_number%%Eepisode_number%% - episode_title%`
 
     |Data|Variable|
     |:-|:-|
@@ -84,7 +84,7 @@ Automatically manage and mux series or movie files to the common conventions use
     |Visual Impaired|`%visual_impaired%`|
     |Text Description|`%text_description%`|
 - Subtitle Title Formats
-    - ***Example:*** %language%% (hearing_impaired)%% (forced)%
+    - ***Example:*** `%language%% (hearing_impaired)%% (forced)%`
 
     |Data|Variable|
     |:-|:-|
@@ -120,10 +120,10 @@ otherwise if empty, will return  `Tom Clancy's Jack Ryan - S01E01`
 ## Available Track Options (Video/Audio/Subtitle)
 - Title
 - Language
-- **Flags** [Default, Original Language, Forced, Commentary, Hearing Impaired, Visual Impaired, Text Description]
+- **Flags** [Enabled, Default, Original Language, Forced, Commentary, Hearing Impaired, Visual Impaired, Text Description]
 - Extra Options field for [mkvmerge commands](https://mkvtoolnix.download/doc/mkvmerge.html) (Separated by space)
     - You can use the variable %id% to access the track id in the user specified extra options
-    - e.g. --track-enabled-flag %id%:true --no-track-tags --no-global-tags
+    - e.g. `--default-duration %id%:23.976fps --no-track-tags --no-global-tags`
 ## Available Video Options
 - No Chapters
 - No Attachments
@@ -158,7 +158,7 @@ This app rely on the third party tools [MediaInfo](https://mediaarea.net/en/Medi
 This project uses self signed certificate because trusted signed certificates from services comes with a cost which isn't reasonable for a FOSS project.
 If you have doubts about the certificate, [Read more here](https://github.com/harlanx/mkv_profile/blob/93f22cf071d54826499b63e9d6869b6ac00384a4/pubspec.yaml#L76C1-L76C108)
 
-## Third party tools path is default but it's not working?
+## Third party tools path is default but its not working?
 The saved path was probably from an old installation, to reset it or entirely clear old app data:
 - **Reset Tool Path**
     - Head to Settings
@@ -171,7 +171,7 @@ The saved path was probably from an old installation, to reset it or entirely cl
     - Find the folder that contains the word `harlanx` or the folder inside it named `MKV Profile` then delete it
     - Reopen the app
     - The path will be set to the default path of the third party binaries that comes with the app
-## Updated the app, now it's showing white screen?
+## Updated the app, now its showing white screen?
 - **Manually Migrate Old App Settings to New**
     - Head to C:\Users\\`<Username>`\AppData\Roaming **or** C:\Users\\`<Username>`\AppData\Local\Packages
     - Find the folder that contains the word `harlanx`
