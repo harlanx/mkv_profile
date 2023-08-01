@@ -8,8 +8,11 @@ import '../../data/app_data.dart';
 /// It is not the same as the generic title bar for windows which can also be
 /// configured with the window_manager package.
 class FluentAppBar extends NavigationAppBar {
-  FluentAppBar({required this.context})
-      : super(
+  FluentAppBar({
+    Key? key,
+    required BuildContext context,
+  }) : super(
+          key: key,
           automaticallyImplyLeading: false,
           actions: const WindowButtons(),
           height: 34,
@@ -31,7 +34,6 @@ class FluentAppBar extends NavigationAppBar {
             ),
           ),
         );
-  final BuildContext context;
 }
 
 class WindowButtons extends StatelessWidget {
