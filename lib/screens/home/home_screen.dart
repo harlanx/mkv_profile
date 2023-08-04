@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' as mt;
 import 'package:fluent_ui/fluent_ui.dart';
 
 import 'package:desktop_drop/desktop_drop.dart';
@@ -506,8 +507,7 @@ class _SeasonNodeState extends State<SeasonNode> {
       child: CustomExpander(
         initiallyExpanded: expand,
         animationDuration: Duration.zero,
-        headerHeight: 30,
-        levelPadding: 0.0,
+        headerPadding: EdgeInsetsDirectional.zero,
         onStateChanged: (value) {
           if (value) {
             notifier.expandedNodes.add(expandKey);
@@ -790,6 +790,55 @@ class _VideoNodeState extends State<VideoNode> {
                     ];
                   },
                 ),
+                if (widget.video.embeddedChapters.isNotEmpty ||
+                    widget.video.embeddedAttachments.isNotEmpty) ...[
+                  const MenuFlyoutSeparator(),
+                  if (widget.video.embeddedChapters.isNotEmpty)
+                    MenuFlyoutItem(
+                      leading: Icon(
+                        mt.Icons.label_off_rounded,
+                        color: widget.video.removeChapters
+                            ? theme.accentColor
+                                .defaultBrushFor(theme.brightness)
+                            : theme.inactiveColor,
+                      ),
+                      text: Text(l10n.removeChapters),
+                      onPressed: () {
+                        Flyout.maybeOf(
+                                Flyout.of(context).rootFlyout.currentContext!)
+                            ?.close();
+                        widget.video.removeChapters =
+                            !widget.video.removeChapters;
+                        for (final chapter in widget.video.embeddedChapters) {
+                          chapter.include = !widget.video.removeChapters;
+                        }
+                        notifier.refresh();
+                      },
+                    ),
+                  if (widget.video.embeddedAttachments.isNotEmpty)
+                    MenuFlyoutItem(
+                      leading: Icon(
+                        mt.Icons.link_off_rounded,
+                        color: widget.video.removeAttachments
+                            ? theme.accentColor
+                                .defaultBrushFor(theme.brightness)
+                            : theme.inactiveColor,
+                      ),
+                      text: Text(l10n.removeAttachments),
+                      onPressed: () {
+                        Flyout.maybeOf(
+                                Flyout.of(context).rootFlyout.currentContext!)
+                            ?.close();
+                        widget.video.removeAttachments =
+                            !widget.video.removeAttachments;
+                        for (final attachment
+                            in widget.video.embeddedAttachments) {
+                          attachment.include = !widget.video.removeAttachments;
+                        }
+                        notifier.refresh();
+                      },
+                    ),
+                ],
               ],
             );
           },
@@ -816,8 +865,7 @@ class _VideoNodeState extends State<VideoNode> {
               child: CustomExpander(
                 initiallyExpanded: expand,
                 animationDuration: Duration.zero,
-                headerHeight: 30,
-                levelPadding: videoPadding,
+                headerPadding: EdgeInsetsDirectional.only(start: videoPadding),
                 onStateChanged: (value) {
                   if (value) {
                     notifier.expandedNodes.add(widget.video.mainFile.path);
@@ -988,8 +1036,7 @@ class _AudioNodesState extends State<AudioNodes> {
       child: CustomExpander(
         initiallyExpanded: expand,
         animationDuration: Duration.zero,
-        headerHeight: 30,
-        levelPadding: widget.trackPadding,
+        headerPadding: EdgeInsetsDirectional.only(start: widget.trackPadding),
         onStateChanged: (value) {
           if (value) {
             notifier.expandedNodes.add(expandKey);
@@ -1133,8 +1180,7 @@ class _SubtitleNodesState extends State<SubtitleNodes> {
       child: CustomExpander(
         initiallyExpanded: expand,
         animationDuration: Duration.zero,
-        headerHeight: 30,
-        levelPadding: widget.trackPadding,
+        headerPadding: EdgeInsetsDirectional.only(start: widget.trackPadding),
         onStateChanged: (value) {
           if (value) {
             notifier.expandedNodes.add(expandKey);
@@ -1275,8 +1321,7 @@ class _ChapterNodesState extends State<ChapterNodes> {
       child: CustomExpander(
         initiallyExpanded: expand,
         animationDuration: Duration.zero,
-        headerHeight: 30,
-        levelPadding: widget.trackPadding,
+        headerPadding: EdgeInsetsDirectional.only(start: widget.trackPadding),
         onStateChanged: (value) {
           if (value) {
             notifier.expandedNodes.add(expandKey);
@@ -1418,8 +1463,7 @@ class _AttachmentNodesState extends State<AttachmentNodes> {
       child: CustomExpander(
         initiallyExpanded: expand,
         animationDuration: Duration.zero,
-        headerHeight: 30,
-        levelPadding: widget.trackPadding,
+        headerPadding: EdgeInsetsDirectional.only(start: widget.trackPadding),
         onStateChanged: (value) {
           if (value) {
             notifier.expandedNodes.add(expandKey);
@@ -1794,20 +1838,22 @@ class _ExtraNodeState extends State<ExtraNode> {
           builder: (context) {
             return MenuFlyout(
               items: [
-                MenuFlyoutItem(
-                  leading: Icon(
-                    embedded ? FluentIcons.link : FluentIcons.add_link,
-                    color: widget.extra.include
-                        ? theme.accentColor.defaultBrushFor(theme.brightness)
-                        : theme.inactiveColor,
+                if (!embedded) ...[
+                  MenuFlyoutItem(
+                    leading: Icon(
+                      FluentIcons.add_link,
+                      color: widget.extra.include
+                          ? theme.accentColor.defaultBrushFor(theme.brightness)
+                          : theme.inactiveColor,
+                    ),
+                    text: Text(l10n.include),
+                    onPressed: () {
+                      Flyout.of(context).close();
+                      widget.extra.update(include: !widget.extra.include);
+                      notifier.refresh();
+                    },
                   ),
-                  text: Text(l10n.include),
-                  onPressed: () {
-                    Flyout.of(context).close();
-                    widget.extra.update(include: !widget.extra.include);
-                    notifier.refresh();
-                  },
-                ),
+                ],
                 MenuFlyoutItem(
                   leading: const Icon(FluentIcons.edit),
                   text: Text(l10n.edit),

@@ -18,12 +18,13 @@ class TitleScanner {
 
   /// Title scanner by replacing the matched strings using the list [UserProfile.modifiers]
   static String _showTitle(String source, List<TextModifier> modifiers) {
-    var fileTitle =
-        source.split(RegExp(r'Episode.\d+|E.\d+|Episode \d+|E \d+')).first;
+    var fileTitle = source
+        .split(RegExp(r'(?:E(?:pisode)?\.?\s?\d{2}|Episode(?:\s?\d{2})?)\b'))
+        .first;
     for (var i in modifiers) {
       for (var j in i.replaceables) {
         fileTitle = fileTitle.replaceAll(
-            RegExp(j.regexSafe, caseSensitive: i.caseSensitive), i.replacement);
+            RegExp(j.regexSafe, caseSensitive: false), i.replacement);
       }
     }
 
@@ -38,8 +39,8 @@ class TitleScanner {
   /// Title scanner by replacing the matched strings using the list [UserProfile.modifiers]
   static String _episodeTitle(String source, List<TextModifier> modifiers) {
     var episodeTitle = '';
-    final possibleTitles =
-        source.split(RegExp(r'Episode.\d+|E.\d+|Episode \d+|E \d+'));
+    final possibleTitles = source
+        .split(RegExp(r'(?:E(?:pisode)?\.?\s?\d{2}|Episode(?:\s?\d{2})?)\b'));
     if (possibleTitles.length >= 2) {
       episodeTitle = possibleTitles.last;
       for (var i in modifiers) {
@@ -74,6 +75,8 @@ class TitleScanner {
     final show = input.show;
     final rawTitle = _sourceTitle(show, profile);
     String titleFormat = profile.showTitleFormat;
+
+    if (titleFormat.isEmpty) return rawTitle;
 
     MediaInfo info;
     if (show is Movie) {

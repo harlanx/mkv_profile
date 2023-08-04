@@ -273,7 +273,7 @@ class AppSettingsNotifier extends ChangeNotifier {
         tooltipTheme: const TooltipThemeData(
           padding: EdgeInsets.all(8),
           showDuration: Duration.zero,
-          waitDuration: Duration.zero,
+          waitDuration: Duration(milliseconds: 300),
         ),
         infoBarTheme: InfoBarThemeData(
           decoration: (severity) {
@@ -319,7 +319,7 @@ class AppSettingsNotifier extends ChangeNotifier {
         tooltipTheme: const TooltipThemeData(
           padding: EdgeInsets.all(8),
           showDuration: Duration.zero,
-          waitDuration: Duration.zero,
+          waitDuration: Duration(milliseconds: 300),
         ),
         infoBarTheme: InfoBarThemeData(
           decoration: (severity) {

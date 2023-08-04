@@ -1,6 +1,7 @@
 import 'dart:isolate';
 
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/material.dart' as material;
 
 class TestScreen extends StatefulWidget {
   const TestScreen({Key? key}) : super(key: key);
@@ -98,6 +99,25 @@ class _TestScreenState extends State<TestScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              TooltipTheme(
+                data: const TooltipThemeData(
+                  waitDuration: Duration.zero,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    for (final color in material.Colors.primaries)
+                      Tooltip(
+                        message: color.toString(),
+                        child: Container(
+                          color: color,
+                          height: 25,
+                          width: 25,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
               const ProgressBar(),
               Text(value),
               const Expander(
