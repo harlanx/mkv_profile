@@ -6,8 +6,8 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
   UserProfile({
     required this.id,
     required this.name,
-    this.showTitleFormat = '%title%',
-    this.videoTitleFormat = '%title%',
+    this.showTitleFormat = '',
+    this.videoTitleFormat = '',
     this.audioTitleFormat = '',
     this.subtitleTitleFormat = '',
     this.videoExtraOptions = '',

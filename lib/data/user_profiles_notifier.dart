@@ -16,7 +16,7 @@ class UserProfilesNotifier extends ChangeNotifier {
       id: 1,
       name: 'Default (Movie)',
       showTitleFormat: '%show_title%% (year)%',
-      videoTitleFormat: '%show_title%% (year)%',
+      videoTitleFormat: '%show_title%',
       subtitleTitleFormat: '%language%% (hearing_impaired)%% (forced)%',
       defaultFlagOrder: [
         'default',
