@@ -264,5 +264,6 @@
   "addSubtitles": "Mag-add ng Subtitles",
   "addChapters": "Mag-add ng Chapters",
   "addAttachments": "Mag-add ng Attachments",
-  "resetAndUseDefault": "I-reset at gamiting ang default path ng tool"
+  "resetAndUseDefault": "I-reset at gamiting ang default path ng tool",
+  "sameAsOutput": "Kapareho sa pangalan ng output file"
 }

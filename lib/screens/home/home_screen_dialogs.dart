@@ -241,7 +241,7 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                   return Row(
                     children: [
                       Tooltip(
-                        message: 'Same as output file title',
+                        message: l10n.sameAsOutput,
                         child: Checkbox(
                           checked: value,
                           onChanged: (val) {
