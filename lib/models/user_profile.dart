@@ -83,8 +83,8 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
       replaceables: [
         'GalaxyRG',
         'GalaxyTV',
-        'Infinity',
-        'Complete',
+        r'\bInfinity\b',
+        r'\bComplete\b',
         'Subbed',
         'Dubbed',
         'WEBRip',
@@ -108,8 +108,8 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         'HDR',
         'WEB',
         'UHD',
-        'Rip',
-        'NF',
+        r'\bRip\b',
+        r'\bNF\b',
         'HD',
         r'\b\d{4}\b', // Year
         r'Season.\d+|S.\d+|Season \d+|S \d+', // Season
