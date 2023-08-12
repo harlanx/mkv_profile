@@ -139,12 +139,11 @@ class TitleScanner {
     return titleFormat.singleSpace.trim();
   }
 
-  static String video(Video video, UserProfile profile) {
-    // If Profile (None) is selected just return the unmodified title
-    if (profile.id == 0) return video.mainFile.title;
-
+  static String video(String showTitle, Video video, UserProfile profile) {
     String titleFormat = profile.videoTitleFormat;
     final videoInfo = video.info.videoInfo.first;
+
+    if (titleFormat.isEmpty) return video.mainFile.title;
 
     final Map<String, String> formats = {};
     formats['%language%'] = video.language.cleanName;
@@ -158,8 +157,7 @@ class TitleScanner {
     formats['%height%'] = videoInfo.height.toString();
     formats['%season_number%'] = video.season?.toString().padLeft(2, '0') ?? '';
     formats['%size%'] = video.info.generalInfo.fileSize.formatByteSize();
-    formats['%show_title%'] =
-        _showTitle(video.mainFile.title, profile.modifiers);
+    formats['%show_title%'] = showTitle;
     formats['%episode_title%'] =
         _episodeTitle(video.mainFile.title, profile.modifiers);
     formats['%width%'] = videoInfo.width.toString();
@@ -185,23 +183,23 @@ class TitleScanner {
     return titleFormat.singleSpace.trim();
   }
 
-  static String audio(TrackProperties audioTrack, UserProfile profile) {
-    if (profile.id == 0) return audioTrack.title ?? '';
-
+  static String audio(TrackProperties track, UserProfile profile) {
     String titleFormat = profile.audioTitleFormat;
     final Map<String, String> formats = {};
-    final bool isEmbedded = audioTrack is EmbeddedTrack;
+    final bool isEmbedded = track is EmbeddedTrack;
 
-    // Reflection is kinda bad in flutter so just use the good ol if-else
-    // condition and type casting to access property.
-    final AudioInfo audioInfo =
-        isEmbedded ? audioTrack.info : (audioTrack as AddedTrack).info;
-    formats['%language%'] = audioTrack.language.cleanName;
-    formats['%format%'] = audioInfo.format;
-    formats['%bit_rate%'] = audioInfo.bitRate.formatBitSpeed();
-    formats['%channels%'] = audioInfo.channels.toString();
-    formats['%sampling_rate%'] = audioInfo.samplingRate.formatFrequency();
-    for (var audioFlag in audioTrack.flags.entries) {
+    // Reflection is kinda bad in flutter so just use type casting to access property.
+    final AudioInfo trackInfo =
+        isEmbedded ? track.info : (track as AddedTrack).info;
+
+    if (titleFormat.isEmpty) return trackInfo.title ?? '';
+
+    formats['%language%'] = track.language.cleanName;
+    formats['%format%'] = trackInfo.format;
+    formats['%bit_rate%'] = trackInfo.bitRate.formatBitSpeed();
+    formats['%channels%'] = trackInfo.channels.toString();
+    formats['%sampling_rate%'] = trackInfo.samplingRate.formatFrequency();
+    for (var audioFlag in track.flags.entries) {
       formats['%${audioFlag.key}%'] = audioFlag.value.titleVar;
     }
 
@@ -225,27 +223,20 @@ class TitleScanner {
     return titleFormat.singleSpace.trim();
   }
 
-  static String subtitle(TrackProperties subtitleTrack, UserProfile profile) {
-    if (profile.id == 0) return subtitleTrack.title ?? '';
-
+  static String subtitle(TrackProperties track, UserProfile profile) {
     String titleFormat = profile.subtitleTitleFormat;
     final Map<String, String> formats = {};
+    final bool isEmbedded = track is EmbeddedTrack;
 
-    if (subtitleTrack is EmbeddedTrack) {
-      final subtitleInfo = subtitleTrack.info as TextInfo;
-      formats['%language%'] = subtitleTrack.language.cleanName;
-      formats['%format%'] = subtitleInfo.format;
-      for (var subtitleFlag in subtitleTrack.flags.entries) {
-        formats['%${subtitleFlag.key}%'] = subtitleFlag.value.titleVar;
-      }
-    } else {
-      subtitleTrack as AddedTrack;
-      final subtitleInfo = subtitleTrack.info as TextInfo;
-      formats['%language%'] = subtitleTrack.language.cleanName;
-      formats['%format%'] = subtitleInfo.format;
-      for (var subtitleFlag in subtitleTrack.flags.entries) {
-        formats['%${subtitleFlag.key}%'] = subtitleFlag.value.titleVar;
-      }
+    final TextInfo trackInfo =
+        isEmbedded ? track.info : (track as AddedTrack).info;
+
+    if (titleFormat.isEmpty) return trackInfo.title ?? '';
+
+    formats['%language%'] = track.language.cleanName;
+    formats['%format%'] = trackInfo.format;
+    for (var subtitleFlag in track.flags.entries) {
+      formats['%${subtitleFlag.key}%'] = subtitleFlag.value.titleVar;
     }
 
     formats.forEach((key, value) {

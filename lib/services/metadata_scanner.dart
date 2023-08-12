@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+//import 'package:flutter/services.dart';
 
 import '../data/app_data.dart';
 import '../models/models.dart';
@@ -35,8 +36,11 @@ class MetadataScanner {
     }
 
     // Fallback if library's inform doesn't work sometimes
-    mediaInfoJson ??= ((await Process.run(_mediaInfoDebug,
-            ['--Language=raw', '--Complete', '--output=JSON', file.path]))
+    mediaInfoJson ??= ((await Process.run(
+      _mediaInfoDebug,
+      ['--Language=raw', '--Complete', '--output=JSON', file.path],
+      stdoutEncoding: const Utf8Codec(),
+    ))
         .stdout as String);
     //Clipboard.setData(ClipboardData(text: mediaInfoJson));
 

@@ -264,5 +264,6 @@
   "addSubtitles": "Add Subtitles",
   "addChapters": "Add Chapters",
   "addAttachments": "Add Attachments",
-  "resetAndUseDefault": "Reset and use the default tool path"
+  "resetAndUseDefault": "Reset and use the default tool path",
+  "sameAsOutput": "Same as output file title"
 }

@@ -44,7 +44,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
     final videos =
         show is Movie ? [(show as Movie).video] : (show as Series).allVideos;
     for (var video in videos) {
-      video.fileTitle = TitleScanner.video(video, profile);
+      video.fileTitle = TitleScanner.video(show.title, video, profile);
       video.title = video.fileTitle;
       video.extraOptions = profile.videoExtraOptions;
       _previewTracks(video);

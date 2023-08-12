@@ -137,6 +137,8 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
   late final removeChapters = ValueNotifier(widget.v.removeChapters);
   late final removeAttachments = ValueNotifier(widget.v.removeAttachments);
   late final extraCtrl = TextEditingController(text: widget.v.extraOptions);
+  late final sameAsOutput =
+      ValueNotifier(fileTitleCtrl.text == trackTitleCtrl.text);
 
   @override
   void initState() {
@@ -233,7 +235,34 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
           InfoLabel(
             label: '${l10n.trackTitle}:',
             labelStyle: theme.typography.bodyStrong,
-            child: TextBox(controller: trackTitleCtrl),
+            child: ValueListenableBuilder<bool>(
+                valueListenable: sameAsOutput,
+                builder: (context, value, child) {
+                  return Row(
+                    children: [
+                      Tooltip(
+                        message: l10n.sameAsOutput,
+                        child: Checkbox(
+                          checked: value,
+                          onChanged: (val) {
+                            final result = val ?? false;
+                            if (result) {
+                              trackTitleCtrl.text = fileTitleCtrl.text;
+                            }
+                            sameAsOutput.value = result;
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: TextBox(
+                          enabled: !value,
+                          controller: trackTitleCtrl,
+                        ),
+                      ),
+                    ],
+                  );
+                }),
           ),
           InfoLabel(
             label: '${l10n.language}:',
