@@ -40,12 +40,10 @@ class MainScreen extends StatelessWidget {
                   selector: (context, tasks) => tasks.items,
                   shouldRebuild: (previous, next) => true,
                   builder: (context, items, _) {
-                    final theme = FluentTheme.of(context);
                     if (items.isEmpty) {
                       return const SizedBox.shrink();
                     } else {
                       return InfoBadge(
-                        color: theme.accentColor,
                         source: Text('${items.length}'),
                       );
                     }

@@ -236,7 +236,6 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
   // Theme styling
   PlutoGridConfiguration _plutoConfig(
       BuildContext context, ThemeMode themeMode) {
-    final accent = context.read<AppSettingsNotifier>().accentColor;
     final theme = FluentTheme.of(context);
 
     if (themeMode == ThemeMode.dark ||
@@ -244,21 +243,25 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
             WidgetsBinding
                 .instance.platformDispatcher.platformBrightness.isDark)) {
       return PlutoGridConfiguration.dark(
+        enableMoveHorizontalInEditing: false,
         style: PlutoGridStyleConfig.dark(
-          rowColor: theme.cardColor.withOpacity(0.1),
-          activatedColor: accent.dark.withOpacity(0.5),
-          activatedBorderColor: accent.light,
-          gridBackgroundColor: theme.micaBackgroundColor.withOpacity(0.15),
+          rowColor: Colors.transparent,
+          activatedColor: theme.resources.subtleFillColorSecondary,
+          activatedBorderColor:
+              theme.accentColor.defaultBrushFor(theme.brightness),
+          gridBackgroundColor: Colors.transparent,
           gridBorderColor: Colors.transparent,
         ),
       );
     }
     return PlutoGridConfiguration(
+      enableMoveHorizontalInEditing: false,
       style: PlutoGridStyleConfig(
-        rowColor: theme.cardColor.withOpacity(0.1),
-        activatedColor: accent.light.withOpacity(0.5),
-        activatedBorderColor: accent.dark,
-        gridBackgroundColor: theme.micaBackgroundColor.withOpacity(0.15),
+        rowColor: Colors.transparent,
+        activatedColor: theme.resources.subtleFillColorSecondary,
+        activatedBorderColor:
+            theme.accentColor.defaultBrushFor(theme.brightness),
+        gridBackgroundColor: Colors.transparent,
         gridBorderColor: Colors.transparent,
       ),
     );
