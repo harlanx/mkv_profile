@@ -196,14 +196,15 @@ class OutputsScreenState extends State<OutputsScreen>
         title: l10n.info,
         field: 'info',
         type: PlutoColumnType.number(),
+        enableRowChecked: outputs.items.isNotEmpty,
         readOnly: true,
         enableSorting: false,
         enableColumnDrag: false,
-        enableRowChecked: outputs.items.isNotEmpty,
         enableEditingMode: false,
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
+        enableContextMenu: false,
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           final output = outputs.items[id]!;
@@ -251,10 +252,16 @@ class OutputsScreenState extends State<OutputsScreen>
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
+        enableContextMenu: false,
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           final output = outputs.items[id]!;
-          return Text(output.profile);
+          return Text(
+            output.profile,
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.fade,
+          );
         },
       ),
       PlutoColumn(
@@ -268,11 +275,16 @@ class OutputsScreenState extends State<OutputsScreen>
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
+        enableContextMenu: false,
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           final output = outputs.items[id]!;
           return Text(
-              DateFormat('mm-dd-yyyy hh:mm:ss a').format(output.dateTime));
+            DateFormat('mm-dd-yyyy hh:mm:ss a').format(output.dateTime),
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.fade,
+          );
         },
       ),
       PlutoColumn(
@@ -286,10 +298,16 @@ class OutputsScreenState extends State<OutputsScreen>
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
+        enableContextMenu: false,
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           final output = outputs.items[id]!;
-          return Text(output.duration.format(includeMillisecond: false));
+          return Text(
+            output.duration.format(includeMillisecond: false),
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.fade,
+          );
         },
       ),
       PlutoColumn(
@@ -303,10 +321,16 @@ class OutputsScreenState extends State<OutputsScreen>
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
+        enableContextMenu: false,
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           final output = outputs.items[id]!;
-          return Text(l10n.taskStatus(output.info.taskStatus.name));
+          return Text(
+            l10n.taskStatus(output.info.taskStatus.name),
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.fade,
+          );
         },
       ),
     ]);
