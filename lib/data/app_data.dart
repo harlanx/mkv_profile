@@ -100,7 +100,7 @@ class AppData {
   static Future<void> init() async {
     // Loads from json file
     await languageCodes.load();
-    // Loads from share preferences xml file
+    // Loads from sharedpreferences xml file
     await SharedPrefs.init().then((_) {
       appSettings.load();
       profiles.load();
@@ -147,7 +147,8 @@ class AppData {
     mkvMergeLoaded = false;
     if (await file.exists() && file.name == _mkvmergeFile) {
       try {
-        final result = (await Process.run(file.path, ['--version'])).stdout;
+        final result =
+            (await Process.run(file.path, ['--version'])).stdout as String;
         if (result.isNotEmpty && result.contains('mkvmerge')) {
           mkvMergeLoaded = true;
           return true;
