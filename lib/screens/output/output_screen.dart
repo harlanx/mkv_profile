@@ -19,7 +19,6 @@ class OutputsScreen extends StatefulWidget {
 
 class OutputsScreenState extends State<OutputsScreen>
     with WidgetsBindingObserver {
-  late final appSettings = context.watch<AppSettingsNotifier>();
   late final outputs = context.watch<OutputNotifier>();
   late PlutoGridStateManager _manager;
   final List<PlutoColumn> _columns = [];
@@ -50,8 +49,8 @@ class OutputsScreenState extends State<OutputsScreen>
 
   @override
   void didChangePlatformBrightness() {
-    _manager.setConfiguration(
-        _plutoConfig(context, context.read<AppSettingsNotifier>().themeMode));
+    _manager
+        .setConfiguration(_plutoConfig(context, AppData.appSettings.themeMode));
     _manager.notifyListeners();
     super.didChangePlatformBrightness();
   }
@@ -110,7 +109,8 @@ class OutputsScreenState extends State<OutputsScreen>
                 color: Colors.transparent,
                 child: PlutoGrid(
                   mode: PlutoGridMode.selectWithOneTap,
-                  configuration: _plutoConfig(context, appSettings.themeMode),
+                  configuration:
+                      _plutoConfig(context, AppData.appSettings.themeMode),
                   onLoaded: (event) {
                     _manager = event.stateManager;
                     for (var col in _columns) {

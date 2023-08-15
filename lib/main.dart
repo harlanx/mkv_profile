@@ -4,6 +4,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 
 import 'package:provider/provider.dart';
 import 'package:system_theme/system_theme.dart';
+import 'package:tuple/tuple.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
 
@@ -142,41 +143,54 @@ class _MyAppState extends State<MyApp>
             value: AppData.profiles),
       ],
       builder: (context, _) {
-        final appSettings = context.watch<AppSettingsNotifier>();
         return SystemThemeBuilder(
           builder: (context, systemAccent) {
-            appSettings.currentSystemAccent = systemAccent;
-            return FluentApp(
-              //showPerformanceOverlay: true,
-              debugShowCheckedModeBanner: false,
-              title: AppData.appTitle,
-              navigatorKey: AppData.mainNavigatorKey,
-              color: appSettings.accentColor,
-              themeMode: appSettings.themeMode,
-              theme: appSettings.lightTheme,
-              darkTheme: appSettings.darkTheme,
-              localizationsDelegates: [
-                // Defined localizations that isn't available from fluent_ui package yet.
-                // Use i18n manager for locally managing translations
-                // though unmaintained, it's still working as expected
-                // https://github.com/gilmarsquinelato/i18n-manager
-                CustomFluentLocalizationDelegate(),
-                // fluent_ui localization delegate
-                FluentLocalizations.delegate,
-                // Generated localization delegates
-                ...AppLocalizations.localizationsDelegates,
-              ],
-              supportedLocales: const [...AppLocalizations.supportedLocales],
-              locale: appSettings.locale,
-              localeResolutionCallback: (locale, supportedLocales) {
-                if (AppLocalizations.supportedLocales.contains(locale)) {
-                  return locale;
-                }
-                // Locale fallback
-                return const Locale('en');
+            AppData.appSettings.currentSystemAccent = systemAccent;
+            return Selector<AppSettingsNotifier,
+                Tuple4<AccentColor, ThemeMode, WindowsFluentEffect, Locale>>(
+              selector: (p0, p1) => Tuple4(
+                  p1.accentColor, p1.themeMode, p1.windowEffect, p1.locale),
+              builder: (context, value, child) {
+                final accentColor = value.item1;
+                final themeMode = value.item2;
+                final locale = value.item4;
+
+                return FluentApp(
+                  //showPerformanceOverlay: true,
+                  debugShowCheckedModeBanner: false,
+                  title: AppData.appTitle,
+                  navigatorKey: AppData.mainNavigatorKey,
+                  color: accentColor,
+                  themeMode: themeMode,
+                  theme: AppData.appSettings.lightTheme,
+                  darkTheme: AppData.appSettings.darkTheme,
+                  localizationsDelegates: [
+                    // Defined localizations that isn't available from fluent_ui package yet.
+                    // Use i18n manager for locally managing translations
+                    // though unmaintained, it's still working as expected
+                    // https://github.com/gilmarsquinelato/i18n-manager
+                    CustomFluentLocalizationDelegate(),
+                    // fluent_ui localization delegate
+                    FluentLocalizations.delegate,
+                    // Generated localization delegates
+                    ...AppLocalizations.localizationsDelegates,
+                  ],
+                  supportedLocales: const [
+                    ...AppLocalizations.supportedLocales
+                  ],
+                  locale: locale,
+                  localeResolutionCallback: (currentLocale, supportedLocales) {
+                    if (AppLocalizations.supportedLocales
+                        .contains(currentLocale)) {
+                      return currentLocale;
+                    }
+                    // Locale fallback
+                    return const Locale('en');
+                  },
+                  initialRoute: '/',
+                  home: const MainScreen(),
+                );
               },
-              initialRoute: '/',
-              home: const MainScreen(),
             );
           },
         );

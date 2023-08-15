@@ -16,7 +16,6 @@ class TasksScreen extends StatefulWidget {
 }
 
 class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
-  late final appSettings = context.watch<AppSettingsNotifier>();
   late final tasks = context.watch<TaskListNotifier>();
   late final PlutoGridStateManager _manager;
   final List<PlutoColumn> _columns = [];
@@ -43,8 +42,8 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
 
   @override
   void didChangePlatformBrightness() {
-    _manager.setConfiguration(
-        _plutoConfig(context, context.read<AppSettingsNotifier>().themeMode));
+    _manager
+        .setConfiguration(_plutoConfig(context, AppData.appSettings.themeMode));
     _manager.notifyListeners();
     super.didChangePlatformBrightness();
   }
@@ -99,7 +98,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         child: mt.Material(
           color: Colors.transparent,
           child: PlutoGrid(
-            configuration: _plutoConfig(context, appSettings.themeMode),
+            configuration: _plutoConfig(context, AppData.appSettings.themeMode),
             columns: _columns,
             rows: _rows,
             onLoaded: (event) {
