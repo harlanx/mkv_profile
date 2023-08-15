@@ -1,7 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 
-import '../../../models/models.dart';
-import '../../../utilities/utilities.dart';
+import '../../../../models/models.dart';
+import '../../../../utilities/utilities.dart';
 
 class NameDialog extends StatelessWidget {
   NameDialog({
