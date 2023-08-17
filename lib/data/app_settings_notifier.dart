@@ -265,7 +265,6 @@ class AppSettingsNotifier extends ChangeNotifier {
         accentColor: accentColor,
         visualDensity: VisualDensity.standard,
         navigationPaneTheme: NavigationPaneThemeData(
-          highlightColor: accentColor,
           backgroundColor: windowEffect.value != WindowEffect.disabled
               ? Colors.transparent
               : null,
@@ -311,7 +310,6 @@ class AppSettingsNotifier extends ChangeNotifier {
         accentColor: accentColor,
         visualDensity: VisualDensity.standard,
         navigationPaneTheme: NavigationPaneThemeData(
-          highlightColor: accentColor,
           backgroundColor: windowEffect.value != WindowEffect.disabled
               ? Colors.transparent
               : null,

@@ -1,5 +1,7 @@
-import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
+import 'package:fluent_ui/fluent_ui.dart';
+
+import 'package:package_info_plus/package_info_plus.dart';
 // import 'package:flutter/foundation.dart';
 // import 'package:flutter/services.dart' show rootBundle;
 
@@ -21,6 +23,7 @@ export 'user_profiles_notifier.dart';
 export 'output_notifier.dart';
 
 class AppData {
+  static late final PackageInfo appInfo;
   static const appTitle = 'MKV Profile';
   static const projectURL = r'https://github.com/harlanx/mkv_profile';
   static const mediainfoURL =
@@ -98,9 +101,10 @@ class AppData {
   static final outputStateKey = GlobalKey<OutputsScreenState>();
 
   static Future<void> init() async {
+    appInfo = await PackageInfo.fromPlatform();
     // Loads from json file
     await languageCodes.load();
-    // Loads from share preferences xml file
+    // Loads from sharedpreferences xml file
     await SharedPrefs.init().then((_) {
       appSettings.load();
       profiles.load();
@@ -147,7 +151,8 @@ class AppData {
     mkvMergeLoaded = false;
     if (await file.exists() && file.name == _mkvmergeFile) {
       try {
-        final result = (await Process.run(file.path, ['--version'])).stdout;
+        final result =
+            (await Process.run(file.path, ['--version'])).stdout as String;
         if (result.isNotEmpty && result.contains('mkvmerge')) {
           mkvMergeLoaded = true;
           return true;

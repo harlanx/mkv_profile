@@ -19,7 +19,6 @@ class OutputsScreen extends StatefulWidget {
 
 class OutputsScreenState extends State<OutputsScreen>
     with WidgetsBindingObserver {
-  late final appSettings = context.watch<AppSettingsNotifier>();
   late final outputs = context.watch<OutputNotifier>();
   late PlutoGridStateManager _manager;
   final List<PlutoColumn> _columns = [];
@@ -50,8 +49,8 @@ class OutputsScreenState extends State<OutputsScreen>
 
   @override
   void didChangePlatformBrightness() {
-    _manager.setConfiguration(
-        _plutoConfig(context, context.read<AppSettingsNotifier>().themeMode));
+    _manager
+        .setConfiguration(_plutoConfig(context, AppData.appSettings.themeMode));
     _manager.notifyListeners();
     super.didChangePlatformBrightness();
   }
@@ -110,7 +109,8 @@ class OutputsScreenState extends State<OutputsScreen>
                 color: Colors.transparent,
                 child: PlutoGrid(
                   mode: PlutoGridMode.selectWithOneTap,
-                  configuration: _plutoConfig(context, appSettings.themeMode),
+                  configuration:
+                      _plutoConfig(context, AppData.appSettings.themeMode),
                   onLoaded: (event) {
                     _manager = event.stateManager;
                     for (var col in _columns) {
@@ -196,14 +196,15 @@ class OutputsScreenState extends State<OutputsScreen>
         title: l10n.info,
         field: 'info',
         type: PlutoColumnType.number(),
+        enableRowChecked: outputs.items.isNotEmpty,
         readOnly: true,
         enableSorting: false,
         enableColumnDrag: false,
-        enableRowChecked: outputs.items.isNotEmpty,
         enableEditingMode: false,
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
+        enableContextMenu: false,
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           final output = outputs.items[id]!;
@@ -251,10 +252,16 @@ class OutputsScreenState extends State<OutputsScreen>
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
+        enableContextMenu: false,
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           final output = outputs.items[id]!;
-          return Text(output.profile);
+          return Text(
+            output.profile,
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.fade,
+          );
         },
       ),
       PlutoColumn(
@@ -268,11 +275,16 @@ class OutputsScreenState extends State<OutputsScreen>
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
+        enableContextMenu: false,
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           final output = outputs.items[id]!;
           return Text(
-              DateFormat('mm-dd-yyyy hh:mm:ss a').format(output.dateTime));
+            DateFormat('mm-dd-yyyy hh:mm:ss a').format(output.dateTime),
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.fade,
+          );
         },
       ),
       PlutoColumn(
@@ -286,10 +298,16 @@ class OutputsScreenState extends State<OutputsScreen>
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
+        enableContextMenu: false,
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           final output = outputs.items[id]!;
-          return Text(output.duration.format(includeMillisecond: false));
+          return Text(
+            output.duration.format(includeMillisecond: false),
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.fade,
+          );
         },
       ),
       PlutoColumn(
@@ -303,10 +321,16 @@ class OutputsScreenState extends State<OutputsScreen>
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
+        enableContextMenu: false,
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           final output = outputs.items[id]!;
-          return Text(l10n.taskStatus(output.info.taskStatus.name));
+          return Text(
+            l10n.taskStatus(output.info.taskStatus.name),
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.fade,
+          );
         },
       ),
     ]);
@@ -332,7 +356,6 @@ class OutputsScreenState extends State<OutputsScreen>
   // Theme styling
   PlutoGridConfiguration _plutoConfig(
       BuildContext context, ThemeMode themeMode) {
-    final accent = context.read<AppSettingsNotifier>().accentColor;
     final theme = FluentTheme.of(context);
 
     if (themeMode == ThemeMode.dark ||
@@ -340,22 +363,25 @@ class OutputsScreenState extends State<OutputsScreen>
             WidgetsBinding
                 .instance.platformDispatcher.platformBrightness.isDark)) {
       return PlutoGridConfiguration.dark(
+        enableMoveHorizontalInEditing: false,
         style: PlutoGridStyleConfig.dark(
-          rowColor: theme.cardColor.withOpacity(0.1),
-          activatedColor: accent.dark.withOpacity(0.5),
-          activatedBorderColor: accent.light,
-          gridBackgroundColor: theme.micaBackgroundColor.withOpacity(0.15),
+          rowColor: Colors.transparent,
+          activatedColor: theme.resources.subtleFillColorSecondary,
+          activatedBorderColor:
+              theme.accentColor.defaultBrushFor(theme.brightness),
+          gridBackgroundColor: Colors.transparent,
           gridBorderColor: Colors.transparent,
         ),
       );
     }
-
     return PlutoGridConfiguration(
+      enableMoveHorizontalInEditing: false,
       style: PlutoGridStyleConfig(
-        rowColor: theme.cardColor.withOpacity(0.1),
-        activatedColor: accent.light.withOpacity(0.5),
-        activatedBorderColor: accent.dark,
-        gridBackgroundColor: theme.micaBackgroundColor.withOpacity(0.15),
+        rowColor: Colors.transparent,
+        activatedColor: theme.resources.subtleFillColorSecondary,
+        activatedBorderColor:
+            theme.accentColor.defaultBrushFor(theme.brightness),
+        gridBackgroundColor: Colors.transparent,
         gridBorderColor: Colors.transparent,
       ),
     );

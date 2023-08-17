@@ -16,7 +16,6 @@ class TasksScreen extends StatefulWidget {
 }
 
 class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
-  late final appSettings = context.watch<AppSettingsNotifier>();
   late final tasks = context.watch<TaskListNotifier>();
   late final PlutoGridStateManager _manager;
   final List<PlutoColumn> _columns = [];
@@ -43,8 +42,8 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
 
   @override
   void didChangePlatformBrightness() {
-    _manager.setConfiguration(
-        _plutoConfig(context, context.read<AppSettingsNotifier>().themeMode));
+    _manager
+        .setConfiguration(_plutoConfig(context, AppData.appSettings.themeMode));
     _manager.notifyListeners();
     super.didChangePlatformBrightness();
   }
@@ -99,7 +98,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         child: mt.Material(
           color: Colors.transparent,
           child: PlutoGrid(
-            configuration: _plutoConfig(context, appSettings.themeMode),
+            configuration: _plutoConfig(context, AppData.appSettings.themeMode),
             columns: _columns,
             rows: _rows,
             onLoaded: (event) {
@@ -143,14 +142,15 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         title: l10n.show,
         field: 'show',
         type: PlutoColumnType.number(),
+        enableRowChecked: tasks.items.isNotEmpty,
         readOnly: true,
         enableSorting: false,
         enableColumnDrag: false,
-        enableRowChecked: tasks.items.isNotEmpty,
         enableEditingMode: false,
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
+        enableContextMenu: false,
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           final tn = tasks.items[id]!;
@@ -173,10 +173,16 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
+        enableContextMenu: false,
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           final tn = tasks.items[id]!;
-          return Text(tn.profile.name);
+          return Text(
+            tn.profile.name,
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.fade,
+          );
         },
       ),
       PlutoColumn(
@@ -188,10 +194,10 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         enableSorting: false,
         enableColumnDrag: false,
         enableEditingMode: false,
-        enableDropToResize: false,
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
+        enableContextMenu: false,
         renderer: (rendererContext) {
           final int id = rendererContext.cell.value;
           return ChangeNotifierProvider.value(
@@ -200,7 +206,12 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
               final tn = context.watch<TaskNotifier>();
               return Align(
                 alignment: AlignmentDirectional.center,
-                child: Text('${tn.progress.toStringAsFixed(2)}%'),
+                child: Text(
+                  '${tn.progress.toStringAsFixed(2)}%',
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.fade,
+                ),
               );
             },
           );
@@ -236,7 +247,6 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
   // Theme styling
   PlutoGridConfiguration _plutoConfig(
       BuildContext context, ThemeMode themeMode) {
-    final accent = context.read<AppSettingsNotifier>().accentColor;
     final theme = FluentTheme.of(context);
 
     if (themeMode == ThemeMode.dark ||
@@ -244,21 +254,25 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
             WidgetsBinding
                 .instance.platformDispatcher.platformBrightness.isDark)) {
       return PlutoGridConfiguration.dark(
+        enableMoveHorizontalInEditing: false,
         style: PlutoGridStyleConfig.dark(
-          rowColor: theme.cardColor.withOpacity(0.1),
-          activatedColor: accent.dark.withOpacity(0.5),
-          activatedBorderColor: accent.light,
-          gridBackgroundColor: theme.micaBackgroundColor.withOpacity(0.15),
+          rowColor: Colors.transparent,
+          activatedColor: theme.resources.subtleFillColorSecondary,
+          activatedBorderColor:
+              theme.accentColor.defaultBrushFor(theme.brightness),
+          gridBackgroundColor: Colors.transparent,
           gridBorderColor: Colors.transparent,
         ),
       );
     }
     return PlutoGridConfiguration(
+      enableMoveHorizontalInEditing: false,
       style: PlutoGridStyleConfig(
-        rowColor: theme.cardColor.withOpacity(0.1),
-        activatedColor: accent.light.withOpacity(0.5),
-        activatedBorderColor: accent.dark,
-        gridBackgroundColor: theme.micaBackgroundColor.withOpacity(0.15),
+        rowColor: Colors.transparent,
+        activatedColor: theme.resources.subtleFillColorSecondary,
+        activatedBorderColor:
+            theme.accentColor.defaultBrushFor(theme.brightness),
+        gridBackgroundColor: Colors.transparent,
         gridBorderColor: Colors.transparent,
       ),
     );

@@ -348,6 +348,8 @@ extension ColorExtension on Color {
 }
 
 extension DynamicLibraryExtension on DynamicLibrary {
+  // TODO: Remove when Dart 3.1 lands as DynamicLibrary.close() has been implemented.
+  // https://github.com/dart-lang/sdk/issues/40159
   void unload() {
     FreeLibrary(handle.address);
   }

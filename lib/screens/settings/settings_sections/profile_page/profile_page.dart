@@ -7,9 +7,9 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../data/app_data.dart';
-import '../../../models/models.dart';
-import '../../../utilities/utilities.dart';
+import '../../../../data/app_data.dart';
+import '../../../../models/models.dart';
+import '../../../../utilities/utilities.dart';
 
 import 'profile_page_dialogs.dart';
 
