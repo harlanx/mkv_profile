@@ -134,7 +134,7 @@ class AppData {
       try {
         final miw = MediaInfoWrapper(dllPath: file.path);
         final result = miw.option('Info_Version');
-        miw.library.unload();
+        miw.library.close();
         if (result.isNotEmpty && result.contains('MediaInfoLib')) {
           mediaInfoLoaded = true;
           return true;

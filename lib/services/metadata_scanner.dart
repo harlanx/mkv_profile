@@ -22,7 +22,7 @@ class MetadataScanner {
 
   // We need to unload of the dll since it can be changed in the settings on runtime.
   static void unload() {
-    _miw.library.unload();
+    _miw.library.close();
   }
 
   static Future<MediaInfo> video(File file) async {
