@@ -28,14 +28,22 @@ jobs:
               run: |
                 echo "${{ env.APP_VERSION }}"
             - uses: subosito/flutter-action@v2
+            - name: Check Flutter version
+              run: flutter --version
             - name: Enable windows build
               run: flutter config --enable-windows-desktop
             - name: Build windows release artifacts
               run: flutter build windows --release
             - name: Archive and compress release artifacts
               run: |
-                $outputPath = "build\windows\runner\Release\mkv_profile-${{env.APP_VERSION}}-windows.zip"
+                $outputPath = "build\windows\runner\Release\mkv_profile-${{ env.APP_VERSION }}-windows.zip"
                 Compress-Archive -Path "build\windows\runner\Release\*" -DestinationPath $outputPath
+            - name: Create exe installer
+              run: |
+                "%ProgramFiles(x86)%\Inno Setup 6\iscc.exe" `
+                /dMyAppVersion="${{ env.APP_VERSION }}" `
+                "inno_setup.iss"
+              shell: cmd
             - name: Create msix installer
               run: |
                 dart run msix:create `
@@ -48,8 +56,9 @@ jobs:
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                tag_name: v${{env.APP_VERSION}}
+                tag_name: v${{ env.APP_VERSION }}
                 generate_release_notes: true
                 files: |
-                  build/windows/runner/Release/mkv_profile-${{env.APP_VERSION}}-windows.zip
-                  build/windows/runner/Release/mkv_profile-${{env.APP_VERSION}}-windows.msix
+                  build/windows/runner/Release/mkv_profile-${{ env.APP_VERSION }}-windows.zip
+                  build/windows/runner/Release/mkv_profile-${{ env.APP_VERSION }}-setup-windows.exe
+                  build/windows/runner/Release/mkv_profile-${{ env.APP_VERSION }}-windows.msix

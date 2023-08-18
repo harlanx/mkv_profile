@@ -24,6 +24,11 @@ Automatically manage and mux series or movie files to the common conventions use
 1. Extract contents
 1. Run mkv_profile.exe to launch app
 
+- **Setup (EXE)**
+1. Head to the downloaded executable setup file
+1. Run setup as administrator
+1. Follow the rest of the installation steps within the setup window
+
 - **Installer (MSIX)**
     - Note: Requires Certificate Installation (first time only or if previously removed)
 1. Head to the downloaded msix file
@@ -35,7 +40,6 @@ Automatically manage and mux series or movie files to the common conventions use
     1. To install certificate, head to General tab and press Install Certificate
 1. After the certificate is installed, you can run the msix installer
 1. Check **Launch when ready** in the installer or Run the shortcut created after the installation to launch app
-
 
 ## Available Profile Configurations
 - Show (Movie / Series) Title Formats
