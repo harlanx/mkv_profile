@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_selector/file_selector.dart';
+import 'package:version/version.dart';
 
 import '../../../data/app_data.dart';
 import '../../../services/app_services.dart';
@@ -257,10 +258,11 @@ class AboutTile extends StatelessWidget {
                         final List<dynamic> json = jsonDecode(response.body);
                         if (json.isNotEmpty) {
                           final Map<String, dynamic> latestData = json.first;
-                          final String latestVersion =
-                              latestData['tag_name'].replaceAll('v', '');
-                          if (Utilities.isNewVersionAvailable(
-                              AppData.appInfo.version, latestVersion)) {
+                          final currentVersion =
+                              Version.parse(AppData.appInfo.version);
+                          final latestVersion = Version.parse(
+                              latestData['tag_name'].replaceAll('v', ''));
+                          if (latestVersion > currentVersion) {
                             await showDialog<bool>(
                                 context: context,
                                 builder: (context) {

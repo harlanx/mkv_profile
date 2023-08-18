@@ -31,20 +31,4 @@ class Utilities {
 
     return filtered;
   }
-
-  static bool isNewVersionAvailable(
-      String currentVersion, String latestVersion) {
-    final currentComponents = currentVersion.split('.').map(int.parse).toList();
-    final latestComponents = latestVersion.split('.').map(int.parse).toList();
-
-    for (int i = 0; i < currentComponents.length; i++) {
-      if (latestComponents[i] > currentComponents[i]) {
-        return true;
-      } else if (latestComponents[i] < currentComponents[i]) {
-        return false;
-      }
-    }
-
-    return false; // latestVersion is equal to currentVersion
-  }
 }
