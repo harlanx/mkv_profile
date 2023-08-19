@@ -47,9 +47,10 @@ jobs:
                 --output-name=mkv_profile-${{env.APP_VERSION}}-windows
             - name: Create exe installer
               run: |
-                "%ProgramFiles(x86)%\Inno Setup 6\iscc.exe" `
-                /DMyAppVersion="${{ env.APP_VERSION }}" `
+                "%ProgramFiles(x86)%\Inno Setup 6\iscc.exe" ^
+                /DMyAppVersion="${{ env.APP_VERSION }}" ^
                 "inno_setup.iss"
+              shell: cmd
             - name: Upload to Github release
               uses: softprops/action-gh-release@v1
               env:
