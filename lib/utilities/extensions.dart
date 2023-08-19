@@ -1,10 +1,8 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:path/path.dart' as p;
-import 'package:win32/win32.dart';
 
 extension LocaleExtension on Locale {
   // Update also when adding new locales
@@ -344,13 +342,5 @@ extension ColorExtension on Color {
   Color saturate([double amount = 0.1]) {
     assert(amount >= 0 && amount <= 1);
     return HSLColor.fromColor(this).withSaturation(amount).toColor();
-  }
-}
-
-extension DynamicLibraryExtension on DynamicLibrary {
-  // TODO: Remove when Dart 3.1 lands as DynamicLibrary.close() has been implemented.
-  // https://github.com/dart-lang/sdk/issues/40159
-  void unload() {
-    FreeLibrary(handle.address);
   }
 }
