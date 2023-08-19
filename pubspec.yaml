@@ -93,9 +93,10 @@ msix_config:
   # where they can run the app portably.
   # The link below is the instruction for installing certificate.
   # https://diyusthad.com/2022/10/solved-untrusted-certificate-when-installing-msix-build-using-flutter.html
-  # If anyone had doubts on the certificate, this is how it was created.
-  # https://sahajrana.medium.com/how-to-generate-a-pfx-certificate-for-flutter-windows-msix-lib-a860cdcebb8
-  # Can be manually typed it in but in my case it has been set up in repo secrets and specified only on github actions
+  # The self signed certificate was created by following the official guide from flutter docs
+  # https://docs.flutter.dev/platform-integration/windows/building#msix-packaging
+  # Path and password can be manually typed it in during testing, for deployment it has been set up in
+  # repo secrets and specified only on github actions
   certificate_path:
   certificate_password:
   sign_msix: true
