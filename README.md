@@ -25,6 +25,7 @@ Automatically manage and mux series or movie files to the common conventions use
 1. Run mkv_profile.exe to launch app
 
 - **Setup (EXE)**
+    - Note: Requires Instllation of Latest [Visual C++ Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170) (if not yet installed)
 1. Head to the downloaded executable setup file
 1. Run setup as administrator
 1. Follow the rest of the installation steps within the setup window
@@ -160,7 +161,7 @@ This app rely on the third party tools [MediaInfo](https://mediaarea.net/en/Medi
 
 ## Why do I have to install the certificate before installing?
 This project uses self signed certificate because trusted signed certificates from services comes with a cost which isn't reasonable for a FOSS project.
-If you have doubts about the certificate, [Read more here](https://github.com/harlanx/mkv_profile/blob/93f22cf071d54826499b63e9d6869b6ac00384a4/pubspec.yaml#L76C1-L76C108)
+To see how the certificate was created. [Read more here](https://docs.flutter.dev/platform-integration/windows/building#msix-packaging)
 
 ## Third party tools path is default but its not working?
 The saved path was probably from an old installation, to reset it or entirely clear old app data:
