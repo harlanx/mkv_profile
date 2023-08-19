@@ -33,7 +33,7 @@ jobs:
             - name: Enable windows build
               run: flutter config --enable-windows-desktop
             - name: Create release build
-              run: flutter build windows --release
+              run: flutter build windows --release --obfuscate --split-debug-info=build/windows/runner/Outputs/symbols
             - name: Create portable zip
               run: |
                 $outputPath = "build/windows/runner/Outputs/mkv_profile-${{ env.APP_VERSION }}-windows.zip"

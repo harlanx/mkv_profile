@@ -106,4 +106,3 @@ msix_config:
   capabilities: "videosLibrary,documentsLibrary,codeGeneration"
   # Don't publish to Microsoft Store
   store: false
-  windows_build_args: --obfuscate --split-debug-info=build/windows/runner/Debug
