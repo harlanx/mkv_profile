@@ -218,6 +218,11 @@ class _VideoTitleDialogState extends State<VideoTitleDialog> {
                 inputFormatters: [
                   FilteringTextInputFormatter.singleLineFormatter,
                 ],
+                onChanged: (value) {
+                  if (sameAsOutput.value) {
+                    trackTitleCtrl.text = fileTitleCtrl.text;
+                  }
+                },
                 validator: (value) {
                   if (value != null) {
                     if (value.isEmpty) {
