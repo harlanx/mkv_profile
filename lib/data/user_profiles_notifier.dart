@@ -57,10 +57,8 @@ class UserProfilesNotifier extends ChangeNotifier {
   }
 
   Future<void> save() async {
-    await SharedPrefs.setStringList(
-      'UserProfiles',
-      _items.values.map((e) => jsonEncode(e)).toList(),
-    );
+    final toBeSaved = _items.values.map((e) => jsonEncode(e)).toList();
+    await SharedPrefs.setStringList('UserProfiles', toBeSaved);
   }
 
   Future<void> import(String path) async {

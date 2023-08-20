@@ -118,7 +118,8 @@ class AppSettingsNotifier extends ChangeNotifier {
   }
 
   Future<void> save() async {
-    await SharedPrefs.setString('AppSettings', jsonEncode(this));
+    final toBeSaved = jsonEncode(this);
+    await SharedPrefs.setString('AppSettings', toBeSaved);
   }
 
   void setRecursiveLimit(int limit) {

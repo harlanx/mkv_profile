@@ -22,7 +22,6 @@ class MetadataScanner {
 
   // We need to unload of the dll since it can be changed in the settings on runtime.
   static void unload() {
-    // ignore: sdk_version_since
     _miw.library.close();
   }
 
