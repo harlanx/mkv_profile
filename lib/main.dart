@@ -84,7 +84,7 @@ class _MyAppState extends State<MyApp>
       await windowManager.minimize();
     } else {
       await AppData.save();
-      await windowManager.close();
+      await windowManager.destroy();
     }
     super.onWindowClose();
   }
