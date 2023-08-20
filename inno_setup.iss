@@ -24,9 +24,13 @@ DisableProgramGroupPage=yes
 OutputDir={#SourcePath}\build\windows\runner\Outputs
 OutputBaseFilename=mkv_profile-{#MyAppVersion}-setup-windows
 SetupIconFile={#SourcePath}\windows\runner\resources\app_icon.ico
+UninstallDisplayIcon={app}\{#MyAppExeName}
+UninstallDisplayName={#MyAppName}
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
+ArchitecturesAllowed=x64
+ArchitecturesInstallIn64BitMode=x64
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
