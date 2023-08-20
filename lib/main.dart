@@ -38,7 +38,6 @@ void main() async {
   // Causes app frame freeze on hot reload or hot restart so don't await this one.
   unawaited(
     windowManager.waitUntilReadyToShow(windowOptions, () async {
-      await windowManager.setPreventClose(true);
       if (AppData.appSettings.isMaximized) {
         await windowManager.maximize();
       }
@@ -85,7 +84,7 @@ class _MyAppState extends State<MyApp>
       await windowManager.minimize();
     } else {
       await AppData.save();
-      await windowManager.destroy();
+      await windowManager.close();
     }
     super.onWindowClose();
   }
