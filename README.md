@@ -25,10 +25,10 @@ Automatically manage and mux series or movie files to the common conventions use
 1. Run mkv_profile.exe to launch app
 
 - **Setup (EXE)**
-    - Note: Requires Instllation of Latest [Visual C++ Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170) (if not yet installed)
 1. Head to the downloaded executable setup file
 1. Run setup as administrator
 1. Follow the rest of the installation steps within the setup window
+1. Check **Launch MKV Profile** or Run the shortcut created after the installation to launch app
 
 - **Installer (MSIX)**
     - Note: Requires Certificate Installation (first time only or if previously removed)
