@@ -34,11 +34,8 @@ jobs:
               run: flutter config --enable-windows-desktop
             - name: Create release build
               run: flutter build windows --release --obfuscate --split-debug-info=build/windows/runner/Outputs/symbols
-            - name: Create portable zip
-              run: |
-                $outputPath = "build/windows/runner/Outputs/mkv_profile-${{ env.APP_VERSION }}-windows.zip"
-                Compress-Archive -Path "build/windows/runner/Release/*" -DestinationPath $outputPath
             # We already called build so we skip it in msix to reduce work for the runner
+            # MSVC++ Redistributables are pre-included in msix
             - name: Create msix installer
               run: |
                 dart run msix:create `
@@ -47,6 +44,32 @@ jobs:
                 --certificate-path=${{ github.workspace }}/keys/CERTIFICATE.pfx `
                 --output-path=build/windows/runner/Outputs `
                 --output-name=mkv_profile-${{env.APP_VERSION}}-windows
+            - name: Check and install MSVCRedist
+              run: |
+                $dlls = @(
+                  "msvcp140.dll",
+                  "vcruntime140.dll",
+                  "vcruntime140_1.dll"
+                )
+            
+                $missingFiles = $dlls | Where-Object { -not (Test-Path "C:\Windows\System32\$_") }
+            
+                if ($missingFiles.Count -gt 0) {
+                  Write-Output "One or more required DLLs are missing. Installing Latest MSVCRedist"
+                  choco install -y vcredist140
+                } else {
+                  Write-Output "All required DLLs are already present."
+                }
+            - name: Include MSVC++ redistributables
+              run: 
+                $destination="build/windows/runner/Release"
+                Copy-Item -Path "c:\windows\system32\msvcp140.dll" -Destination $destination
+                Copy-Item -Path "c:\windows\system32\vcruntime140.dll" -Destination $destination
+                Copy-Item -Path "c:\windows\system32\vcruntime140_1.dll" -Destination $destination
+            - name: Create portable zip
+              run: |
+                $outputPath = "build/windows/runner/Outputs/mkv_profile-${{ env.APP_VERSION }}-windows.zip"
+                Compress-Archive -Path "build/windows/runner/Release/*" -DestinationPath $outputPath
             - name: Create exe setup installer
               run: |
                 "%ProgramFiles(x86)%\Inno Setup 6\iscc.exe" ^
