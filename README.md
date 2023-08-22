@@ -8,12 +8,24 @@ Automatically manage and mux series or movie files to the common conventions use
 
 ## Preview
 <p align="center">
-<img src="docs/images/Installer.png" height="150"/>
-<img src="docs/images/Home.png" height="150"/>
-<img src="docs/images/Tasks.png" height="150"/>
-<img src="docs/images/Outputs.png" height="150"/>
-<img src="docs/images/Settings.png" height="150"/>
+<img src="docs/images/Home.png" height="500"/>
 </p>
+
+<details>
+<summary>More Preview</summary>
+<p align="center">
+<img src="docs/images/Tasks.png" height="300"/>
+<img src="docs/images/Outputs.png"  height="300"/>
+<img src="docs/images/Settings.png"  height="300"/>
+</p>
+</details>
+
+
+
+
+
+
+
 
 ## Download
 [![GitHub Latest Release](https://img.shields.io/github/release/harlanx/mkv_profile.svg)](https://github.com/harlanx/mkv_profile/releases/latest) [![Github Total Downloads](https://img.shields.io/github/downloads/harlanx/mkv_profile/total.svg)](https://github.com/harlanx/mkv_profile/releases)
