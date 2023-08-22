@@ -196,7 +196,7 @@ class TitleScanner {
 
     formats['%language%'] = track.language.cleanName;
     formats['%format%'] = trackInfo.format;
-    formats['%bit_rate%'] = trackInfo.bitRate.formatBitSpeed();
+    formats['%bit_rate%'] = trackInfo.bitRate?.formatBitSpeed() ?? '';
     formats['%channels%'] = trackInfo.channels.toString();
     formats['%sampling_rate%'] = trackInfo.samplingRate.formatFrequency();
     for (var audioFlag in track.flags.entries) {

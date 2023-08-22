@@ -93,7 +93,7 @@ class VideoInfo extends TrackProperties {
   final int width;
   final int height;
   final double frameRate;
-  final int streamSize;
+  final int? streamSize;
   final String encoding;
 
   factory VideoInfo.fromJson(Map<String, dynamic> json, MkvInfo? mkvInfo) {
@@ -107,7 +107,7 @@ class VideoInfo extends TrackProperties {
       width: int.parse(json['Width']),
       height: int.parse(json['Height']),
       frameRate: double.parse(json['FrameRate'] ?? json['FrameRate_Original']),
-      streamSize: int.parse(json['StreamSize']),
+      streamSize: int.tryParse(json['StreamSize'].toString()),
       encoding: json['Encoded_Library_Name'] ?? json['Format_Commercial'],
       title: json['Title'],
     )
@@ -143,7 +143,7 @@ class AudioInfo extends TrackProperties {
   String? uid;
   final String format;
   final double duration;
-  final int bitRate;
+  final int? bitRate;
   final int channels;
   final int samplingRate;
 
@@ -156,7 +156,7 @@ class AudioInfo extends TrackProperties {
       uid: mkvAudioInfo?.uid,
       format: json['Format'],
       duration: double.parse(json['Duration']),
-      bitRate: int.parse(json['BitRate']),
+      bitRate: int.tryParse(json['BitRate'].toString()),
       channels: int.parse(json['Channels']),
       samplingRate: int.parse(json['SamplingRate']),
       title: json['Title'],
