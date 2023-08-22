@@ -69,6 +69,13 @@ class _MyAppState extends State<MyApp>
     super.initState();
     windowManager.addListener(this);
     WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(milliseconds: 300), () async {
+        await AppData.appSettings.setWindowEffect(
+            AppData.mainNavigatorKey.currentContext!,
+            AppData.appSettings.windowEffect);
+      });
+    });
   }
 
   @override
@@ -76,6 +83,24 @@ class _MyAppState extends State<MyApp>
     windowManager.removeListener(this);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    // Update app theme when user changes dark or light mode in windows personalization settings
+    AppData.appSettings.setThemeMode(AppData.appSettings.themeMode);
+
+    // Force update window effect since it won't match the thememode light
+    // and dark mode colors if changed on runtime.
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(milliseconds: 150), () async {
+        await AppData.appSettings.setWindowEffect(
+            AppData.mainNavigatorKey.currentContext!,
+            AppData.appSettings.windowEffect);
+      });
+    });
+
+    super.didChangePlatformBrightness();
   }
 
   @override
@@ -105,24 +130,6 @@ class _MyAppState extends State<MyApp>
   void onWindowUnmaximize() {
     super.onWindowUnmaximize();
     AppData.appSettings.isMaximized = false;
-  }
-
-  @override
-  void didChangePlatformBrightness() {
-    // Update app theme when user changes dark or light mode in windows personalization settings
-    AppData.appSettings.setThemeMode(AppData.appSettings.themeMode);
-
-    // Force update window effect since it won't match the thememode light
-    // and dark mode colors if changed on runtime.
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.delayed(const Duration(milliseconds: 150), () async {
-        await AppData.appSettings.setWindowEffect(
-            AppData.mainNavigatorKey.currentContext!,
-            AppData.appSettings.windowEffect);
-      });
-    });
-
-    super.didChangePlatformBrightness();
   }
 
   @override
