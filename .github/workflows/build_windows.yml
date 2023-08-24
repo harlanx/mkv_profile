@@ -61,7 +61,7 @@ jobs:
                   Write-Output "All required DLLs are already present."
                 }
             - name: Include MSVC++ redistributables
-              run: 
+              run: |
                 $destination="build/windows/runner/Release"
                 Copy-Item -Path "c:\windows\system32\msvcp140.dll" -Destination $destination
                 Copy-Item -Path "c:\windows\system32\vcruntime140.dll" -Destination $destination
