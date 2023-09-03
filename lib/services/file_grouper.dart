@@ -182,8 +182,10 @@ class FileGrouper {
   static Future<int?> _fetchSeason(String text) async {
     int? result;
     // Extract the season string
-    final seasonPattern =
-        RegExp(r'Season.\d+|S.\d+|Season \d+|S \d+', caseSensitive: false);
+    final seasonPattern = RegExp(
+      r'Season.\d+|S.\d+|Season \d+|S \d+',
+      caseSensitive: false,
+    );
     final seasonMatch = seasonPattern.stringMatch(text);
     if (seasonMatch != null) {
       // Extract the season number
@@ -200,14 +202,15 @@ class FileGrouper {
   static Future<int?> _fetchEpisode(String text) async {
     int? result;
     // Extract the episode string
-    final seasonPattern = RegExp(
-        r'Episode.\d+|E.\d+|Episode \d+|E \d+|\b\d{2}\b',
-        caseSensitive: false);
-    final seasonMatch = seasonPattern.stringMatch(text);
-    if (seasonMatch != null) {
+    final episodePattern = RegExp(
+      r'Episode.\d+|E.\d+|Episode \d+|E \d+|(?<!Season\s|S\s)-?\b\d{2}\b',
+      caseSensitive: false,
+    );
+    final episodeMatch = episodePattern.stringMatch(text);
+    if (episodeMatch != null) {
       // Extract the season number
       final numberPattern = RegExp(r'\d+', caseSensitive: false);
-      final numberMatch = numberPattern.stringMatch(seasonMatch);
+      final numberMatch = numberPattern.stringMatch(episodeMatch);
       if (numberMatch != null) {
         // Parse season number string to int
         result = int.parse(numberMatch);
