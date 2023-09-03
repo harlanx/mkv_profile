@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fluent_ui/fluent_ui.dart';
 
 import 'package:file_selector/file_selector.dart';
@@ -105,6 +107,6 @@ class HomeScreenMenuBar extends StatelessWidget {
     final shows = context.read<ShowListNotifier>();
     final paths = await getDirectoryPaths();
 
-    await shows.add(paths);
+    unawaited(shows.add(paths));
   }
 }
