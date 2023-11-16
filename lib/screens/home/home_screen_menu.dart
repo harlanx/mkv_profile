@@ -107,6 +107,6 @@ class HomeScreenMenuBar extends StatelessWidget {
     final shows = context.read<ShowListNotifier>();
     final paths = await getDirectoryPaths();
 
-    unawaited(shows.add(paths));
+    await shows.add(paths);
   }
 }

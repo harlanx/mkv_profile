@@ -280,7 +280,9 @@ class OutputsScreenState extends State<OutputsScreen>
           final int id = rendererContext.cell.value;
           final output = outputs.items[id]!;
           return Text(
-            DateFormat('mm-dd-yyyy hh:mm:ss a').format(output.dateTime),
+            DateFormat.yMd(Platform.localeName)
+                .add_jm()
+                .format(output.dateTime),
             maxLines: 1,
             softWrap: false,
             overflow: TextOverflow.fade,
