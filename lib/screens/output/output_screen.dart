@@ -4,7 +4,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 
 import 'package:intl/intl.dart';
 import 'package:multi_split_view/multi_split_view.dart';
-import 'package:pluto_grid/pluto_grid.dart';
+import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 import 'package:provider/provider.dart';
 
 import '../../data/app_data.dart';
@@ -20,25 +20,104 @@ class OutputsScreen extends StatefulWidget {
 class OutputsScreenState extends State<OutputsScreen>
     with WidgetsBindingObserver {
   late final outputs = context.watch<OutputNotifier>();
-  late PlutoGridStateManager _manager;
+  PlutoGridStateManager? _manager;
   final List<PlutoColumn> _columns = [];
   final List<PlutoRow> _rows = [];
   final _verticalCtrl = ScrollController(),
       _horizontalCtrl = ScrollController();
   final _infoPreview = ValueNotifier<String?>(null);
 
-  final _splitViewCtrl = MultiSplitViewController(areas: [
-    Area(size: 350, minimalSize: 200),
-    Area(size: 150, minimalSize: 100),
-  ]);
+  late final _splitViewCtrl = MultiSplitViewController(
+    areas: [
+      Area(
+        size: 350,
+        min: 200,
+        builder: (context, area) => SizedBox.expand(
+          child: mt.Material(
+            color: Colors.transparent,
+            child: PlutoGrid(
+              mode: PlutoGridMode.selectWithOneTap,
+              configuration:
+                  _plutoConfig(context, AppData.appSettings.themeMode),
+              onLoaded: (event) {
+                _manager = event.stateManager;
+                for (var col in _columns) {
+                  _manager?.autoFitColumn(context, col);
+                }
+              },
+              onSelected: (event) {
+                _infoPreview.value = outputs.items[event.cell?.value]?.info.log;
+              },
+              onRowChecked: (event) {
+                if (event.row != null && event.rowIdx != null) {
+                  if (event.isChecked!) {
+                    outputs.addSelected({event.row!.cells['info']!.value});
+                  } else {
+                    outputs.removeSelected({event.row!.cells['info']!.value});
+                  }
+                } else {
+                  if (event.isChecked!) {
+                    outputs.addSelected(outputs.items.keys.toSet());
+                  } else {
+                    outputs.removeSelected(outputs.items.keys.toSet());
+                  }
+                }
+              },
+              columns: _columns,
+              rows: _rows,
+            ),
+          ),
+        ),
+      ),
+      Area(
+        size: 150,
+        min: 100,
+        builder: (context, area) => Container(
+          height: 200,
+          width: double.infinity,
+          margin: const EdgeInsets.all(5.0),
+          padding: const EdgeInsets.all(5.0),
+          decoration: BoxDecoration(
+            color: FluentTheme.of(context).micaBackgroundColor,
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: Scrollbar(
+            controller: _verticalCtrl,
+            thumbVisibility: true,
+            child: Scrollbar(
+              controller: _horizontalCtrl,
+              thumbVisibility: true,
+              notificationPredicate: (notification) => notification.depth == 1,
+              child: SingleChildScrollView(
+                controller: _verticalCtrl,
+                child: SingleChildScrollView(
+                  controller: _horizontalCtrl,
+                  scrollDirection: Axis.horizontal,
+                  child: ValueListenableBuilder<String?>(
+                      valueListenable: _infoPreview,
+                      builder: (context, text, child) {
+                        if (text != null) {
+                          return SelectableText(text);
+                        }
+                        // Empty Widget
+                        return const SizedBox.shrink();
+                      }),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     Future.delayed(Duration.zero, () {
       if (mounted) fetchData();
     });
-    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -49,9 +128,9 @@ class OutputsScreenState extends State<OutputsScreen>
 
   @override
   void didChangePlatformBrightness() {
-    _manager
-        .setConfiguration(_plutoConfig(context, AppData.appSettings.themeMode));
-    _manager.notifyListeners();
+    _manager?.setConfiguration(
+        _plutoConfig(context, AppData.appSettings.themeMode));
+    _manager?.notifyListeners();
     super.didChangePlatformBrightness();
   }
 
@@ -77,7 +156,7 @@ class OutputsScreenState extends State<OutputsScreen>
                         : () {
                             _infoPreview.value = null;
                             outputs.remove(_selectedIds);
-                            _manager.removeRows(_manager.checkedRows);
+                            _manager?.removeRows(_manager!.checkedRows);
                           },
                   ),
                 ],
@@ -103,95 +182,19 @@ class OutputsScreenState extends State<OutputsScreen>
               ),
             );
           },
-          children: [
-            SizedBox.expand(
-              child: mt.Material(
-                color: Colors.transparent,
-                child: PlutoGrid(
-                  mode: PlutoGridMode.selectWithOneTap,
-                  configuration:
-                      _plutoConfig(context, AppData.appSettings.themeMode),
-                  onLoaded: (event) {
-                    _manager = event.stateManager;
-                    for (var col in _columns) {
-                      _manager.autoFitColumn(context, col);
-                    }
-                  },
-                  onSelected: (event) {
-                    _infoPreview.value =
-                        outputs.items[event.cell?.value]?.info.log;
-                  },
-                  onRowChecked: (event) {
-                    if (event.row != null && event.rowIdx != null) {
-                      if (event.isChecked!) {
-                        outputs.addSelected({event.row!.cells['info']!.value});
-                      } else {
-                        outputs
-                            .removeSelected({event.row!.cells['info']!.value});
-                      }
-                    } else {
-                      if (event.isChecked!) {
-                        outputs.addSelected(outputs.items.keys.toSet());
-                      } else {
-                        outputs.removeSelected(outputs.items.keys.toSet());
-                      }
-                    }
-                  },
-                  columns: _columns,
-                  rows: _rows,
-                ),
-              ),
-            ),
-            Container(
-              height: 200,
-              width: double.infinity,
-              margin: const EdgeInsets.all(5.0),
-              padding: const EdgeInsets.all(5.0),
-              decoration: BoxDecoration(
-                color: theme.micaBackgroundColor,
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Scrollbar(
-                controller: _verticalCtrl,
-                thumbVisibility: true,
-                child: Scrollbar(
-                  controller: _horizontalCtrl,
-                  thumbVisibility: true,
-                  notificationPredicate: (notification) =>
-                      notification.depth == 1,
-                  child: SingleChildScrollView(
-                    controller: _verticalCtrl,
-                    child: SingleChildScrollView(
-                      controller: _horizontalCtrl,
-                      scrollDirection: Axis.horizontal,
-                      child: ValueListenableBuilder<String?>(
-                          valueListenable: _infoPreview,
-                          builder: (context, text, child) {
-                            if (text != null) {
-                              return SelectableText(text);
-                            }
-                            // Empty Widget
-                            return const SizedBox.shrink();
-                          }),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );
   }
 
   Set<int> get _selectedIds =>
-      _manager.checkedRows.map<int>((e) => e.cells.values.first.value).toSet();
+      _manager!.checkedRows.map<int>((e) => e.cells.values.first.value).toSet();
 
   void fetchData() {
     final l10n = AppLocalizations.of(context);
-    _manager.removeAllRows();
-    _manager.removeColumns(_manager.columns);
-    _manager.insertColumns(0, [
+    _manager?.removeAllRows();
+    _manager?.removeColumns(_manager!.columns);
+    _manager?.insertColumns(0, [
       PlutoColumn(
         title: l10n.info,
         field: 'info',
@@ -280,7 +283,9 @@ class OutputsScreenState extends State<OutputsScreen>
           final int id = rendererContext.cell.value;
           final output = outputs.items[id]!;
           return Text(
-            DateFormat('mm-dd-yyyy hh:mm:ss a').format(output.dateTime),
+            DateFormat.yMd(Platform.localeName)
+                .add_jm()
+                .format(output.dateTime),
             maxLines: 1,
             softWrap: false,
             overflow: TextOverflow.fade,
@@ -334,10 +339,11 @@ class OutputsScreenState extends State<OutputsScreen>
         },
       ),
     ]);
-
-    _manager.appendRows(
+    final sorted = Map.fromEntries(
+        outputs.items.entries.sorted((a, b) => b.key.compareTo(a.key)));
+    _manager?.appendRows(
       List.from(
-        outputs.items.entries.map(
+        sorted.entries.map(
           (e) => PlutoRow(
             checked: outputs.selected.contains(e.key),
             cells: {

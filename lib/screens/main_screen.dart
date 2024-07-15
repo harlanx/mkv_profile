@@ -9,7 +9,7 @@ import '../services/app_services.dart';
 import '../utilities/utilities.dart';
 
 class MainScreen extends StatelessWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  const MainScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

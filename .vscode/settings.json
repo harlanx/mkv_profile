@@ -1,3 +1,4 @@
 {
-    "git.autoRepositoryDetection": "subFolders"
+    "git.autoRepositoryDetection": "subFolders",
+    "cmake.ignoreCMakeListsMissing": true
 }

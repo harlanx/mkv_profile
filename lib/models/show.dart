@@ -17,18 +17,18 @@ abstract class Show {
 
 class Movie extends Show {
   Movie({
-    required Directory directory,
+    required super.directory,
     required this.video,
-  }) : super(directory: directory);
+  });
 
   final Video video;
 }
 
 class Series extends Show {
   Series({
-    required Directory directory,
+    required super.directory,
     required this.seasons,
-  }) : super(directory: directory);
+  });
 
   final List<Season> seasons;
 
@@ -55,9 +55,9 @@ class Video extends TrackProperties {
     this.removeChapters = false,
     this.removeAttachments = false,
     String? title,
-    bool include = true,
+    super.include,
   })  : fileTitle = mainFile.title,
-        super(title: mainFile.title, include: include);
+        super(title: mainFile.title);
 
   final File mainFile;
   final int? season;
@@ -264,9 +264,9 @@ class EmbeddedTrack extends TrackProperties {
     required this.id,
     this.uid = '',
     required this.info,
-    String? title,
-    bool include = true,
-  }) : super(title: title, include: include);
+    super.title,
+    super.include,
+  });
   final int id;
   final String uid;
   final dynamic info;
@@ -371,9 +371,9 @@ class EmbeddedTrack extends TrackProperties {
 class AddedTrack extends TrackProperties {
   AddedTrack({
     required this.file,
-    String? title,
-    bool include = true,
-  }) : super(title: title, include: include);
+    super.title,
+    super.include,
+  });
 
   final File file;
   dynamic info;

@@ -28,7 +28,9 @@ class MetadataScanner {
   static Future<MediaInfo> video(File file) async {
     final mkvInfoJson =
         await Process.run(AppData.appSettings.mkvMergePath, ['-J', file.path]);
+
     final mkvInfo = MkvInfo.fromJson(mkvInfoJson.stdout);
+    // print(mkvInfoJson.stdout);
 
     String? mediaInfoJson;
     if (kReleaseMode) {
@@ -42,8 +44,8 @@ class MetadataScanner {
       stdoutEncoding: const Utf8Codec(),
     ))
         .stdout as String);
-    //Clipboard.setData(ClipboardData(text: mediaInfoJson));
-
+    // await Clipboard.setData(ClipboardData(text: mediaInfoJson));
+    // print(mediaInfoJson);
     return MediaInfo.fromJson(mediaInfoJson, mkvInfo);
   }
 

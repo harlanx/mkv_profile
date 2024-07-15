@@ -4,7 +4,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart' as material;
 
 class TestScreen extends StatefulWidget {
-  const TestScreen({Key? key}) : super(key: key);
+  const TestScreen({super.key});
 
   @override
   State<TestScreen> createState() => _TestScreenState();

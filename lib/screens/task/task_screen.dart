@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' as mt;
 import 'package:fluent_ui/fluent_ui.dart';
 
-import 'package:pluto_grid/pluto_grid.dart';
+import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 import 'package:provider/provider.dart';
 
 import '../../data/app_data.dart';
@@ -9,7 +9,7 @@ import '../../services/app_services.dart';
 import '../../utilities/utilities.dart';
 
 class TasksScreen extends StatefulWidget {
-  const TasksScreen({Key? key}) : super(key: key);
+  const TasksScreen({super.key});
 
   @override
   State<TasksScreen> createState() => TasksScreenState();

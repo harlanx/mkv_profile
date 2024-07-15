@@ -66,8 +66,8 @@ class DeleteDialog extends StatelessWidget {
   const DeleteDialog(
     this.title,
     this.item, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final String title;
   final String item;
@@ -96,8 +96,8 @@ class DeleteDialog extends StatelessWidget {
 class NewUpdateDialog extends StatelessWidget {
   const NewUpdateDialog(
     this.response, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final Map<String, dynamic> response;
 

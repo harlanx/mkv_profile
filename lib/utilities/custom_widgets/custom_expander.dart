@@ -84,7 +84,7 @@ class CustomExpander extends StatefulWidget {
   final ValueChanged<bool>? onStateChanged;
 
   /// The background color of the header.
-  final ButtonState<Color>? headerBackgroundColor;
+  final WidgetStateProperty<Color>? headerBackgroundColor;
 
   /// The shape of the header.
   ///
@@ -240,7 +240,7 @@ class CustomExpanderState extends State<CustomExpander>
                           child: AnimatedSlide(
                             duration: theme.fastAnimationDuration,
                             curve: Curves.easeInCirc,
-                            offset: states.isPressing
+                            offset: states.isPressed
                                 ? const Offset(0, 0.1)
                                 : Offset.zero,
                             child: Icon(

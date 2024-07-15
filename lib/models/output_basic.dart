@@ -66,7 +66,7 @@ class OutputBasic {
       path: json['path'],
       profile: json['profile'] as String,
       info: OutputInfo.fromJson(json['info']),
-      dateTime: DateTime.fromMillisecondsSinceEpoch(json['dateTime'] as int),
+      dateTime: DateTime.fromMillisecondsSinceEpoch(json['dateTime']),
       duration: Duration(seconds: json['duration']),
     );
   }

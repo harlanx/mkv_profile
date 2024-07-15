@@ -61,37 +61,30 @@ class HomeScreenMenuBar extends StatelessWidget {
                   value: shows.items[selectedID.value]!,
                   child: Consumer<ShowNotifier>(
                     builder: (context, show, child) {
-                      return IntrinsicWidth(
-                        child: CommandBar(
-                          overflowBehavior: CommandBarOverflowBehavior.noWrap,
-                          primaryItems: [
-                            CommandBarCombobox<UserProfile>(
-                              label: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(FluentIcons.boards),
-                                  const SizedBox(width: 6),
-                                  Text('${l10n.profiles}:'),
-                                ],
-                              ),
-                              value: show.profile,
-                              width: 200,
-                              items: List.from(
-                                profiles.items.values.map(
-                                  (e) => ComboBoxItem<UserProfile>(
-                                    value: e,
-                                    child: Text(e.name),
-                                  ),
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(FluentIcons.boards),
+                          const SizedBox(width: 6),
+                          Text('${l10n.profiles}:'),
+                          const SizedBox(width: 6),
+                          ComboBox<UserProfile>(
+                            value: show.profile,
+                            items: List.from(
+                              profiles.items.values.map(
+                                (e) => ComboBoxItem<UserProfile>(
+                                  value: e,
+                                  child: Text(e.name),
                                 ),
                               ),
-                              onChanged: (value) {
-                                if (value != null) {
-                                  show.updateProfile(value);
-                                }
-                              },
                             ),
-                          ],
-                        ),
+                            onChanged: (value) {
+                              if (value != null) {
+                                show.updateProfile(value);
+                              }
+                            },
+                          ),
+                        ],
                       );
                     },
                   ),
@@ -107,6 +100,6 @@ class HomeScreenMenuBar extends StatelessWidget {
     final shows = context.read<ShowListNotifier>();
     final paths = await getDirectoryPaths();
 
-    unawaited(shows.add(paths));
+    await shows.add(paths);
   }
 }

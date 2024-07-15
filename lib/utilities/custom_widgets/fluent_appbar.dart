@@ -9,10 +9,9 @@ import '../../data/app_data.dart';
 /// configured with the window_manager package.
 class FluentAppBar extends NavigationAppBar {
   FluentAppBar({
-    Key? key,
+    super.key,
     required BuildContext context,
   }) : super(
-          key: key,
           automaticallyImplyLeading: false,
           actions: const WindowButtons(),
           height: 34,
@@ -37,7 +36,7 @@ class FluentAppBar extends NavigationAppBar {
 }
 
 class WindowButtons extends StatelessWidget {
-  const WindowButtons({Key? key}) : super(key: key);
+  const WindowButtons({super.key});
 
   @override
   Widget build(BuildContext context) {
