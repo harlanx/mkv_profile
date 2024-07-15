@@ -17,6 +17,7 @@ class UserProfilesNotifier extends ChangeNotifier {
       name: 'Default (Movie)',
       showTitleFormat: '%show_title%% (year)%',
       videoTitleFormat: '%show_title%',
+      audioTitleFormat: '%language%',
       subtitleTitleFormat: '%language%% (hearing_impaired)%% (forced)%',
       defaultFlagOrder: [
         'default',
@@ -32,6 +33,7 @@ class UserProfilesNotifier extends ChangeNotifier {
       showTitleFormat: '%show_title%',
       videoTitleFormat:
           '%show_title%% - Sseason_number%%Eepisode_number%% - episode_title%',
+      audioTitleFormat: '%language%',
       subtitleTitleFormat: '%language%% (hearing_impaired)%% (forced)%',
       defaultFlagOrder: [
         'default',

@@ -93,7 +93,7 @@ class TitleScanner {
     formats['%duration%'] =
         Duration(milliseconds: (videoInfo.duration * 1000).toInt()).format();
     formats['%encoding%'] = videoInfo.encoding;
-    formats['%frame_rate%'] = videoInfo.frameRate.toString();
+    formats['%frame_rate%'] = videoInfo.frameRate;
     formats['%height%'] = videoInfo.height.toString();
     formats['%size%'] = info.generalInfo.fileSize.formatByteSize();
     formats['%show_title%'] = _showTitle(rawTitle, profile.modifiers);
@@ -153,7 +153,7 @@ class TitleScanner {
     formats['%episode_number%'] =
         video.episode?.toString().padLeft(2, '0') ?? '';
     formats['%format%'] = videoInfo.format;
-    formats['%frame_rate%'] = videoInfo.frameRate.toString();
+    formats['%frame_rate%'] = videoInfo.frameRate;
     formats['%height%'] = videoInfo.height.toString();
     formats['%season_number%'] = video.season?.toString().padLeft(2, '0') ?? '';
     formats['%size%'] = video.info.generalInfo.fileSize.formatByteSize();
