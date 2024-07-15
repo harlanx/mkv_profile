@@ -5,9 +5,9 @@ import '../../../../utilities/utilities.dart';
 
 class NameDialog extends StatelessWidget {
   NameDialog({
-    Key? key,
+    super.key,
     required this.profile,
-  }) : super(key: key);
+  });
 
   final UserProfile profile;
   late final controller = TextEditingController(text: profile.name);

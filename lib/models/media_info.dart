@@ -24,6 +24,7 @@ class MediaInfo {
 
   factory MediaInfo.fromJson(String str, MkvInfo? mkvInfo) {
     final Map<String, dynamic> json = jsonDecode(str)['media'];
+
     return MediaInfo(
       ref: json['@ref'],
       generalInfo: GeneralInfo.fromJson(
@@ -62,6 +63,8 @@ class GeneralInfo {
   final int fileSize;
 
   factory GeneralInfo.fromJson(Map<String, dynamic> json) {
+    // print('General');
+
     return GeneralInfo(
       title: json['Title'],
       fileExtension: json['FileExtension'],
@@ -82,9 +85,9 @@ class VideoInfo extends TrackProperties {
     required this.frameRate,
     required this.streamSize,
     required this.encoding,
-    String? title,
-    bool include = true,
-  }) : super(title: title, include: include);
+    super.title,
+    super.include,
+  });
 
   final int id;
   String? uid;
@@ -92,13 +95,15 @@ class VideoInfo extends TrackProperties {
   final double duration;
   final int width;
   final int height;
-  final double frameRate;
+  final String frameRate;
   final int? streamSize;
   final String encoding;
 
   factory VideoInfo.fromJson(Map<String, dynamic> json, MkvInfo? mkvInfo) {
     final mkvVideoInfo = mkvInfo?.videoInfo
         .singleWhere((video) => video.id == int.parse(json['StreamOrder']));
+    // print('Video');
+
     return VideoInfo(
       id: int.parse(json['StreamOrder']),
       uid: mkvVideoInfo?.uid,
@@ -106,7 +111,9 @@ class VideoInfo extends TrackProperties {
       duration: double.parse(json['Duration']),
       width: int.parse(json['Width']),
       height: int.parse(json['Height']),
-      frameRate: double.parse(json['FrameRate'] ?? json['FrameRate_Original']),
+      frameRate: json['FrameRate'] ??
+          json['FrameRate_Original'] ??
+          json['FrameRate_Mode'],
       streamSize: int.tryParse(json['StreamSize'].toString()),
       encoding: json['Encoded_Library_Name'] ?? json['Format_Commercial'],
       title: json['Title'],
@@ -135,9 +142,9 @@ class AudioInfo extends TrackProperties {
     required this.bitRate,
     required this.channels,
     required this.samplingRate,
-    String? title,
-    bool include = true,
-  }) : super(title: title, include: include);
+    super.title,
+    super.include,
+  });
 
   final int id;
   String? uid;
@@ -150,6 +157,7 @@ class AudioInfo extends TrackProperties {
   factory AudioInfo.fromJson(Map<String, dynamic> json, MkvInfo? mkvInfo) {
     final mkvAudioInfo = mkvInfo?.audioInfo.singleWhere((audio) =>
         audio.id == int.parse(json['StreamOrder'] ?? json['StreamKindID']));
+    // print('Audio');
 
     return AudioInfo(
       id: int.parse(json['StreamOrder'] ?? json['StreamKindID']),
@@ -181,9 +189,9 @@ class TextInfo extends TrackProperties {
     required this.id,
     this.uid,
     required this.format,
-    String? title,
-    bool include = true,
-  }) : super(title: title, include: include);
+    super.title,
+    super.include,
+  });
 
   final int id;
   String? uid;
@@ -192,6 +200,8 @@ class TextInfo extends TrackProperties {
   factory TextInfo.fromJson(Map<String, dynamic> json, MkvInfo? mkvInfo) {
     final mkvTextInfo = mkvInfo?.textInfo.singleWhere((text) =>
         text.id == int.parse(json['StreamOrder'] ?? json['StreamKindID']));
+    // print('Text');
+
     return TextInfo(
       id: int.parse(json['StreamOrder'] ?? json['StreamKindID']),
       uid: mkvTextInfo?.uid,

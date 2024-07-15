@@ -15,10 +15,10 @@ import 'profile_page_dialogs.dart';
 
 class ProfilePage extends StatelessWidget {
   ProfilePage({
-    Key? key,
+    super.key,
     required this.sourceProfile,
     required this.isNew,
-  }) : super(key: key) {
+  }) {
     if (isNew) {
       // Default profile (Shouldn't be deleted nor edited) so we just clone it.
       // This is for creating new profile.
@@ -53,8 +53,18 @@ class ProfilePage extends StatelessWidget {
     final theme = FluentTheme.of(context);
     final l10n = AppLocalizations.of(context);
 
-    return WillPopScope(
-      onWillPop: () async => await _onWillPop(context),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
+        final NavigatorState navigator = Navigator.of(context);
+        final bool? shouldPop = await _changesDialog(context);
+        if (shouldPop ?? false) {
+          navigator.pop();
+        }
+      },
       child: NavigationView(
         appBar: FluentAppBar(context: context),
         content: ChangeNotifierProvider<UserProfile>.value(
@@ -883,7 +893,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Future<bool> _onWillPop(BuildContext context) async {
+  Future<bool?> _changesDialog(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
 
     if (editProfile == sourceProfile) {

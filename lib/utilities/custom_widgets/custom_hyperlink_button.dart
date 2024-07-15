@@ -31,39 +31,39 @@ class CustomHyperlinkButton extends BaseButton {
     final theme = FluentTheme.of(context);
 
     return ButtonStyle(
-      backgroundColor: ButtonState.resolveWith((states) {
+      backgroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.isDisabled) {
           return theme.resources.subtleFillColorDisabled;
-        } else if (states.isPressing) {
+        } else if (states.isPressed) {
           return theme.resources.subtleFillColorTertiary;
-        } else if (states.isHovering) {
+        } else if (states.isHovered) {
           return theme.resources.subtleFillColorSecondary;
         } else {
           return theme.resources.subtleFillColorTransparent;
         }
       }),
-      shape: ButtonState.all(
+      shape: WidgetStateProperty.all(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
       ),
-      padding: ButtonState.all(
+      padding: WidgetStateProperty.all(
         const EdgeInsetsDirectional.only(
           top: 5.0,
           end: 11.0,
           bottom: 6.0,
         ),
       ),
-      foregroundColor: ButtonState.resolveWith((states) {
+      foregroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.isDisabled) {
           return theme.resources.controlFillColorDisabled;
-        } else if (states.isPressing) {
+        } else if (states.isPressed) {
           return theme.accentColor.tertiaryBrushFor(theme.brightness);
-        } else if (states.isHovering) {
+        } else if (states.isHovered) {
           return theme.accentColor.secondaryBrushFor(theme.brightness);
         } else {
           return theme.accentColor.defaultBrushFor(theme.brightness);
         }
       }),
-      textStyle: ButtonState.all(const TextStyle(
+      textStyle: WidgetStateProperty.all(const TextStyle(
         fontWeight: FontWeight.w600,
         letterSpacing: 0.5,
       )),

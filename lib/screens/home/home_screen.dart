@@ -15,14 +15,26 @@ import 'home_screen_dialogs.dart';
 final _selectedID = ValueNotifier<int?>(null);
 
 class HomeScreen extends StatelessWidget {
-  HomeScreen({Key? key}) : super(key: key);
-
-  final _splitViewCtrl = MultiSplitViewController(areas: [
-    Area(size: AppData.appSettings.folderPanelWidth, minimalSize: 300),
-    Area(size: AppData.appSettings.infoPanelWidth, minimalSize: 500),
-  ]);
-
+  HomeScreen({super.key});
   final _isDragging = ValueNotifier<bool>(false);
+
+  late final _splitViewCtrl = MultiSplitViewController(
+    areas: [
+      Area(
+        size: AppData.appSettings.folderPanelWidth,
+        min: 300,
+        builder: (context, area) => InputPanel(
+          isDragging: _isDragging,
+          selectedID: _selectedID,
+        ),
+      ),
+      Area(
+        size: AppData.appSettings.infoPanelWidth,
+        min: 500,
+        builder: (context, area) => InfoPanel(selectedID: _selectedID),
+      ),
+    ],
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -84,13 +96,12 @@ class HomeScreen extends StatelessWidget {
             ),
           );
         },
-        children: [
-          InputPanel(
-            isDragging: _isDragging,
-            selectedID: _selectedID,
-          ),
-          InfoPanel(selectedID: _selectedID),
-        ],
+        onDividerDragUpdate: (index) {
+          AppData.appSettings.folderPanelWidth =
+              _splitViewCtrl.areas[0].size ?? 300;
+          AppData.appSettings.infoPanelWidth =
+              _splitViewCtrl.areas[1].size ?? 500;
+        },
       ),
     );
   }
@@ -98,10 +109,10 @@ class HomeScreen extends StatelessWidget {
 
 class InputPanel extends StatelessWidget {
   InputPanel({
-    Key? key,
+    super.key,
     required this.isDragging,
     required this.selectedID,
-  }) : super(key: key);
+  });
 
   final ScrollController _controller = ScrollController();
   final ValueNotifier<bool> isDragging;
@@ -154,6 +165,7 @@ class InputPanel extends StatelessWidget {
                       itemBuilder: (_, index) {
                         final itemID = listNotifier.items.keys.elementAt(index);
                         return InputTile(
+                          listNotifier: listNotifier,
                           selectedID: selectedID,
                           itemID: itemID,
                         );
@@ -173,10 +185,12 @@ class InputPanel extends StatelessWidget {
 class InputTile extends StatefulWidget {
   const InputTile({
     super.key,
+    required this.listNotifier,
     required this.selectedID,
     required this.itemID,
   });
 
+  final ShowListNotifier listNotifier;
   final ValueNotifier<int?> selectedID;
   final int itemID;
 
@@ -185,6 +199,14 @@ class InputTile extends StatefulWidget {
 }
 
 class _InputTileState extends State<InputTile> {
+  late Future storedFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    storedFuture = widget.listNotifier.items[widget.itemID]!.loadInfo();
+  }
+
   @override
   Widget build(BuildContext context) {
     final listNotifier = context.watch<ShowListNotifier>();
@@ -202,7 +224,7 @@ class _InputTileState extends State<InputTile> {
               ),
             ),
             child: FutureBuilder<void>(
-              future: notifier.loadInfo(),
+              future: storedFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState != ConnectionState.done) {
                   // Loading Animation
@@ -268,9 +290,9 @@ class _InputTileState extends State<InputTile> {
 
 class InfoPanel extends StatelessWidget {
   const InfoPanel({
-    Key? key,
+    super.key,
     required this.selectedID,
-  }) : super(key: key);
+  });
 
   final ValueNotifier<int?> selectedID;
 
@@ -391,7 +413,6 @@ class _MainNodeState extends State<MainNode> {
               onPressed: () async =>
                   await _folderTitleDialog(context, notifier),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(FluentIcons.folder, size: 14),
                   const SizedBox(width: 8),
@@ -860,7 +881,8 @@ class _VideoNodeState extends State<VideoNode> {
                     ? theme.resources.textFillColorDisabled.withOpacity(0.15)
                     : null,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4.0)),
+                  borderRadius: BorderRadius.circular(4.0),
+                ),
               ),
               child: CustomExpander(
                 initiallyExpanded: expand,
@@ -1675,14 +1697,14 @@ class _TrackNodeState extends State<TrackNode> {
                 context, notifier, widget.type, widget.track),
             style: theme.buttonTheme.hyperlinkButtonStyle?.copyWith(
               backgroundColor: !embedded
-                  ? ButtonState.resolveWith(
+                  ? WidgetStateProperty.resolveWith(
                       (states) {
                         return ButtonThemeData.uncheckedInputColor(
                           theme,
-                          (states.isPressing || states.isNone)
-                              ? {ButtonStates.hovering}
-                              : states.isHovering
-                                  ? {ButtonStates.pressing}
+                          (states.isPressed || states.isNone)
+                              ? {WidgetState.hovered}
+                              : states.isHovered
+                                  ? {WidgetState.pressed}
                                   : states,
                           transparentWhenNone: true,
                         );
@@ -1897,14 +1919,14 @@ class _ExtraNodeState extends State<ExtraNode> {
                 context, notifier, widget.type, widget.extra),
             style: theme.buttonTheme.hyperlinkButtonStyle?.copyWith(
               backgroundColor: !embedded
-                  ? ButtonState.resolveWith(
+                  ? WidgetStateProperty.resolveWith(
                       (states) {
                         return ButtonThemeData.uncheckedInputColor(
                           theme,
-                          (states.isPressing || states.isNone)
-                              ? {ButtonStates.hovering}
-                              : states.isHovering
-                                  ? {ButtonStates.pressing}
+                          (states.isPressed || states.isNone)
+                              ? {WidgetState.hovered}
+                              : states.isHovered
+                                  ? {WidgetState.pressed}
                                   : states,
                           transparentWhenNone: true,
                         );

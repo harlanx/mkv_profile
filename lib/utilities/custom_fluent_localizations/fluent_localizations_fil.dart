@@ -1,7 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 
 class FluentLocalizationFil extends FluentLocalizations {
-  FluentLocalizationFil([String locale = 'fil']) : super(locale);
+  FluentLocalizationFil([super.locale = 'fil']);
 
   @override
   String get backButtonTooltip => 'Bumalik';

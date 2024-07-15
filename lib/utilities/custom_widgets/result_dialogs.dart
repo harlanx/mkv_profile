@@ -8,10 +8,10 @@ import '../utilities.dart';
 
 class ToolNotExistDialog extends StatelessWidget {
   const ToolNotExistDialog({
-    Key? key,
+    super.key,
     required this.toolName,
     required this.info,
-  }) : super(key: key);
+  });
 
   final String toolName;
   final String info;
@@ -52,9 +52,9 @@ class ToolNotExistDialog extends StatelessWidget {
 
 class ParserResultDialog extends StatelessWidget {
   const ParserResultDialog({
-    Key? key,
+    super.key,
     required this.failedPaths,
-  }) : super(key: key);
+  });
 
   final List<ScanError> failedPaths;
 
