@@ -339,10 +339,11 @@ class OutputsScreenState extends State<OutputsScreen>
         },
       ),
     ]);
-
+    final sorted = Map.fromEntries(
+        outputs.items.entries.sorted((a, b) => b.key.compareTo(a.key)));
     _manager?.appendRows(
       List.from(
-        outputs.items.entries.map(
+        sorted.entries.map(
           (e) => PlutoRow(
             checked: outputs.selected.contains(e.key),
             cells: {
