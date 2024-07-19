@@ -183,7 +183,7 @@ class FileGrouper {
     int? result;
     // Extract the season string
     final seasonPattern = RegExp(
-      r'Season.\d+|S.\d+|Season \d+|S \d+',
+      r'Season.\d+|\bS.\d+|Season \d+|\bS \d+',
       caseSensitive: false,
     );
     final seasonMatch = seasonPattern.stringMatch(text);
