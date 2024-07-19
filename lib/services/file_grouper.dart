@@ -6,7 +6,7 @@ import '../utilities/utilities.dart';
 class FileGrouper {
   static Future<GroupingResult> group(PathData pathData) async {
     // Movie
-    if (pathData.videos.length == 1) {
+    if (await _isMovie(pathData)) {
       final video = pathData.videos.first;
       return GroupingResult(
         Movie(
@@ -217,6 +217,27 @@ class FileGrouper {
       }
     }
     return result;
+  }
+
+  static Future<bool> _isMovie(PathData pathData) async {
+    final Set<int> seasonNumbers = {};
+    final Set<int> episodeNumbers = {};
+
+    for (var dir in pathData.directories) {
+      final season = await _fetchSeason(dir.name);
+      if (season != null) {
+        seasonNumbers.add(season);
+      }
+    }
+
+    for (var vid in pathData.videos) {
+      final season = await _fetchSeason(vid.title);
+      final episode = await _fetchEpisode(vid.title);
+      if (season != null) seasonNumbers.add(season);
+      if (episode != null) episodeNumbers.add(episode);
+    }
+
+    return seasonNumbers.isEmpty && episodeNumbers.isEmpty;
   }
 
   static Future<List<AddedTrack>> _fetchAudios(List<File> relatedFiles) async {
