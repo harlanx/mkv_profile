@@ -20,8 +20,8 @@ class UserProfilesNotifier extends ChangeNotifier {
       audioTitleFormat: '%language%',
       subtitleTitleFormat: '%language%% (hearing_impaired)%% (forced)%',
       defaultFlagOrder: [
-        'default',
         'hearing_impaired',
+        'default',
       ],
       defaultLanguage: 'eng',
       languages: UserProfile.defaultLanguages,
@@ -36,8 +36,8 @@ class UserProfilesNotifier extends ChangeNotifier {
       audioTitleFormat: '%language%',
       subtitleTitleFormat: '%language%% (hearing_impaired)%% (forced)%',
       defaultFlagOrder: [
-        'default',
         'hearing_impaired',
+        'default',
       ],
       defaultLanguage: 'eng',
       languages: UserProfile.defaultLanguages,
