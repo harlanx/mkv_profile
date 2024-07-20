@@ -335,7 +335,7 @@ class EmbeddedTrack extends TrackProperties {
   }
 
   Future<bool> get _isHearingImpaired async {
-    final identifiers = ['Hearing Impaired', 'SDH'];
+    final identifiers = ['Hearing Impaired', 'SDH', 'CC'];
     bool result = flags['hearing_impaired']!.value;
     if (!result) {
       result = identifiers.any((identifier) =>
@@ -431,7 +431,7 @@ class AddedTrack extends TrackProperties {
   }
 
   Future<bool> get _isHearingImpaired async {
-    final identifiers = ['Hearing Impaired', 'SDH'];
+    final identifiers = ['Hearing Impaired', 'SDH', 'CC'];
     bool result = false;
     result = identifiers.any((identifier) =>
         file.title.contains(RegExp(identifier, caseSensitive: true)));

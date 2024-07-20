@@ -19,20 +19,25 @@ class NameDialog extends StatelessWidget {
 
     return ContentDialog(
       title: Text(l10n.profileName),
-      content: TextFormBox(
-        key: nameForm,
-        controller: controller,
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return l10n.nameCannotBeEmpty;
-          }
-          return null;
-        },
-        onFieldSubmitted: (value) {
-          if (nameForm.currentState!.validate()) {
-            Navigator.pop(context, controller.text);
-          }
-        },
+      content: ListView(
+        shrinkWrap: true,
+        children: [
+          TextFormBox(
+            key: nameForm,
+            controller: controller,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return l10n.nameCannotBeEmpty;
+              }
+              return null;
+            },
+            onFieldSubmitted: (value) {
+              if (nameForm.currentState!.validate()) {
+                Navigator.pop(context, controller.text);
+              }
+            },
+          ),
+        ],
       ),
       actions: [
         Button(

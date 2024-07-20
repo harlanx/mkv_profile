@@ -106,6 +106,7 @@ class NewUpdateDialog extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return ContentDialog(
+      constraints: kDefaultContentDialogConstraints.copyWith(maxWidth: 480),
       title: Text(l10n.checkUpdate),
       content: Column(
         mainAxisSize: MainAxisSize.min,
