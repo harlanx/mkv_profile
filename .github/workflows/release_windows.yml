@@ -1,0 +1,46 @@
+name: Release build for windows
+on: 
+    workflow_dispatch:
+      inputs:
+        run-id:
+          description: 'Artifact Workflow run ID'
+          required: true
+
+permissions:
+  contents: write
+
+jobs:
+    release_build_windows:
+        name: Release build for Windows
+        runs-on: windows-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Get app version from pubspec.yaml
+              run: |
+                choco install yq
+                $full_version=(yq -r .version pubspec.yaml)
+                $display_version = $full_version -split '\+' | Select-Object -First 1
+                echo "APP_VERSION=$display_version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            - name: Check fetched app version
+              run: |
+                echo "${{ env.APP_VERSION }}"
+            - name: Download Artifact
+              uses: actions/download-artifact@v4
+              with:
+                name: build-v${{ env.APP_VERSION }}
+                github-token: ${{ secrets.GITHUB_TOKEN }}
+                path: downloaded-artifacts
+                run-id: ${{ inputs.run-id }}
+            - name: Check download artifacts
+              run: ls -R downloaded-artifacts
+            - name: Upload to Github release
+              uses: softprops/action-gh-release@v2
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                tag_name: v${{ env.APP_VERSION }}
+                generate_release_notes: true
+                files: |
+                  downloaded-artifacts/mkv_profile-${{ env.APP_VERSION }}-windows.zip
+                  downloaded-artifacts/mkv_profile-${{ env.APP_VERSION }}-setup-windows.exe
+                  downloaded-artifacts/mkv_profile-${{ env.APP_VERSION }}-windows.msix
