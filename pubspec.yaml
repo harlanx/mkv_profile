@@ -77,7 +77,7 @@ msix_config:
   display_name: MKV Profile
   # Refer to https://www.ibm.com/docs/en/ibm-mq/7.5?topic=certificates-distinguished-names
   # Arrangement/Order must be the same as the DN on the CRT file under Details Tab > Subject
-  publisher: E=silan.harry@gmail.com, CN=harlanx, L=SanJose, S=NuevaEcija, C=PH
+  publisher: E=silan.harry@gmail.com, CN=harlanx, O=harlanx, L=San Jose, S=Nueva Ecija, C=PH
   publisher_display_name: harlanx
   identity_name: harlanx.mkvprofile
   logo_path: ./assets/icons/mkv_profile.ico
