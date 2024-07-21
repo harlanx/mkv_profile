@@ -11,22 +11,27 @@ jobs:
         runs-on: windows-latest
         steps:
             - uses: actions/checkout@v4
+
             - name: Prepare folders
               run: |
                 mkdir keys
+
             - name: Setup secret keys
               shell: bash
               run: |
                 echo ${{ secrets.CERTIFICATE }} | base64 --decode > keys/CERTIFICATE.pfx
+
             - name: Get app version from pubspec.yaml
               run: |
                 choco install yq
                 $full_version=(yq -r .version pubspec.yaml)
                 $display_version = $full_version -split '\+' | Select-Object -First 1
                 echo "APP_VERSION=$display_version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
             - name: Check fetched app version
               run: |
                 echo "${{ env.APP_VERSION }}"
+
             - uses: subosito/flutter-action@v2
             - name: Check Flutter version
               run: flutter --version
@@ -34,6 +39,7 @@ jobs:
               run: flutter config --enable-windows-desktop
             - name: Create release build
               run: flutter build windows --release --obfuscate --split-debug-info=build/windows/runner/Outputs/symbols
+
             # We already called build so we skip it in msix to reduce work for the runner
             # MSVC++ Redistributables are pre-included in msix
             - name: Create msix installer
@@ -44,6 +50,7 @@ jobs:
                 --certificate-path=${{ github.workspace }}/keys/CERTIFICATE.pfx `
                 --output-path=build/windows/runner/Outputs `
                 --output-name=mkv_profile-${{env.APP_VERSION}}-windows
+
             - name: Check and install MSVCRedist
               run: |
                 $dlls = @(
@@ -62,26 +69,29 @@ jobs:
                 }
             - name: Include MSVC++ redistributables
               run: |
-                $destination="build/windows/runner/Release"
+                $destination="build/windows/x64/runner/Release"
                 Copy-Item -Path "c:\windows\system32\msvcp140.dll" -Destination $destination
                 Copy-Item -Path "c:\windows\system32\vcruntime140.dll" -Destination $destination
                 Copy-Item -Path "c:\windows\system32\vcruntime140_1.dll" -Destination $destination
+
             - name: Create portable zip
               run: |
                 $outputPath = "build/windows/runner/Outputs/mkv_profile-${{ env.APP_VERSION }}-windows.zip"
-                Compress-Archive -Path "build/windows/runner/Release/*" -DestinationPath $outputPath
+                Compress-Archive -Path "build/windows/x64/runner/Release/*" -DestinationPath $outputPath
+
             - name: Create exe setup installer
               run: |
                 "%ProgramFiles(x86)%\Inno Setup 6\iscc.exe" ^
                 /DMyAppVersion="${{ env.APP_VERSION }}" ^
                 "inno_setup.iss"
               shell: cmd
+
             - name: Upload Artifact
               uses: actions/upload-artifact@v4
               with:
                 name: build-v${{ env.APP_VERSION }}
+                retention-days: 30
                 path: |
                   build/windows/runner/Outputs/mkv_profile-${{ env.APP_VERSION }}-windows.zip
                   build/windows/runner/Outputs/mkv_profile-${{ env.APP_VERSION }}-setup-windows.exe
                   build/windows/runner/Outputs/mkv_profile-${{ env.APP_VERSION }}-windows.msix
-                retention-days: 30
