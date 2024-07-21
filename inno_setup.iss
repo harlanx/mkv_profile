@@ -51,3 +51,16 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
+procedure CurUninstallStepChanged (CurUninstallStep: TUninstallStep);
+var
+    mres : integer;
+begin
+    case CurUninstallStep of                   
+        usPostUninstall:
+            begin
+                mres := MsgBox('Do you want to Remove the User Settings?', mbConfirmation, MB_YESNO or MB_DEFBUTTON2)
+                if mres = IDYES then
+                    DelTree(ExpandConstant('{userappdata}\{#MyAppPublisher}'), True, True, True);
+            end;
+    end;
+end;
