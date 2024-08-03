@@ -203,7 +203,7 @@ class FileGrouper {
     int? result;
     // Extract the episode string
     final episodePattern = RegExp(
-      r'Episode.\d+|E.\d+|Episode \d+|E \d+|(?<!Season\s|S\s)-?\b\d{2}\b',
+      r'(?<!\.\d{4})Episode\s*\d+|E\s*\d+|(?<=Season\s|S\s)-?\b\d{2}\b',
       caseSensitive: false,
     );
     final episodeMatch = episodePattern.stringMatch(text);
