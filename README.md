@@ -165,7 +165,7 @@ This app assumes folders with single video file as movie, for folders that conta
 **Image:** [jpg, jpeg, png]
 
 ## Third Party Requirements
-This app rely on the third party tools [MediaInfo](https://mediaarea.net/en/MediaInfo) and [MKVMerge](https://mkvtoolnix.download/doc/mkvmerge.html) thus required for this app to work. You can download it in their websites:
+This app rely on the third party tools [MediaInfo](https://mediaarea.net/en/MediaInfo) and [MKVMerge](https://mkvtoolnix.download/doc/mkvmerge.html) thus required for this app to work. These tools are already included in the installers. However, you can download it their websites to use other version:
 - [MediaInfo](https://mediaarea.net/en/MediaInfo/Download/Windows)
 - [MKVMerge](https://mkvtoolnix.download/downloads.html#windows)
 
