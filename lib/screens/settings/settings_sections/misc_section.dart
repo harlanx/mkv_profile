@@ -115,7 +115,7 @@ class ToolsTile extends StatelessWidget {
                                       ),
                                     ],
                                   ).then((file) async {
-                                    if (file != null) {
+                                    if (file != null && context.mounted) {
                                       await context
                                           .read<AppSettingsNotifier>()
                                           .updateMediaInfoPath(file.path);
@@ -200,7 +200,7 @@ class ToolsTile extends StatelessWidget {
                                       )
                                     ],
                                   ).then((file) async {
-                                    if (file != null) {
+                                    if (file != null && context.mounted) {
                                       await context
                                           .read<AppSettingsNotifier>()
                                           .updateMkvMergePath(file.path);
@@ -262,7 +262,8 @@ class AboutTile extends StatelessWidget {
                               Version.parse(AppData.appInfo.version);
                           final latestVersion = Version.parse(
                               latestData['tag_name'].replaceAll('v', ''));
-                          if (latestVersion > currentVersion) {
+                          if ((latestVersion > currentVersion) &&
+                              context.mounted) {
                             await showDialog<bool>(
                                 context: context,
                                 builder: (context) {
@@ -276,17 +277,19 @@ class AboutTile extends StatelessWidget {
                               }
                             });
                           } else {
-                            await displayInfoBar(context,
-                                builder: (context, close) {
-                              return InfoBar(
-                                title: Text(l10n.youAreUsingLatestVersion),
-                                action: IconButton(
-                                  icon: const Icon(FluentIcons.clear),
-                                  onPressed: close,
-                                ),
-                                severity: InfoBarSeverity.info,
-                              );
-                            });
+                            if (context.mounted) {
+                              await displayInfoBar(context,
+                                  builder: (context, close) {
+                                return InfoBar(
+                                  title: Text(l10n.youAreUsingLatestVersion),
+                                  action: IconButton(
+                                    icon: const Icon(FluentIcons.clear),
+                                    onPressed: close,
+                                  ),
+                                  severity: InfoBarSeverity.info,
+                                );
+                              });
+                            }
                           }
                         }
                       });
