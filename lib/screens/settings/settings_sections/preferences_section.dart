@@ -273,7 +273,8 @@ class PreferencesSection extends StatelessWidget {
                                                   l10n.profile, p.name);
                                             }).then(
                                           (value) {
-                                            if (value ?? false) {
+                                            if ((value ?? false) &&
+                                                context.mounted) {
                                               // Set profile to none if it's assigned to anything before it gets deleted.
                                               context
                                                   .read<ShowListNotifier>()

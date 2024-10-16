@@ -108,10 +108,12 @@ class PersonalizationSection extends StatelessWidget {
                                 await Future.delayed(
                                     const Duration(milliseconds: 150),
                                     () async {
-                                  await context
-                                      .read<AppSettingsNotifier>()
-                                      .setWindowEffect(context,
-                                          AppData.appSettings.windowEffect);
+                                  if (context.mounted) {
+                                    await context
+                                        .read<AppSettingsNotifier>()
+                                        .setWindowEffect(context,
+                                            AppData.appSettings.windowEffect);
+                                  }
                                 });
                               });
                             },

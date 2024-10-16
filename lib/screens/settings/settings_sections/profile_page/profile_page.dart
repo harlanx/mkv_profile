@@ -55,7 +55,7 @@ class ProfilePage extends StatelessWidget {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, result) async {
         if (didPop) {
           return;
         }
@@ -158,19 +158,22 @@ class ProfilePage extends StatelessWidget {
                                                     ClipboardData(
                                                         text: variable))
                                                 .then((_) {
-                                              displayInfoBar(context,
-                                                  builder: (context, close) {
-                                                return InfoBar(
-                                                  title: Text(l10n.copiedHint),
-                                                  action: IconButton(
-                                                    icon: const Icon(
-                                                        FluentIcons.clear),
-                                                    onPressed: close,
-                                                  ),
-                                                  severity:
-                                                      InfoBarSeverity.info,
-                                                );
-                                              });
+                                              if (context.mounted) {
+                                                displayInfoBar(context,
+                                                    builder: (context, close) {
+                                                  return InfoBar(
+                                                    title:
+                                                        Text(l10n.copiedHint),
+                                                    action: IconButton(
+                                                      icon: const Icon(
+                                                          FluentIcons.clear),
+                                                      onPressed: close,
+                                                    ),
+                                                    severity:
+                                                        InfoBarSeverity.info,
+                                                  );
+                                                });
+                                              }
                                             });
                                           },
                                         ),
@@ -228,19 +231,22 @@ class ProfilePage extends StatelessWidget {
                                                     ClipboardData(
                                                         text: variable))
                                                 .then((_) {
-                                              displayInfoBar(context,
-                                                  builder: (context, close) {
-                                                return InfoBar(
-                                                  title: Text(l10n.copiedHint),
-                                                  action: IconButton(
-                                                    icon: const Icon(
-                                                        FluentIcons.clear),
-                                                    onPressed: close,
-                                                  ),
-                                                  severity:
-                                                      InfoBarSeverity.info,
-                                                );
-                                              });
+                                              if (context.mounted) {
+                                                displayInfoBar(context,
+                                                    builder: (context, close) {
+                                                  return InfoBar(
+                                                    title:
+                                                        Text(l10n.copiedHint),
+                                                    action: IconButton(
+                                                      icon: const Icon(
+                                                          FluentIcons.clear),
+                                                      onPressed: close,
+                                                    ),
+                                                    severity:
+                                                        InfoBarSeverity.info,
+                                                  );
+                                                });
+                                              }
                                             });
                                           },
                                         ),
@@ -298,19 +304,22 @@ class ProfilePage extends StatelessWidget {
                                                     ClipboardData(
                                                         text: variable))
                                                 .then((_) {
-                                              displayInfoBar(context,
-                                                  builder: (context, close) {
-                                                return InfoBar(
-                                                  title: Text(l10n.copiedHint),
-                                                  action: IconButton(
-                                                    icon: const Icon(
-                                                        FluentIcons.clear),
-                                                    onPressed: close,
-                                                  ),
-                                                  severity:
-                                                      InfoBarSeverity.info,
-                                                );
-                                              });
+                                              if (context.mounted) {
+                                                displayInfoBar(context,
+                                                    builder: (context, close) {
+                                                  return InfoBar(
+                                                    title:
+                                                        Text(l10n.copiedHint),
+                                                    action: IconButton(
+                                                      icon: const Icon(
+                                                          FluentIcons.clear),
+                                                      onPressed: close,
+                                                    ),
+                                                    severity:
+                                                        InfoBarSeverity.info,
+                                                  );
+                                                });
+                                              }
                                             });
                                           },
                                         ),
@@ -368,19 +377,22 @@ class ProfilePage extends StatelessWidget {
                                                     ClipboardData(
                                                         text: variable))
                                                 .then((_) {
-                                              displayInfoBar(context,
-                                                  builder: (context, close) {
-                                                return InfoBar(
-                                                  title: Text(l10n.copiedHint),
-                                                  action: IconButton(
-                                                    icon: const Icon(
-                                                        FluentIcons.clear),
-                                                    onPressed: close,
-                                                  ),
-                                                  severity:
-                                                      InfoBarSeverity.info,
-                                                );
-                                              });
+                                              if (context.mounted) {
+                                                displayInfoBar(context,
+                                                    builder: (context, close) {
+                                                  return InfoBar(
+                                                    title:
+                                                        Text(l10n.copiedHint),
+                                                    action: IconButton(
+                                                      icon: const Icon(
+                                                          FluentIcons.clear),
+                                                      onPressed: close,
+                                                    ),
+                                                    severity:
+                                                        InfoBarSeverity.info,
+                                                  );
+                                                });
+                                              }
                                             });
                                           },
                                         ),
