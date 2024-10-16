@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' as mt;
+import 'package:flutter/material.dart' show Material;
 import 'package:fluent_ui/fluent_ui.dart';
 
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
@@ -95,17 +95,15 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
       ),
       padding: EdgeInsets.zero,
       content: SizedBox.expand(
-        child: mt.Material(
+        child: Material(
           color: Colors.transparent,
           child: PlutoGrid(
             configuration: _plutoConfig(context, AppData.appSettings.themeMode),
             columns: _columns,
+            mode: PlutoGridMode.selectWithOneTap,
             rows: _rows,
             onLoaded: (event) {
               _manager = event.stateManager;
-              for (var col in _columns) {
-                _manager.autoFitColumn(context, col);
-              }
             },
             onRowChecked: (event) {
               if (event.row != null && event.rowIdx != null) {

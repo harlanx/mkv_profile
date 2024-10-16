@@ -1,13 +1,13 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart' as mt;
+import 'package:flutter/material.dart' show Material;
 import 'package:fluent_ui/fluent_ui.dart';
 
-import 'package:intl/intl.dart';
 import 'package:multi_split_view/multi_split_view.dart';
 import 'package:pluto_grid_plus/pluto_grid_plus.dart';
 import 'package:provider/provider.dart';
 
 import '../../data/app_data.dart';
+import '../../models/models.dart';
 import '../../utilities/utilities.dart';
 
 class OutputsScreen extends StatefulWidget {
@@ -20,95 +20,95 @@ class OutputsScreen extends StatefulWidget {
 class OutputsScreenState extends State<OutputsScreen>
     with WidgetsBindingObserver {
   late final outputs = context.watch<OutputNotifier>();
-  PlutoGridStateManager? _manager;
+  late final PlutoGridStateManager _manager;
   final List<PlutoColumn> _columns = [];
   final List<PlutoRow> _rows = [];
   final _verticalCtrl = ScrollController(),
       _horizontalCtrl = ScrollController();
-  final _infoPreview = ValueNotifier<String?>(null);
+  final _selectedOutput = ValueNotifier<OutputBasic?>(null);
 
   late final _splitViewCtrl = MultiSplitViewController(
     areas: [
       Area(
-        size: 350,
-        min: 200,
-        builder: (context, area) => SizedBox.expand(
-          child: mt.Material(
-            color: Colors.transparent,
-            child: PlutoGrid(
-              mode: PlutoGridMode.selectWithOneTap,
-              configuration:
-                  _plutoConfig(context, AppData.appSettings.themeMode),
-              onLoaded: (event) {
-                _manager = event.stateManager;
-                for (var col in _columns) {
-                  _manager?.autoFitColumn(context, col);
-                }
-              },
-              onSelected: (event) {
-                _infoPreview.value = outputs.items[event.cell?.value]?.info.log;
-              },
-              onRowChecked: (event) {
-                if (event.row != null && event.rowIdx != null) {
-                  if (event.isChecked!) {
-                    outputs.addSelected({event.row!.cells['info']!.value});
+        flex: 3,
+        builder: (context, area) {
+          return SizedBox.expand(
+            child: Material(
+              color: Colors.transparent,
+              child: PlutoGrid(
+                mode: PlutoGridMode.selectWithOneTap,
+                configuration:
+                    _plutoConfig(context, AppData.appSettings.themeMode),
+                onLoaded: (event) {
+                  _manager = event.stateManager;
+                },
+                onSelected: (event) {
+                  _selectedOutput.value =
+                      outputs.items[event.cell?.row.cells.values.first.value];
+                },
+                onRowChecked: (event) {
+                  if (event.row != null && event.rowIdx != null) {
+                    if (event.isChecked!) {
+                      outputs.addSelected({event.row!.cells['id']!.value});
+                    } else {
+                      outputs.removeSelected({event.row!.cells['id']!.value});
+                    }
                   } else {
-                    outputs.removeSelected({event.row!.cells['info']!.value});
+                    if (event.isChecked!) {
+                      outputs.addSelected(outputs.items.keys.toSet());
+                    } else {
+                      outputs.removeSelected(outputs.items.keys.toSet());
+                    }
                   }
-                } else {
-                  if (event.isChecked!) {
-                    outputs.addSelected(outputs.items.keys.toSet());
-                  } else {
-                    outputs.removeSelected(outputs.items.keys.toSet());
-                  }
-                }
-              },
-              columns: _columns,
-              rows: _rows,
+                },
+                columns: _columns,
+                rows: _rows,
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
-      Area(
-        size: 150,
-        min: 100,
-        builder: (context, area) => Container(
-          height: 200,
-          width: double.infinity,
-          margin: const EdgeInsets.all(5.0),
-          padding: const EdgeInsets.all(5.0),
-          decoration: BoxDecoration(
-            color: FluentTheme.of(context).micaBackgroundColor,
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: Scrollbar(
-            controller: _verticalCtrl,
-            thumbVisibility: true,
+      _outputLogArea,
+    ],
+  );
+
+  late final _outputLogArea = Area(
+    flex: 2,
+    builder: (context, area) {
+      return ValueListenableBuilder(
+        valueListenable: _selectedOutput,
+        builder: (context, output, child) {
+          if (output == null) return const SizedBox.shrink();
+          return Container(
+            width: double.infinity,
+            margin: const EdgeInsets.all(5.0),
+            padding: const EdgeInsets.all(5.0),
+            decoration: BoxDecoration(
+              color: FluentTheme.of(context).micaBackgroundColor,
+              borderRadius: BorderRadius.circular(5),
+            ),
             child: Scrollbar(
-              controller: _horizontalCtrl,
+              controller: _verticalCtrl,
               thumbVisibility: true,
-              notificationPredicate: (notification) => notification.depth == 1,
-              child: SingleChildScrollView(
-                controller: _verticalCtrl,
+              child: Scrollbar(
+                controller: _horizontalCtrl,
+                thumbVisibility: true,
+                notificationPredicate: (notification) =>
+                    notification.depth == 1,
                 child: SingleChildScrollView(
-                  controller: _horizontalCtrl,
-                  scrollDirection: Axis.horizontal,
-                  child: ValueListenableBuilder<String?>(
-                      valueListenable: _infoPreview,
-                      builder: (context, text, child) {
-                        if (text != null) {
-                          return SelectableText(text);
-                        }
-                        // Empty Widget
-                        return const SizedBox.shrink();
-                      }),
+                  controller: _verticalCtrl,
+                  child: SingleChildScrollView(
+                    controller: _horizontalCtrl,
+                    scrollDirection: Axis.horizontal,
+                    child: SelectableText(output.info.log),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-      ),
-    ],
+          );
+        },
+      );
+    },
   );
 
   @override
@@ -117,6 +117,18 @@ class OutputsScreenState extends State<OutputsScreen>
     WidgetsBinding.instance.addObserver(this);
     Future.delayed(Duration.zero, () {
       if (mounted) fetchData();
+    });
+    if (_selectedOutput.value == null) {
+      _splitViewCtrl.removeAreaAt(1);
+    }
+    _selectedOutput.addListener(() {
+      if (_selectedOutput.value == null) {
+        _splitViewCtrl.removeAreaAt(1);
+      } else {
+        if (_splitViewCtrl.areasCount != 2) {
+          _splitViewCtrl.addArea(_outputLogArea);
+        }
+      }
     });
   }
 
@@ -128,9 +140,9 @@ class OutputsScreenState extends State<OutputsScreen>
 
   @override
   void didChangePlatformBrightness() {
-    _manager?.setConfiguration(
-        _plutoConfig(context, AppData.appSettings.themeMode));
-    _manager?.notifyListeners();
+    _manager
+        .setConfiguration(_plutoConfig(context, AppData.appSettings.themeMode));
+    _manager.notifyListeners();
     super.didChangePlatformBrightness();
   }
 
@@ -154,9 +166,10 @@ class OutputsScreenState extends State<OutputsScreen>
                     onPressed: outputs.selected.isEmpty
                         ? null
                         : () {
-                            _infoPreview.value = null;
+                            _selectedOutput.value = null;
                             outputs.remove(_selectedIds);
-                            _manager?.removeRows(_manager!.checkedRows);
+                            outputs.removeSelected(_selectedIds);
+                            _manager.removeRows(_manager.checkedRows);
                           },
                   ),
                 ],
@@ -188,17 +201,23 @@ class OutputsScreenState extends State<OutputsScreen>
   }
 
   Set<int> get _selectedIds =>
-      _manager!.checkedRows.map<int>((e) => e.cells.values.first.value).toSet();
+      _manager.checkedRows.map<int>((e) => e.cells.values.first.value).toSet();
 
   void fetchData() {
     final l10n = AppLocalizations.of(context);
-    _manager?.removeAllRows();
-    _manager?.removeColumns(_manager!.columns);
-    _manager?.insertColumns(0, [
+    _manager.removeAllRows();
+    _manager.removeColumns(_manager.columns);
+    _manager.insertColumns(0, [
+      PlutoColumn(
+        title: 'ID',
+        field: 'id',
+        type: PlutoColumnType.text(),
+        hide: true,
+      ),
       PlutoColumn(
         title: l10n.info,
         field: 'info',
-        type: PlutoColumnType.number(),
+        type: PlutoColumnType.text(),
         enableRowChecked: outputs.items.isNotEmpty,
         readOnly: true,
         enableSorting: false,
@@ -209,10 +228,8 @@ class OutputsScreenState extends State<OutputsScreen>
         enableHideColumnMenuItem: false,
         enableContextMenu: false,
         renderer: (rendererContext) {
-          final int id = rendererContext.cell.value;
-          final output = outputs.items[id]!;
+          final output = rendererContext.cell.value as OutputBasic;
           final theme = FluentTheme.of(context);
-
           return Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,113 +264,85 @@ class OutputsScreenState extends State<OutputsScreen>
       PlutoColumn(
         title: l10n.profile,
         field: 'profile',
-        type: PlutoColumnType.number(),
+        type: PlutoColumnType.text(),
         readOnly: true,
-        enableSorting: false,
+        enableSorting: true,
         enableColumnDrag: false,
         enableEditingMode: false,
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
         enableContextMenu: false,
-        renderer: (rendererContext) {
-          final int id = rendererContext.cell.value;
-          final output = outputs.items[id]!;
-          return Text(
-            output.profile,
-            maxLines: 1,
-            softWrap: false,
-            overflow: TextOverflow.fade,
-          );
-        },
       ),
       PlutoColumn(
         title: l10n.date,
         field: 'date',
-        type: PlutoColumnType.number(),
+        type: PlutoColumnType.date(
+          format: 'MM/dd/yyyy HH:mm:ss',
+        ),
         readOnly: true,
-        enableSorting: false,
+        enableSorting: true,
         enableColumnDrag: false,
         enableEditingMode: false,
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
         enableContextMenu: false,
-        renderer: (rendererContext) {
-          final int id = rendererContext.cell.value;
-          final output = outputs.items[id]!;
-          return Text(
-            DateFormat.yMd(Platform.localeName)
-                .add_jm()
-                .format(output.dateTime),
-            maxLines: 1,
-            softWrap: false,
-            overflow: TextOverflow.fade,
-          );
-        },
       ),
       PlutoColumn(
         title: l10n.duration,
         field: 'duration',
         type: PlutoColumnType.number(),
         readOnly: true,
-        enableSorting: false,
+        enableSorting: true,
         enableColumnDrag: false,
         enableEditingMode: false,
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
         enableContextMenu: false,
-        renderer: (rendererContext) {
-          final int id = rendererContext.cell.value;
-          final output = outputs.items[id]!;
-          return Text(
-            output.duration.format(includeMillisecond: false),
-            maxLines: 1,
-            softWrap: false,
-            overflow: TextOverflow.fade,
-          );
+        formatter: (value) {
+          final duration = Duration(seconds: value);
+          return duration.format(includeMillisecond: false);
         },
       ),
       PlutoColumn(
         title: l10n.status,
         field: 'status',
-        type: PlutoColumnType.number(),
+        type: PlutoColumnType.text(),
         readOnly: true,
-        enableSorting: false,
+        enableSorting: true,
         enableColumnDrag: false,
         enableEditingMode: false,
         enableFilterMenuItem: false,
         enableSetColumnsMenuItem: false,
         enableHideColumnMenuItem: false,
         enableContextMenu: false,
-        renderer: (rendererContext) {
-          final int id = rendererContext.cell.value;
-          final output = outputs.items[id]!;
-          return Text(
-            l10n.taskStatus(output.info.taskStatus.name),
-            maxLines: 1,
-            softWrap: false,
-            overflow: TextOverflow.fade,
-          );
-        },
+        formatter: (value) => (value as String).capitalized,
       ),
     ]);
-    final sorted = Map.fromEntries(
-        outputs.items.entries.sorted((a, b) => b.key.compareTo(a.key)));
-    _manager?.appendRows(
+    // Initially sorted by added sequence.
+    // final sorted = Map.fromEntries(outputs.items.entries.sorted((a, b) => b.key.compareTo(a.key)));
+    // Just reverse the list for better speed.
+    final sorted = Map.fromEntries(outputs.items.entries.toList().reversed);
+    _manager.appendRows(
       List.from(
         sorted.entries.map(
-          (e) => PlutoRow(
-            checked: outputs.selected.contains(e.key),
-            cells: {
-              'info': PlutoCell(value: e.key),
-              'profile': PlutoCell(value: e.key),
-              'date': PlutoCell(value: e.key),
-              'duration': PlutoCell(value: e.key),
-              'status': PlutoCell(value: e.key),
-            },
-          ),
+          (e) {
+            final int id = e.key;
+            final output = outputs.items[id]!;
+            return PlutoRow(
+              checked: outputs.selected.contains(e.key),
+              cells: {
+                'id': PlutoCell(value: e.key),
+                'info': PlutoCell(value: output),
+                'profile': PlutoCell(value: output.profile),
+                'date': PlutoCell(value: output.dateTime),
+                'duration': PlutoCell(value: output.duration.inSeconds),
+                'status': PlutoCell(value: output.info.taskStatus.name),
+              },
+            );
+          },
         ),
       ),
     );
