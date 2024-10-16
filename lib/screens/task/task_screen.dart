@@ -255,7 +255,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
         enableMoveHorizontalInEditing: false,
         style: PlutoGridStyleConfig.dark(
           rowColor: Colors.transparent,
-          activatedColor: theme.resources.subtleFillColorSecondary,
+          activatedColor: theme.resources.cardStrokeColorDefaultSolid,
           activatedBorderColor:
               theme.accentColor.defaultBrushFor(theme.brightness),
           gridBackgroundColor: Colors.transparent,
@@ -267,7 +267,7 @@ class TasksScreenState extends State<TasksScreen> with WidgetsBindingObserver {
       enableMoveHorizontalInEditing: false,
       style: PlutoGridStyleConfig(
         rowColor: Colors.transparent,
-        activatedColor: theme.resources.subtleFillColorSecondary,
+        activatedColor: theme.resources.cardStrokeColorDefault,
         activatedBorderColor:
             theme.accentColor.defaultBrushFor(theme.brightness),
         gridBackgroundColor: Colors.transparent,
