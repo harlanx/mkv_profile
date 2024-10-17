@@ -5,6 +5,15 @@ import 'package:diacritic/diacritic.dart';
 
 import '../utilities/utilities.dart';
 
+enum MatchingAlgorithm {
+  jaroWrinkler('Jaro Wrinkler'),
+  levenshtein('Levenshtein'),
+  nGram('n-Gram');
+
+  const MatchingAlgorithm(this.value);
+  final String value;
+}
+
 class LanguageCodes {
   late final Set<LanguageCode> _items;
   Set<LanguageCode> get items => _items;
@@ -22,9 +31,8 @@ class LanguageCodes {
       _items.singleWhere((code) => code.name == 'Undetermined');
 
   Future<LanguageCode> identify([String? isoCode, String? text]) async {
-    if (isoCode == null && text == null) {
-      return defaultCode;
-    }
+    if (isoCode == null && text == null) return defaultCode;
+
     LanguageCode result;
     result = identifyByCode(isoCode);
     if (result == defaultCode && text != null) {
@@ -34,10 +42,9 @@ class LanguageCodes {
   }
 
   LanguageCode identifyByCode(String? isoCode, [String? isoCodeExtra]) {
+    if (isoCode == null) return defaultCode;
+
     LanguageCode? result;
-    if (isoCode == null) {
-      return defaultCode;
-    }
     result ??= _items.firstWhereOrNull((code) => code.iso6393 == isoCode);
     result ??= _items.firstWhereOrNull((code) => code.iso6392 == isoCode);
     result ??= _items.firstWhereOrNull((code) => code.iso6391 == isoCode);
@@ -48,40 +55,51 @@ class LanguageCodes {
     return result;
   }
 
-  // Still not sure whether allow user to change algorithm since they can manually change the wrong ones.
-  /// Identify the LanguageCode by text using various similarty algoritms
-  /// 1 = Jaro-Wrinkler Distance;
-  /// 2 = Levenshtein Distance;
+  /// Identify the LanguageCode by text using various similarty algoritms: </br>
+  /// 1 = Jaro-Wrinkler Distance </br>
+  /// 2 = Levenshtein Distance </br>
   /// 3 = nGram Cosine Similarity
-  Future<LanguageCode> identifyByText(String text, {int algo = 1}) async {
+  Future<LanguageCode> identifyByText(
+    String text, {
+    MatchingAlgorithm algo = MatchingAlgorithm.jaroWrinkler,
+  }) async {
     LanguageCode? result;
     // Match using exact strings
-    final bounds = RegExp('[${RegExp.escape('[](){}.+-=#')}]');
-    final texts = text.split(bounds);
-    for (var t in texts) {
-      for (var l in _items) {
-        if (t == l.cleanName) {
-          result ??= l;
+    final delimiters = RegExp('[${RegExp.escape(r'-.[](){}')}]');
+    var texts = text.split(delimiters);
+    texts = texts.where((t) => t.isNotEmpty).map((e) => e.trim()).toList();
+    // Exact string matching
+    for (var text in texts) {
+      for (var language in _items) {
+        if (text == language.cleanName ||
+            text == language.iso6393 ||
+            text == language.iso6392 ||
+            text == language.iso6391) {
+          result ??= language;
           break;
         }
       }
     }
-    // Only retains letters
-    text = text.replaceAll(RegExp(r'[^A-Za-z]+'), '');
-    // Match using text matching algorithms
-    switch (algo) {
-      case 1:
-        result ??= await _levenshteinMatch(text) ?? defaultCode;
-        break;
-      case 2:
-        result ??= await _jaroWinklerMatch(text) ?? defaultCode;
-        break;
-      case 3:
-        result ??= await _bigramCosineMatch(text) ?? defaultCode;
-        break;
+
+    // Fallback matching method using text matching algorithms
+    if (result == null) {
+      LanguageCode? algoMatch;
+      for (var text in texts) {
+        switch (algo) {
+          case MatchingAlgorithm.jaroWrinkler:
+            algoMatch = await _levenshteinMatch(text);
+          case MatchingAlgorithm.levenshtein:
+            algoMatch = await _jaroWinklerMatch(text);
+          case MatchingAlgorithm.nGram:
+            algoMatch = await _bigramCosineMatch(text);
+        }
+        if (algoMatch != null) {
+          result = algoMatch;
+          break;
+        }
+      }
     }
-    result ??= defaultCode;
-    return result;
+    return result ?? defaultCode;
   }
 
   Future<LanguageCode?> _jaroWinklerMatch(String input) async {

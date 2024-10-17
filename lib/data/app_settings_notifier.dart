@@ -5,6 +5,7 @@ import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:system_theme/system_theme.dart';
 
 import '../data/app_data.dart';
+import '../models/models.dart';
 import '../utilities/utilities.dart';
 
 enum WindowsFluentEffect {
@@ -27,6 +28,7 @@ class AppSettingsNotifier extends ChangeNotifier {
   AppSettingsNotifier({
     this.recursiveLimit = 20,
     this.maximumProcess = 1,
+    this.textMatchingAlgorithm = MatchingAlgorithm.jaroWrinkler,
     this.themeMode = ThemeMode.system,
     this.accentMode = AccentMode.custom,
     this.customAccent = const Color(0xff468600),
@@ -43,6 +45,7 @@ class AppSettingsNotifier extends ChangeNotifier {
 
   int recursiveLimit;
   int maximumProcess;
+  MatchingAlgorithm textMatchingAlgorithm;
   ThemeMode themeMode;
   AccentMode accentMode;
   Color customAccent;
@@ -63,6 +66,8 @@ class AppSettingsNotifier extends ChangeNotifier {
     return AppSettingsNotifier(
       recursiveLimit: json['recursiveLimit'],
       maximumProcess: json['maximumProcess'],
+      textMatchingAlgorithm:
+          MatchingAlgorithm.values.byName(json['textMatchingAlgorithm']),
       themeMode: ThemeMode.values.byName(json['themeMode']),
       accentMode: AccentMode.values.byName(json['accentMode']),
       customAccent: Color(json['customAccent']),
@@ -83,6 +88,7 @@ class AppSettingsNotifier extends ChangeNotifier {
   Map<String, dynamic> toJson() => {
         'recursiveLimit': recursiveLimit,
         'maximumProcess': maximumProcess,
+        'textMatchingAlgorithm': textMatchingAlgorithm.name,
         'themeMode': themeMode.name,
         'accentMode': accentMode.name,
         'customAccent': customAccent.value,
@@ -103,6 +109,7 @@ class AppSettingsNotifier extends ChangeNotifier {
       final data = fromJson(jsonDecode(appSettingsJson));
       recursiveLimit = data.recursiveLimit;
       maximumProcess = data.maximumProcess;
+      textMatchingAlgorithm = data.textMatchingAlgorithm;
       themeMode = data.themeMode;
       accentMode = data.accentMode;
       customAccent = data.customAccent;
@@ -129,6 +136,11 @@ class AppSettingsNotifier extends ChangeNotifier {
 
   void setMaximumProcess(int limit) {
     maximumProcess = limit;
+    notifyListeners();
+  }
+
+  void setTextAlgorithm(MatchingAlgorithm algorithm) {
+    textMatchingAlgorithm = algorithm;
     notifyListeners();
   }
 
