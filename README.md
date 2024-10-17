@@ -134,6 +134,10 @@ otherwise if empty, will return  `Tom Clancy's Jack Ryan - S01E01`
 - **Audio:** Variables specified in the *Audio* title format will be replaced with the corresponding data.
 - **Subtitle:** Variables specified in the *Subtitle* title format will be replaced with the corresponding data.
 
+## Language Scanning
+- **Embedded:** Uses language code tag, if the tag is *Undetermined* it will scan the track title to match a language.
+- **Added:** Scans the file title to match a language.
+
 ## Available Track Options (Video/Audio/Subtitle)
 - Title
 - Language

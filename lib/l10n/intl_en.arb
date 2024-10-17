@@ -265,5 +265,6 @@
   "addChapters": "Add Chapters",
   "addAttachments": "Add Attachments",
   "resetAndUseDefault": "Reset and use the default tool path",
-  "sameAsOutput": "Same as output file title"
+  "sameAsOutput": "Same as output file title",
+  "textAlgorithmSubstitute": "Text matching substitute algorithm"
 }

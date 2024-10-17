@@ -388,7 +388,10 @@ class AddedTrack extends TrackProperties {
         info = await MetadataScanner.subtitle(file);
       }
 
-      language = await AppData.languageCodes.identifyByText(file.title);
+      language = await AppData.languageCodes.identifyByText(
+        file.title,
+        algo: AppData.appSettings.textMatchingAlgorithm,
+      );
       flags['enabled']!.value = true;
       flags['original_language']!.value = await _isOriginalLanguage;
       flags['forced']!.value = await _isForced;

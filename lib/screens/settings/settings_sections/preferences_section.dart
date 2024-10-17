@@ -8,6 +8,7 @@ import 'package:win32/win32.dart';
 import 'package:intl/intl.dart';
 
 import '../../../data/app_data.dart';
+import '../../../models/models.dart';
 import '../../../utilities/utilities.dart';
 import '../settings_screen_dialogs.dart';
 import 'profile_page/profile_page.dart';
@@ -135,6 +136,43 @@ class PreferencesSection extends StatelessWidget {
                         );
                       },
                     ),
+                  ),
+                ],
+              ),
+            ),
+            Card(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Icon(FluentIcons.charticulator_linking_data),
+                  const SizedBox(width: 6),
+                  Text.rich(TextSpan(text: l10n.textAlgorithmSubstitute)),
+                  const Spacer(),
+                  Selector<AppSettingsNotifier, MatchingAlgorithm>(
+                    selector: (p0, p1) => p1.textMatchingAlgorithm,
+                    builder: (context, value, child) {
+                      return ComboBox<MatchingAlgorithm>(
+                        value: value,
+                        items: List.from(
+                          MatchingAlgorithm.values.map(
+                            (e) => ComboBoxItem<MatchingAlgorithm>(
+                              value: e,
+                              child: Text(e.value),
+                            ),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          if (value != null) {
+                            context
+                                .read<AppSettingsNotifier>()
+                                .setTextAlgorithm(value);
+                          }
+                        },
+                      );
+                    },
                   ),
                 ],
               ),
