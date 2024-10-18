@@ -118,7 +118,6 @@
   "videoTitleNote": "Ito ay mag a-apply sa pangalan ng file ng bidyo at sa pangalan ng track nito",
   "audioTitleNote": "Ito ay mag a-apply sa pangalan ng track ng audio",
   "subtitleTitleNote": "Ito ay mag a-apply sa pangalan ng track ng subtitle",
-  "selectLanguageToInclude": "Piliin ang mga lengguwaheng isasama at pumili rin ng maaring gawing default",
   "languages": "Mga lengguwahe",
   "selectedLanguages": "Mga pinili",
   "selectTrackFlagsAndReorder": "Pumili ng track flags at i-reorder, ito ay mag se-set ng Default flag base sa pagkakasunod ng fallbacks",
@@ -266,5 +265,7 @@
   "addAttachments": "Mag-add ng Attachments",
   "resetAndUseDefault": "I-reset at gamiting ang default path ng tool",
   "sameAsOutput": "Kapareho sa pangalan ng output file",
-  "textAlgorithmSubstitute": "Kapalit na pantugmang algoritmo sa text"
+  "textAlgorithmSubstitute": "Kapalit na pantugmang algoritmo sa text",
+  "selectSubtitleLanguageToInclude": "Piliin ang mga lengguwahe ng subtitle na isasama at pumili ng itatakdang default",
+  "selectAudioLanguageToInclude": "Piliin ang mga lengguwahe ng audio na isasama at pumili ng itatakdang default"
 }

@@ -622,13 +622,14 @@ class ProfilePage extends StatelessWidget {
                           ],
                         ),
                       ),
+                      // Select Audio Languages
                       Expander(
-                        header: Text(l10n.selectLanguageToInclude),
+                        header: Text(l10n.selectAudioLanguageToInclude),
                         trailing: Visibility(
-                          visible: profile.defaultLanguage.isNotEmpty,
-                          child: Text(profile.defaultLanguage.isNotEmpty
+                          visible: profile.defaultAudioLanguage.isNotEmpty,
+                          child: Text(profile.defaultAudioLanguage.isNotEmpty
                               ? AppData.languageCodes
-                                  .identifyByCode(profile.defaultLanguage)
+                                  .identifyByCode(profile.defaultAudioLanguage)
                                   .name
                               : ''),
                         ),
@@ -648,11 +649,10 @@ class ProfilePage extends StatelessWidget {
                                       key: const Key('Search Languages'),
                                       trailingIcon:
                                           const Icon(FluentIcons.search),
-                                      sorter: (text, items) =>
-                                          Utilities.searchSorter(text, items),
+                                      sorter: Utilities.searchSorter,
                                       onSelected: (selected) {
                                         if (selected.value != null) {
-                                          profile.updateLanguages(
+                                          profile.updateAudioLanguages(
                                               selected.value!.iso6393);
                                         }
                                       },
@@ -676,20 +676,18 @@ class ProfilePage extends StatelessWidget {
                                   child: ReorderableListView.builder(
                                     shrinkWrap: true,
                                     buildDefaultDragHandles: false,
-                                    itemCount: editProfile.languages.length,
-                                    onReorder: (oldIndex, newIndex) =>
-                                        editProfile.reorderLanguages(
-                                            oldIndex, newIndex),
-                                    proxyDecorator: (child, index, animation) =>
-                                        _proxyDecorator(
-                                            child, index, animation),
+                                    itemCount:
+                                        editProfile.audioLanguages.length,
+                                    onReorder:
+                                        editProfile.reorderAudioLanguages,
+                                    proxyDecorator: _proxyDecorator,
                                     itemBuilder: (context, index) {
                                       final code = AppData.languageCodes
-                                          .identifyByCode(profile.languages
+                                          .identifyByCode(profile.audioLanguages
                                               .elementAt(index));
 
                                       final isDefault = code.iso6393 ==
-                                          editProfile.defaultLanguage;
+                                          editProfile.defaultAudioLanguage;
                                       return ReorderableDragStartListener(
                                         key: ValueKey(code),
                                         index: index,
@@ -707,7 +705,7 @@ class ProfilePage extends StatelessWidget {
                                                   semanticLabel: 'isDefault',
                                                   checked: isDefault,
                                                   onChanged: (val) => profile
-                                                      .updateDefaultLanguage(
+                                                      .updateDefaultAudioLanguage(
                                                           code.iso6393),
                                                 ),
                                               ),
@@ -715,8 +713,138 @@ class ProfilePage extends StatelessWidget {
                                             trailing: IconButton(
                                               icon: const Icon(
                                                   FluentIcons.remove),
-                                              onPressed: () =>
-                                                  editProfile.updateLanguages(
+                                              onPressed: () => editProfile
+                                                  .updateAudioLanguages(
+                                                      code.iso6393, false),
+                                            ),
+                                            title: SizedBox(
+                                              height: 28,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  if (code.warn) ...[
+                                                    Tooltip(
+                                                      message:
+                                                          l10n.nonIso6392Hint,
+                                                      child: const Icon(
+                                                          FluentIcons.warning),
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                  ],
+                                                  Flexible(
+                                                    child: Text(code.fullName),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // Select Subtitle Languages
+                      Expander(
+                        header: Text(l10n.selectSubtitleLanguageToInclude),
+                        trailing: Visibility(
+                          visible: profile.defaultSubtitleLanguage.isNotEmpty,
+                          child: Text(profile.defaultSubtitleLanguage.isNotEmpty
+                              ? AppData.languageCodes
+                                  .identifyByCode(
+                                      profile.defaultSubtitleLanguage)
+                                  .name
+                              : ''),
+                        ),
+                        content: ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 500),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(' ${l10n.languages}: '),
+                                  Flexible(
+                                    child: AutoSuggestBox<LanguageCode>(
+                                      key: const Key('Search Languages'),
+                                      trailingIcon:
+                                          const Icon(FluentIcons.search),
+                                      sorter: Utilities.searchSorter,
+                                      onSelected: (selected) {
+                                        if (selected.value != null) {
+                                          profile.updateSubtitleLanguages(
+                                              selected.value!.iso6393);
+                                        }
+                                      },
+                                      items: List.from(
+                                        AppData.languageCodes.items.map(
+                                          (code) {
+                                            return AutoSuggestBoxItem(
+                                              value: code,
+                                              label: code.fullCleanName,
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Flexible(
+                                child: InfoLabel(
+                                  label: ' ${l10n.selectedLanguages}: ',
+                                  child: ReorderableListView.builder(
+                                    shrinkWrap: true,
+                                    buildDefaultDragHandles: false,
+                                    itemCount:
+                                        editProfile.subtitleLanguages.length,
+                                    onReorder:
+                                        editProfile.reorderSubtitleLanguages,
+                                    proxyDecorator: _proxyDecorator,
+                                    itemBuilder: (context, index) {
+                                      final code = AppData.languageCodes
+                                          .identifyByCode(profile
+                                              .subtitleLanguages
+                                              .elementAt(index));
+
+                                      final isDefault = code.iso6393 ==
+                                          editProfile.defaultSubtitleLanguage;
+                                      return ReorderableDragStartListener(
+                                        key: ValueKey(code),
+                                        index: index,
+                                        child: FluentTheme(
+                                          data: theme,
+                                          child: ListTile(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(4)),
+                                            onPressed: () {},
+                                            leading: SizedBox(
+                                              height: 30,
+                                              child: Center(
+                                                child: Checkbox(
+                                                  semanticLabel: 'isDefault',
+                                                  checked: isDefault,
+                                                  onChanged: (val) => profile
+                                                      .updateDefaultSubtitleLanguage(
+                                                          code.iso6393),
+                                                ),
+                                              ),
+                                            ),
+                                            trailing: IconButton(
+                                              icon: const Icon(
+                                                  FluentIcons.remove),
+                                              onPressed: () => editProfile
+                                                  .updateSubtitleLanguages(
                                                       code.iso6393, false),
                                             ),
                                             title: SizedBox(
@@ -797,10 +925,8 @@ class ProfilePage extends StatelessWidget {
                                   buildDefaultDragHandles: false,
                                   itemCount:
                                       editProfile.defaultFlagOrder.length,
-                                  onReorder: (oldIndex, newIndex) => editProfile
-                                      .reorderFlagOrder(oldIndex, newIndex),
-                                  proxyDecorator: (child, index, animation) =>
-                                      _proxyDecorator(child, index, animation),
+                                  onReorder: editProfile.reorderFlagOrder,
+                                  proxyDecorator: _proxyDecorator,
                                   itemBuilder: (context, index) {
                                     final flag = editProfile.defaultFlagOrder
                                         .elementAt(index);
@@ -952,7 +1078,6 @@ class ProfilePage extends StatelessWidget {
       );
     } else {
       sourceProfile.update(
-        defaultLanguage: editProfile.defaultLanguage,
         showTitleFormat: editProfile.showTitleFormat,
         videoTitleFormat: editProfile.videoTitleFormat,
         audioTitleFormat: editProfile.audioTitleFormat,
@@ -961,7 +1086,10 @@ class ProfilePage extends StatelessWidget {
         audioExtraOptions: editProfile.audioExtraOptions,
         subtitleExtraOptions: editProfile.subtitleExtraOptions,
         attachmentExtraOptions: editProfile.attachmentExtraOptions,
-        languages: editProfile.languages,
+        defaultAudioLanguage: editProfile.defaultAudioLanguage,
+        audioLanguages: editProfile.audioLanguages,
+        defaultSubtitleLanguage: editProfile.defaultSubtitleLanguage,
+        subtitleLanguages: editProfile.subtitleLanguages,
         defaultFlagOrder: editProfile.defaultFlagOrder,
         name: editProfile.name,
         modifiers: editProfile.modifiers,

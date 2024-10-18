@@ -118,7 +118,6 @@
   "videoTitleNote": "This will apply to the video file title and video track title",
   "audioTitleNote": "This will apply to the audio track title",
   "subtitleTitleNote": "This will apply to the subtitle track title",
-  "selectLanguageToInclude": "Select languages to include and choose to set as default",
   "languages": "Languages",
   "selectedLanguages": "Selected languages",
   "selectTrackFlagsAndReorder": "Select track flags and reorder which will set the Default flag based on order fallbacks",
@@ -266,5 +265,7 @@
   "addAttachments": "Add Attachments",
   "resetAndUseDefault": "Reset and use the default tool path",
   "sameAsOutput": "Same as output file title",
-  "textAlgorithmSubstitute": "Text matching substitute algorithm"
+  "textAlgorithmSubstitute": "Text matching substitute algorithm",
+  "selectSubtitleLanguageToInclude": "Select subtitle languages to include and choose to set as default",
+  "selectAudioLanguageToInclude": "Select audio languages to include and choose to set as default"
 }

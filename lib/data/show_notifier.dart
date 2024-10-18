@@ -52,8 +52,8 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
   }
 
   void _previewTracks(Video video) {
-    _assignDefault(video.audios);
-    _assignDefault(video.subtitles);
+    _assignDefaultAudio(video.audios);
+    _assignDefaultSubtitle(video.subtitles);
     sortTracks();
     for (var audio in video.audios) {
       audio.title = TitleScanner.audio(audio, profile);
@@ -69,13 +69,13 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
     }
   }
 
-  void _assignDefault(List<TrackProperties> tracks) {
+  void _assignDefaultAudio(List<TrackProperties> tracks) {
     List<TrackProperties> matches = [];
     for (final flagOrder in profile.defaultFlagOrder) {
       if (flagOrder == 'default') {
         matches = tracks.where((track) {
           final isDefaultLanguage =
-              track.language.iso6393 == profile.defaultLanguage;
+              track.language.iso6393 == profile.defaultAudioLanguage;
           final orderableFlags = track.flags.values.where((flag) {
             return !['enabled', 'default'].contains(flag.definedKey);
           }).toList();
@@ -86,7 +86,7 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
       } else {
         matches = tracks.where((track) {
           final isDefaultLanguage =
-              track.language.iso6393 == profile.defaultLanguage;
+              track.language.iso6393 == profile.defaultAudioLanguage;
 
           return track.flags[flagOrder]!.value && isDefaultLanguage;
         }).toList();
@@ -98,7 +98,49 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
       }
     }
     for (final track in tracks) {
-      if (profile.languages.contains(track.language.iso6393)) {
+      if (profile.audioLanguages.contains(track.language.iso6393)) {
+        track.include = true;
+        if (matches.contains(track)) {
+          track.flags['default']!.value = true;
+        } else {
+          track.flags['default']!.value = false;
+        }
+      } else {
+        track.include = false;
+      }
+    }
+  }
+
+  void _assignDefaultSubtitle(List<TrackProperties> tracks) {
+    List<TrackProperties> matches = [];
+    for (final flagOrder in profile.defaultFlagOrder) {
+      if (flagOrder == 'default') {
+        matches = tracks.where((track) {
+          final isDefaultLanguage =
+              track.language.iso6393 == profile.defaultSubtitleLanguage;
+          final orderableFlags = track.flags.values.where((flag) {
+            return !['enabled', 'default'].contains(flag.definedKey);
+          }).toList();
+
+          return orderableFlags.every((flag) => flag.value == false) &&
+              isDefaultLanguage;
+        }).toList();
+      } else {
+        matches = tracks.where((track) {
+          final isDefaultLanguage =
+              track.language.iso6393 == profile.defaultSubtitleLanguage;
+
+          return track.flags[flagOrder]!.value && isDefaultLanguage;
+        }).toList();
+      }
+      if (matches.isEmpty) {
+        continue;
+      } else {
+        break;
+      }
+    }
+    for (final track in tracks) {
+      if (profile.subtitleLanguages.contains(track.language.iso6393)) {
         track.include = true;
         if (matches.contains(track)) {
           track.flags['default']!.value = true;
