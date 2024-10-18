@@ -14,8 +14,10 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
     this.audioExtraOptions = '',
     this.subtitleExtraOptions = '',
     this.attachmentExtraOptions = '',
-    this.defaultLanguage = '',
-    this.languages = const [],
+    this.defaultAudioLanguage = '',
+    this.audioLanguages = const [],
+    this.defaultSubtitleLanguage = '',
+    this.subtitleLanguages = const [],
     this.defaultFlagOrder = const [],
     this.modifiers = const [],
     this.useFolderName = true,
@@ -174,7 +176,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
     'hin',
     'spa',
     'fre',
-    'arb',
+    'ara',
     'ben',
     'por',
     'rus',
@@ -192,8 +194,10 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
   String audioExtraOptions;
   String subtitleExtraOptions;
   String attachmentExtraOptions;
-  String defaultLanguage;
-  List<String> languages;
+  String defaultAudioLanguage;
+  List<String> audioLanguages;
+  String defaultSubtitleLanguage;
+  List<String> subtitleLanguages;
   List<String> defaultFlagOrder;
   List<TextModifier> modifiers;
   bool useFolderName;
@@ -210,8 +214,10 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
       audioExtraOptions: json['audioExtraOptions'],
       subtitleExtraOptions: json['subtitleExtraOptions'],
       attachmentExtraOptions: json['attachmentExtraOptions'],
-      defaultLanguage: json['defaultLanguage'],
-      languages: List<String>.from(json['languages']),
+      defaultAudioLanguage: json['defaultAudioLanguage'],
+      audioLanguages: List<String>.from(json['audioLanguages']),
+      defaultSubtitleLanguage: json['defaultSubtitleLanguage'],
+      subtitleLanguages: List<String>.from(json['subtitleLanguages']),
       defaultFlagOrder: List<String>.from(json['defaultFlagOrder']),
       modifiers: List<TextModifier>.from(
           json['modifiers'].map((e) => TextModifier.fromJson(e))),
@@ -230,8 +236,10 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         'audioExtraOptions': audioExtraOptions,
         'subtitleExtraOptions': subtitleExtraOptions,
         'attachmentExtraOptions': attachmentExtraOptions,
-        'defaultLanguage': defaultLanguage,
-        'languages': languages,
+        'defaultAudioLanguage': defaultAudioLanguage,
+        'audioLanguages': audioLanguages,
+        'defaultSubtitleLanguage': defaultSubtitleLanguage,
+        'subtitleLanguages': subtitleLanguages,
         'defaultFlagOrder': defaultFlagOrder,
         'modifiers': modifiers,
         'useFolderName': useFolderName,
@@ -248,8 +256,10 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
     String? audioExtraOptions,
     String? subtitleExtraOptions,
     String? attachmentExtraOptions,
-    String? defaultLanguage,
-    List<String>? languages,
+    String? defaultAudioLanguage,
+    List<String>? audioLanguages,
+    String? defaultSubtitleLanguage,
+    List<String>? subtitleLanguages,
     List<String>? defaultFlagOrder,
     List<TextModifier>? modifiers,
     bool? useFolderName,
@@ -266,8 +276,12 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         subtitleExtraOptions: subtitleExtraOptions ?? this.subtitleExtraOptions,
         attachmentExtraOptions:
             attachmentExtraOptions ?? this.attachmentExtraOptions,
-        defaultLanguage: defaultLanguage ?? this.defaultLanguage,
-        languages: languages ?? List.from(this.languages),
+        defaultAudioLanguage: defaultAudioLanguage ?? this.defaultAudioLanguage,
+        audioLanguages: audioLanguages ?? this.audioLanguages,
+        defaultSubtitleLanguage:
+            defaultSubtitleLanguage ?? this.defaultSubtitleLanguage,
+        subtitleLanguages:
+            subtitleLanguages ?? List.from(this.subtitleLanguages),
         defaultFlagOrder: defaultFlagOrder ?? List.from(this.defaultFlagOrder),
         modifiers: modifiers ?? List.from(this.modifiers),
         useFolderName: useFolderName ?? this.useFolderName,
@@ -284,8 +298,10 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
     String? audioExtraOptions,
     String? subtitleExtraOptions,
     String? attachmentExtraOptions,
-    String? defaultLanguage,
-    List<String>? languages,
+    String? defaultAudioLanguage,
+    List<String>? audioLanguages,
+    String? defaultSubtitleLanguage,
+    List<String>? subtitleLanguages,
     List<String>? defaultFlagOrder,
     List<TextModifier>? modifiers,
     bool? useFolderName,
@@ -302,42 +318,77 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         subtitleExtraOptions ?? this.subtitleExtraOptions;
     this.attachmentExtraOptions;
     attachmentExtraOptions ?? this.attachmentExtraOptions;
-    this.defaultLanguage = defaultLanguage ?? this.defaultLanguage;
-    this.languages = languages ?? this.languages;
+    this.defaultAudioLanguage =
+        defaultAudioLanguage ?? this.defaultAudioLanguage;
+    this.audioLanguages = audioLanguages ?? this.audioLanguages;
+    this.defaultSubtitleLanguage =
+        defaultSubtitleLanguage ?? this.defaultSubtitleLanguage;
+    this.subtitleLanguages = subtitleLanguages ?? this.subtitleLanguages;
     this.defaultFlagOrder = defaultFlagOrder ?? this.defaultFlagOrder;
     this.modifiers = modifiers ?? this.modifiers;
     this.useFolderName = useFolderName ?? this.useFolderName;
     notifyListeners();
   }
 
-  void updateDefaultLanguage(String language) {
-    if (defaultLanguage == language) {
-      defaultLanguage = '';
+  void updateDefaultAudioLanguage(String language) {
+    if (defaultAudioLanguage == language) {
+      defaultAudioLanguage = '';
     } else {
-      defaultLanguage = language;
+      defaultAudioLanguage = language;
     }
     notifyListeners();
   }
 
-  void updateLanguages(String iso6393, [bool add = true]) {
+  void updateAudioLanguages(String iso6393, [bool add = true]) {
     if (add) {
-      if (!languages.contains(iso6393)) {
-        languages = List.from(languages)..add(iso6393);
+      if (!audioLanguages.contains(iso6393)) {
+        audioLanguages = List.from(audioLanguages)..add(iso6393);
       }
     } else {
-      if (iso6393 == defaultLanguage) {
-        updateDefaultLanguage(iso6393);
+      if (iso6393 == defaultAudioLanguage) {
+        updateDefaultAudioLanguage(iso6393);
       }
-      languages = List.from(languages)..remove(iso6393);
+      audioLanguages = List.from(audioLanguages)..remove(iso6393);
     }
     notifyListeners();
   }
 
-  void reorderLanguages(int oldIndex, int newIndex) {
+  void reorderAudioLanguages(int oldIndex, int newIndex) {
     if (newIndex > oldIndex) newIndex -= 1;
-    final languagesCopy = List<String>.from(languages);
+    final languagesCopy = List<String>.from(audioLanguages);
     final item = languagesCopy.removeAt(oldIndex);
-    languages = languagesCopy..insert(newIndex, item);
+    audioLanguages = languagesCopy..insert(newIndex, item);
+    notifyListeners();
+  }
+
+  void updateDefaultSubtitleLanguage(String language) {
+    if (defaultSubtitleLanguage == language) {
+      defaultSubtitleLanguage = '';
+    } else {
+      defaultSubtitleLanguage = language;
+    }
+    notifyListeners();
+  }
+
+  void updateSubtitleLanguages(String iso6393, [bool add = true]) {
+    if (add) {
+      if (!subtitleLanguages.contains(iso6393)) {
+        subtitleLanguages = List.from(subtitleLanguages)..add(iso6393);
+      }
+    } else {
+      if (iso6393 == defaultSubtitleLanguage) {
+        updateDefaultSubtitleLanguage(iso6393);
+      }
+      subtitleLanguages = List.from(subtitleLanguages)..remove(iso6393);
+    }
+    notifyListeners();
+  }
+
+  void reorderSubtitleLanguages(int oldIndex, int newIndex) {
+    if (newIndex > oldIndex) newIndex -= 1;
+    final languagesCopy = List<String>.from(subtitleLanguages);
+    final item = languagesCopy.removeAt(oldIndex);
+    subtitleLanguages = languagesCopy..insert(newIndex, item);
     notifyListeners();
   }
 
@@ -382,8 +433,10 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         audioExtraOptions,
         subtitleExtraOptions,
         attachmentExtraOptions,
-        defaultLanguage,
-        languages,
+        defaultAudioLanguage,
+        audioLanguages,
+        defaultSubtitleLanguage,
+        subtitleLanguages,
         defaultFlagOrder,
         modifiers,
         useFolderName,
