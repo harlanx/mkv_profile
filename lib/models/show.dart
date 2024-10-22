@@ -417,10 +417,10 @@ class AddedTrack extends TrackProperties {
     result = identifiers.any((identifier) =>
         file.title.contains(RegExp(identifier, caseSensitive: true)));
 
-    if (AppData.subtitleFormats.contains(file.extension)) {
-      // Usually Forced Subtitles are less than 20KB
-      result = await file.length() < 20000;
-    }
+    // if (AppData.subtitleFormats.contains(file.extension)) {
+    //   // Usually Forced Subtitles are less than 10KB
+    //   result = await file.length() < 10000;
+    // }
     return result;
   }
 

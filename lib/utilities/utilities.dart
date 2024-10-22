@@ -79,7 +79,7 @@ class Utilities {
       }
     }
     final currentModifiers = jsonEncode(AppData.profiles.items[1]!.modifiers);
-    print(latestModifiers == currentModifiers);
+    //print(latestModifiers == currentModifiers);
     if (latestModifiers.isNotEmpty && (latestModifiers != currentModifiers)) {
       return MapEntry(true, latestModifiers);
     }
