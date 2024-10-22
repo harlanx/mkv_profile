@@ -210,6 +210,13 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
     return 0;
   }
 
+  ShowNotifier copyWith({Show? show, UserProfile? profile}) {
+    return ShowNotifier(
+      show ?? this.show,
+      profile ?? this.profile,
+    );
+  }
+
   void updateProfile(UserProfile profile) {
     this.profile = profile;
     _previewProfile();
