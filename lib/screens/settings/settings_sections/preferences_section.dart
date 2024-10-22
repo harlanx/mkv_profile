@@ -271,8 +271,7 @@ class PreferencesSection extends StatelessWidget {
                 children: List.from(
                   profiles.items.values.map(
                     (p) {
-                      // Default profiles' id
-                      final isDefault = p.id <= 2;
+                      final isDefault = p.isDefault;
                       return Card(
                         padding: const EdgeInsets.only(left: 8.0, right: 4.0),
                         borderRadius: BorderRadius.circular(4),

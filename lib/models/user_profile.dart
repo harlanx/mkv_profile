@@ -6,6 +6,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
   UserProfile({
     required this.id,
     required this.name,
+    required this.isDefault,
     this.showTitleFormat = '',
     this.videoTitleFormat = '',
     this.audioTitleFormat = '',
@@ -96,6 +97,8 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         r'\bHDCam\b',
         r'\bDolby\b',
         r'\bAtmos\b',
+        r'\bDual\b,',
+        r'\bESub\b,',
         r'\bHEVC\b',
         r'\bDTS\b',
         r'\bAAC\b',
@@ -105,8 +108,8 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         r'\bUHD\b',
         r'\bRip\b',
         r'\bCAM\b',
-        r'\bSDb',
-        r'\bHDb',
+        r'\bSD\b',
+        r'\bHD\b',
         r'\bTS\b',
       ],
       replacement: '',
@@ -126,6 +129,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         r'TrueHD.\d+.\d+', // 'TrueHD.7.1', 'TrueHD.5.1', Atmos
         r'\[(.*?)\]|\((.*?)\)', // [Anything with square brackets] (and Parentheses)
         r'\d+(?:\.\d+)?MB|\d+(?:\.\d+)?GB', // 200MB, 150.20MB, 2GB, 2.5GB
+        r'\bAV\d\b',
         r'\bM{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})\b', // Roman numerals
       ],
       replacement: '',
@@ -142,10 +146,11 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
         r'\bPROTON\b',
         r'\bMeGusta\b',
         r'\bInfinity\b',
-        r'\b\bELiTEb',
+        r'\bELiTE\b',
         r'\bION265\b',
         r'\bION10\b',
         r'\bXEBEC\b',
+        r'\bHULU\b',
         r'\bPCOK\b',
         r'\bFLUX\b',
         r'\bRARBG\b',
@@ -186,6 +191,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
 
   int id;
   String name;
+  bool isDefault;
   String showTitleFormat;
   String videoTitleFormat;
   String audioTitleFormat;
@@ -206,6 +212,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
     return UserProfile(
       id: json['id'],
       name: json['name'],
+      isDefault: json['isDefault'],
       showTitleFormat: json['showTitleFormat'],
       videoTitleFormat: json['videoTitleFormat'],
       audioTitleFormat: json['audioTitleFormat'],
@@ -228,6 +235,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
+        'isDefault': isDefault,
         'showTitleFormat': showTitleFormat,
         'videoTitleFormat': videoTitleFormat,
         'audioTitleFormat': audioTitleFormat,
@@ -248,6 +256,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
   UserProfile copyWith({
     int? id,
     String? name,
+    bool? isDefault,
     String? showTitleFormat,
     String? videoTitleFormat,
     String? audioTitleFormat,
@@ -267,6 +276,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
       UserProfile(
         name: name ?? this.name,
         id: id ?? this.id,
+        isDefault: isDefault ?? this.isDefault,
         showTitleFormat: showTitleFormat ?? this.showTitleFormat,
         videoTitleFormat: videoTitleFormat ?? this.videoTitleFormat,
         audioTitleFormat: audioTitleFormat ?? this.audioTitleFormat,
@@ -290,6 +300,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
   void update({
     String? name,
     int? id,
+    bool? isDefault,
     String? showTitleFormat,
     String? videoTitleFormat,
     String? audioTitleFormat,
@@ -308,6 +319,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
   }) {
     this.name = name ?? this.name;
     this.id = id ?? this.id;
+    this.isDefault = isDefault ?? this.isDefault;
     this.showTitleFormat = showTitleFormat ?? this.showTitleFormat;
     this.videoTitleFormat = videoTitleFormat ?? this.videoTitleFormat;
     this.audioTitleFormat = audioTitleFormat ?? this.audioTitleFormat;
@@ -425,6 +437,7 @@ class UserProfile extends ChangeNotifier with EquatableMixin {
   List<Object> get props => [
         id,
         name,
+        isDefault,
         showTitleFormat,
         videoTitleFormat,
         audioTitleFormat,

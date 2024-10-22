@@ -7,3 +7,4 @@ export 'mkv_info.dart';
 export 'show.dart';
 export 'language_code.dart';
 export 'scan_error.dart';
+export 'app_update.dart';

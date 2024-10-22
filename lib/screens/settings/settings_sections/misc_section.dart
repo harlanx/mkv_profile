@@ -3,9 +3,8 @@ import 'package:fluent_ui/fluent_ui.dart';
 
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
+
 import 'package:file_selector/file_selector.dart';
-import 'package:version/version.dart';
 
 import '../../../data/app_data.dart';
 import '../../../services/app_services.dart';
@@ -246,54 +245,64 @@ class AboutTile extends StatelessWidget {
       header: Text(l10n.about),
       trailing: ValueListenableBuilder<bool>(
         valueListenable: isCheckingUpdate,
-        builder: (context, value, child) {
+        builder: (context, isChecking, child) {
           return Button(
-            onPressed: !value
+            onPressed: !isChecking
                 ? () async {
                     try {
                       isCheckingUpdate.value = true;
-                      final url = Uri.https('api.github.com',
-                          'repos/harlanx/mkv_profile/releases');
-                      await http.get(url).then((response) async {
-                        final List<dynamic> json = jsonDecode(response.body);
-                        if (json.isNotEmpty) {
-                          final Map<String, dynamic> latestData = json.first;
-                          final currentVersion =
-                              Version.parse(AppData.appInfo.version);
-                          final latestVersion = Version.parse(
-                              latestData['tag_name'].replaceAll('v', ''));
-                          if ((latestVersion > currentVersion) &&
-                              context.mounted) {
-                            await showDialog<bool>(
-                                context: context,
-                                builder: (context) {
-                                  return NewUpdateDialog(latestData);
-                                }).then((value) async {
-                              if (value ??= false) {
-                                final url = json.first['html_url'];
-                                if (await canLaunchUrl(Uri.parse(url))) {
-                                  await launchUrl(Uri.parse(url));
-                                }
-                              }
-                            });
-                          } else {
-                            if (context.mounted) {
-                              await displayInfoBar(context,
-                                  builder: (context, close) {
-                                return InfoBar(
-                                  title: Text(l10n.youAreUsingLatestVersion),
-                                  action: IconButton(
-                                    icon: const Icon(FluentIcons.clear),
-                                    onPressed: close,
-                                  ),
-                                  severity: InfoBarSeverity.info,
-                                );
-                              });
+                      final appUpdate = await Utilities.checkVersion();
+                      if (appUpdate != null) {
+                        if (appUpdate.isOutdated ||
+                            appUpdate.isModifiersOutdated) {
+                          if (!context.mounted) return;
+                          final wantDownload = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => NewUpdateDialog(appUpdate));
+                          if (wantDownload ?? false) {
+                            if (appUpdate.isOutdated) {
+                              final url = Uri.parse(appUpdate.info['html_url']);
+                              if (await canLaunchUrl(url)) await launchUrl(url);
+                            }
+                            if (appUpdate.isModifiersOutdated) {
+                              AppData.profiles.updateDefaultModifiers(
+                                  appUpdate.modifiersInfo);
+                              if (!context.mounted) return;
+                              await displayInfoBar(
+                                context,
+                                builder: (context, close) {
+                                  return InfoBar(
+                                    title: Text(l10n.modifiersUpdated),
+                                    action: IconButton(
+                                      icon: const Icon(FluentIcons.clear),
+                                      onPressed: close,
+                                    ),
+                                    severity: InfoBarSeverity.success,
+                                  );
+                                },
+                              );
                             }
                           }
+                        } else {
+                          if (!context.mounted) return;
+                          await displayInfoBar(
+                            context,
+                            builder: (context, close) {
+                              return InfoBar(
+                                title: Text(l10n.youAreUsingLatestVersion),
+                                action: IconButton(
+                                  icon: const Icon(FluentIcons.clear),
+                                  onPressed: close,
+                                ),
+                                severity: InfoBarSeverity.info,
+                              );
+                            },
+                          );
                         }
-                      });
-                    } catch (_) {}
+                      }
+                    } catch (e) {
+                      debugPrint(e.toString());
+                    }
                     isCheckingUpdate.value = false;
                   }
                 : null,
@@ -301,7 +310,7 @@ class AboutTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 ...[
-                  if (value)
+                  if (isChecking)
                     SizedBox(
                       height: theme.iconTheme.size,
                       width: theme.iconTheme.size,

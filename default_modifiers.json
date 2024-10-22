@@ -1,0 +1,93 @@
+[
+	{
+		"id": 0,
+		"replaceables": [
+			"\\bClean.Cam\\b",
+			"\\bTELESYNC\\b",
+			"\\bComplete\\b",
+			"\\bSubbed\\b",
+			"\\bDubbed\\b",
+			"\\bWEBRip\\b",
+			"\\bCAMRip\\b",
+			"\\bBluRay\\b",
+			"\\bWeb-Dl\\b",
+			"\\bBDRip\\b",
+			"\\bHDCam\\b",
+			"\\bDolby\\b",
+			"\\bAtmos\\b",
+			"\\bDual\\b,",
+			"\\bESub\\b,",
+			"\\bHEVC\\b",
+			"\\bDTS\\b",
+			"\\bAAC\\b",
+			"\\bSDR\\b",
+			"\\bHDR\\b",
+			"\\bWEB\\b",
+			"\\bUHD\\b",
+			"\\bRip\\b",
+			"\\bCAM\\b",
+			"\\bSD\\b",
+			"\\bHD\\b",
+			"\\bTS\\b"
+		],
+		"replacement": ""
+	},
+	{
+		"id": 1,
+		"replaceables": [
+			"\\b\\d{4}\\b",
+			"Season.\\d+|S.\\d+|Season \\d+|S \\d+",
+			"Episode.\\d+|E.\\d+|Episode \\d+|E \\d+|\\b\\d{2}\\b",
+			"\\d{3,4}p",
+			"x.\\d{3}|x\\d{3}",
+			"h.\\d{3}|h\\d{3}",
+			"[\\d]+bit",
+			"Part\\.\\d|Part\\s\\d",
+			"DD\\d+.\\d+|DDP\\d+.\\d+",
+			"TrueHD.\\d+.\\d+",
+			"\\[(.*?)\\]|\\((.*?)\\)",
+			"\\d+(?:\\.\\d+)?MB|\\d+(?:\\.\\d+)?GB",
+			"\\bAV\\d\\b",
+			"\\bM{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})\\b"
+		],
+		"replacement": ""
+	},
+	{
+		"id": 2,
+		"replaceables": [
+			"\\bTORRENTGALAXY\\b",
+			"\\bGalaxyRG265\\b",
+			"\\bSUNSCREEN\\b",
+			"\\bKONTRAST\\b",
+			"\\bGalaxyRG\\b",
+			"\\bGalaxyTV\\b",
+			"\\bPROTON\\b",
+			"\\bMeGusta\\b",
+			"\\bInfinity\\b",
+			"\\bELiTE\\b",
+			"\\bION265\\b",
+			"\\bION10\\b",
+			"\\bXEBEC\\b",
+			"\\bHULU\\b",
+			"\\bPCOK\\b",
+			"\\bFLUX\\b",
+			"\\bRARBG\\b",
+			"\\bMiNX\\b",
+			"\\bZMNT\\b",
+			"\\bYIFY\\b",
+			"\\bAMZN\\b",
+			"\\bTGx\\b",
+			"\\bNF\\b"
+		],
+		"replacement": ""
+	},
+	{
+		"id": 3,
+		"replaceables": [
+			".",
+			"_",
+			"-"
+		],
+		"replacement": " "
+	}
+]

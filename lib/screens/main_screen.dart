@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' as foundation;
+import 'package:flutter/foundation.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 
 import 'package:provider/provider.dart';
@@ -70,7 +70,7 @@ class MainScreen extends StatelessWidget {
                 title: Text(l10n.settings),
                 body: const SettingsScreen(),
               ),
-              if (foundation.kDebugMode) ...[
+              if (kDebugMode) ...[
                 PaneItem(
                   key: const Key('/testing'),
                   icon: const Icon(FluentIcons.test_impact_solid),

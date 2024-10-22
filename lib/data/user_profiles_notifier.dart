@@ -11,10 +11,12 @@ class UserProfilesNotifier extends ChangeNotifier {
     UserProfile(
       id: 0,
       name: 'None',
+      isDefault: true,
     ),
     UserProfile(
       id: 1,
-      name: 'Default (Movie)',
+      name: 'Movie (Default)',
+      isDefault: true,
       showTitleFormat: '%show_title%% (year)%',
       videoTitleFormat: '%show_title%',
       audioTitleFormat: '%language%',
@@ -31,7 +33,8 @@ class UserProfilesNotifier extends ChangeNotifier {
     ),
     UserProfile(
       id: 2,
-      name: 'Default (Series)',
+      name: 'Series (Default)',
+      isDefault: true,
       showTitleFormat: '%show_title%',
       videoTitleFormat:
           '%show_title%% - Sseason_number%%Eepisode_number%% - episode_title%',
@@ -50,15 +53,17 @@ class UserProfilesNotifier extends ChangeNotifier {
   ];
 
   void load() {
+    // Loads hard-coded default profiles
+    // Used only on initial usage of the app.
     _items.addEntries(defaultProfiles.map((e) => MapEntry(e.id, e)));
 
-    final profilesJson = SharedPrefs.getStringList('UserProfiles');
-    if (profilesJson != null) {
-      _items.addAll({
-        for (var profile
-            in profilesJson.map((e) => UserProfile.fromJson(jsonDecode(e))))
-          profile.id: profile
-      });
+    // Loading saved profiles
+    // Hard-coded default profiles are replaced by the saved default profiles.
+    final userProfilesJson = SharedPrefs.getStringList('UserProfiles');
+    if (userProfilesJson != null) {
+      final userProfiles =
+          userProfilesJson.map((e) => UserProfile.fromJson(jsonDecode(e)));
+      _items.addEntries(userProfiles.map((e) => MapEntry(e.id, e)));
     }
   }
 
@@ -82,8 +87,7 @@ class UserProfilesNotifier extends ChangeNotifier {
   Future<void> export(String path) async {
     // Exclude default profiles.
     final toBeSaved = <UserProfile>[
-      for (var item in _items.entries)
-        if (item.key >= 3) ...[item.value]
+      for (var item in _items.entries) item.value
     ];
     final jsonString = jsonEncode(toBeSaved);
     await File(path).writeAsString(jsonString);
@@ -98,6 +102,16 @@ class UserProfilesNotifier extends ChangeNotifier {
 
   void remove(int id) {
     _items.remove(id);
+    notifyListeners();
+  }
+
+  void updateDefaultModifiers(String json) {
+    final List<dynamic> jsonList = jsonDecode(json);
+    final newModifiers = jsonList
+        .map((e) => TextModifier.fromJson(e as Map<String, dynamic>))
+        .toList();
+    _items[2]!.modifiers = newModifiers;
+    _items[2]!.modifiers = newModifiers;
     notifyListeners();
   }
 }

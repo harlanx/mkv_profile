@@ -267,5 +267,7 @@
   "sameAsOutput": "Kapareho sa pangalan ng output file",
   "textAlgorithmSubstitute": "Kapalit na pantugmang algoritmo sa text",
   "selectSubtitleLanguageToInclude": "Piliin ang mga lengguwahe ng subtitle na isasama at pumili ng itatakdang default",
-  "selectAudioLanguageToInclude": "Piliin ang mga lengguwahe ng audio na isasama at pumili ng itatakdang default"
+  "selectAudioLanguageToInclude": "Piliin ang mga lengguwahe ng audio na isasama at pumili ng itatakdang default",
+  "newModifiersAvailable": "May bagong text modifiers na available!",
+  "modifiersUpdated": "Ang mga text modifiers ng default profiles ay updated na!"
 }
