@@ -63,21 +63,24 @@ class Utilities {
   static Future<MapEntry<bool, String?>> _checkTextModifiersUpdate() async {
     String latestModifiers = '';
 
-    if (kDebugMode) {
+    if (!kDebugMode) {
       final file = await rootBundle.loadString('default_modifiers.json');
       // Re-encoding to remove any formatting (compact)
       latestModifiers = jsonEncode(jsonDecode(file));
     } else {
-      final url = Uri.https(
-          'github.com/harlanx/mkv_profile/blob/main/default_modifiers.json');
-      final response = await http.get(url);
+      final url = Uri.https('api.github.com',
+          'repos/harlanx/mkv_profile/contents/default_modifiers.json');
+      final response = await http.get(url, headers: {
+        HttpHeaders.acceptHeader: 'application/vnd.github.VERSION.raw'
+      });
       if (response.statusCode == 200) {
         // Re-encoding to remove any formatting (compact)
         latestModifiers = jsonEncode(jsonDecode(response.body));
       }
     }
     final currentModifiers = jsonEncode(AppData.profiles.items[1]!.modifiers);
-    if (latestModifiers != currentModifiers) {
+    print(latestModifiers == currentModifiers);
+    if (latestModifiers.isNotEmpty && (latestModifiers != currentModifiers)) {
       return MapEntry(true, latestModifiers);
     }
     return const MapEntry(false, null);

@@ -110,7 +110,9 @@ class UserProfilesNotifier extends ChangeNotifier {
     final newModifiers = jsonList
         .map((e) => TextModifier.fromJson(e as Map<String, dynamic>))
         .toList();
-    _items[2]!.modifiers = newModifiers;
+    // Movies (Default)
+    // Series (Default)
+    _items[1]!.modifiers = newModifiers;
     _items[2]!.modifiers = newModifiers;
     notifyListeners();
   }
