@@ -22,7 +22,8 @@ class ProfilePage extends StatelessWidget {
     if (isNew) {
       // Default profile (Shouldn't be deleted nor edited) so we just clone it.
       // This is for creating new profile.
-      editProfile = sourceProfile.copyWith(name: 'My New Profile');
+      editProfile =
+          sourceProfile.copyWith(name: 'My New Profile', isDefault: false);
     } else {
       // This is for editing existing profiles.
       editProfile = sourceProfile.copyWith();

@@ -95,11 +95,11 @@ class DeleteDialog extends StatelessWidget {
 
 class NewUpdateDialog extends StatelessWidget {
   const NewUpdateDialog(
-    this.response, {
+    this.appUpdate, {
     super.key,
   });
 
-  final Map<String, dynamic> response;
+  final AppUpdate appUpdate;
 
   @override
   Widget build(BuildContext context) {
@@ -113,20 +113,40 @@ class NewUpdateDialog extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         //shrinkWrap: true,
         children: [
-          Text(l10n.newVersionAvailable(response['tag_name'])),
-          Flexible(
-            child: Markdown(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              data: response['body'],
-              extensionSet: md.ExtensionSet(
-                md.ExtensionSet.gitHubWeb.blockSyntaxes,
-                [
-                  ...md.ExtensionSet.gitHubWeb.inlineSyntaxes,
-                ],
+          if (appUpdate.isOutdated) ...[
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(FluentIcons.ringer_solid),
+                const SizedBox(width: 6),
+                Text(l10n.newVersionAvailable(appUpdate.info['tag_name'])),
+              ],
+            ),
+            Flexible(
+              child: Markdown(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                data: appUpdate.info['body'],
+                extensionSet: md.ExtensionSet(
+                  md.ExtensionSet.gitHubWeb.blockSyntaxes,
+                  md.ExtensionSet.gitHubWeb.inlineSyntaxes,
+                ),
               ),
             ),
-          ),
+            const SizedBox(height: 10),
+          ],
+          if (appUpdate.isModifiersOutdated) ...[
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  FluentIcons.ringer_solid,
+                ),
+                const SizedBox(width: 6),
+                Text(l10n.newModifiersAvailable),
+              ],
+            ),
+          ],
         ],
       ),
       actions: [

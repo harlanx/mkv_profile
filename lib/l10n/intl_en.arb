@@ -267,5 +267,7 @@
   "sameAsOutput": "Same as output file title",
   "textAlgorithmSubstitute": "Text matching substitute algorithm",
   "selectSubtitleLanguageToInclude": "Select subtitle languages to include and choose to set as default",
-  "selectAudioLanguageToInclude": "Select audio languages to include and choose to set as default"
+  "selectAudioLanguageToInclude": "Select audio languages to include and choose to set as default",
+  "newModifiersAvailable": "New text modifiers available!",
+  "modifiersUpdated": "Default profiles' text modifiers are updated to latest!"
 }

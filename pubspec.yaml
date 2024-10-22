@@ -66,6 +66,7 @@ flutter:
     - assets/json/
     - assets/mkvmerge/
     - assets/mediainfo/
+    - default_modifiers.json
 
 flutter_launcher_icons:
   windows:
