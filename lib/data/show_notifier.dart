@@ -71,26 +71,13 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
 
   void _assignDefaultAudio(List<TrackProperties> tracks) {
     List<TrackProperties> matches = [];
-    for (final flagOrder in profile.defaultFlagOrder) {
-      if (flagOrder == 'default') {
-        matches = tracks.where((track) {
-          final isDefaultLanguage =
-              track.language.iso6393 == profile.defaultAudioLanguage;
-          final orderableFlags = track.flags.values.where((flag) {
-            return !['enabled', 'default'].contains(flag.definedKey);
-          }).toList();
+    for (final flagName in profile.defaultFlagOrder) {
+      matches = tracks.where((track) {
+        final isDefaultLanguage =
+            track.language.iso6393 == profile.defaultAudioLanguage;
+        return track.flags[flagName]!.value && isDefaultLanguage;
+      }).toList();
 
-          return orderableFlags.every((flag) => flag.value == false) &&
-              isDefaultLanguage;
-        }).toList();
-      } else {
-        matches = tracks.where((track) {
-          final isDefaultLanguage =
-              track.language.iso6393 == profile.defaultAudioLanguage;
-
-          return track.flags[flagOrder]!.value && isDefaultLanguage;
-        }).toList();
-      }
       if (matches.isEmpty) {
         continue;
       } else {
@@ -221,6 +208,13 @@ class ShowNotifier extends InputBasic with ChangeNotifier {
     }
 
     return 0;
+  }
+
+  ShowNotifier copyWith({Show? show, UserProfile? profile}) {
+    return ShowNotifier(
+      show ?? this.show,
+      profile ?? this.profile,
+    );
   }
 
   void updateProfile(UserProfile profile) {

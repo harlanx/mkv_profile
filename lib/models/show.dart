@@ -290,7 +290,7 @@ class EmbeddedTrack extends TrackProperties {
   @override
   Future<void> loadInfo() async {
     return await _memoizer.runOnce(() async {
-      flags['default']!.value = false;
+      flags['default']!.value = await _isDefault;
       flags['original_language']!.value = await _isOriginalLanguage;
       flags['forced']!.value = await _isForced;
       flags['commentary']!.value = await _isCommentary;
@@ -298,6 +298,18 @@ class EmbeddedTrack extends TrackProperties {
       flags['visual_impaired']!.value = await _isVisualImpaired;
       flags['text_description']!.value = await _isTextDescription;
     });
+  }
+
+  Future<bool> get _isDefault async {
+    final identifiers = ['Default'];
+    bool result = flags['default']!.value;
+    // If false, reconfirm by using track title;
+    if (!result) {
+      result = identifiers.any((identifier) =>
+          (title ?? '').contains(RegExp(identifier, caseSensitive: true)));
+    }
+
+    return result;
   }
 
   Future<bool> get _isOriginalLanguage async {
@@ -417,10 +429,10 @@ class AddedTrack extends TrackProperties {
     result = identifiers.any((identifier) =>
         file.title.contains(RegExp(identifier, caseSensitive: true)));
 
-    if (AppData.subtitleFormats.contains(file.extension)) {
-      // Usually Forced Subtitles are less than 20KB
-      result = await file.length() < 20000;
-    }
+    // if (AppData.subtitleFormats.contains(file.extension)) {
+    //   // Usually Forced Subtitles are less than 10KB
+    //   result = await file.length() < 10000;
+    // }
     return result;
   }
 

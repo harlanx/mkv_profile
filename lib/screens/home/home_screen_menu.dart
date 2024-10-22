@@ -50,7 +50,8 @@ class HomeScreenMenuBar extends StatelessWidget {
                       icon: const Icon(FluentIcons.build_queue_new),
                       label: Text(l10n.addToQueue),
                       onPressed: selectedID.value != null
-                          ? () => tasks.add(shows.items[selectedID.value]!)
+                          ? () => tasks
+                              .add(shows.items[selectedID.value]!.copyWith())
                           : null,
                     ),
                   ],
